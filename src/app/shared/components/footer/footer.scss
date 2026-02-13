@@ -1,0 +1,162 @@
+@use '../../../../styles/variables' as *;
+@use '../../../../styles/mixins' as *;
+
+.footer {
+  background: $darker-color;
+  border-top: 2px solid $primary-color;
+  margin-top: auto;
+  box-shadow: 0 -4px 20px rgba(29, 185, 84, 0.2);
+}
+
+.footer-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: $spacing-2xl $spacing-lg $spacing-xl;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: $spacing-xl;
+
+  @include tablet {
+    grid-template-columns: repeat(2, 1fr);
+    gap: $spacing-lg;
+  }
+
+  @include mobile {
+    grid-template-columns: 1fr;
+    gap: $spacing-lg;
+  }
+}
+
+.footer-column {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+}
+
+// Logo
+.footer-logo {
+  display: flex;
+  align-items: baseline;
+  gap: $spacing-xs;
+  margin-bottom: $spacing-sm;
+
+  .logo-text {
+    font-size: 32px;
+    font-weight: 900;
+    color: $primary-color;
+    text-shadow: $shadow-neon-green;
+    letter-spacing: 2px;
+  }
+
+  .logo-subtext {
+    font-size: 18px;
+    color: $secondary-color;
+    font-weight: 600;
+  }
+}
+
+.footer-description {
+  color: $text-muted;
+  line-height: 1.6;
+  margin: 0;
+}
+
+// Social Links
+.social-links {
+  display: flex;
+  gap: $spacing-md;
+  margin-top: $spacing-sm;
+}
+
+.social-icon {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba($primary-color, 0.1);
+  border: 1px solid $primary-color;
+  border-radius: $radius-md;
+  color: $primary-color;
+  transition: all $transition-fast;
+
+  &:hover {
+    background: $primary-color;
+    color: $darker-color;
+    transform: translateY(-3px);
+    box-shadow: $shadow-neon-green;
+  }
+}
+
+// Títulos
+.footer-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: $primary-color;
+  margin: 0 0 $spacing-sm 0;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+// Enlaces
+.footer-links {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+
+  li a {
+    color: $text-muted;
+    text-decoration: none;
+    transition: all $transition-fast;
+    display: inline-block;
+
+    &:hover {
+      color: $primary-color;
+      transform: translateX(5px);
+    }
+  }
+}
+
+// Contacto
+.footer-contact {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+
+  li {
+    display: flex;
+    align-items: flex-start;
+    gap: $spacing-sm;
+    color: $text-muted;
+
+    svg {
+      flex-shrink: 0;
+      color: $primary-color;
+      margin-top: 2px;
+    }
+
+    span {
+      line-height: 1.5;
+    }
+  }
+}
+
+// Copyright
+.footer-bottom {
+  background: $bg-dark;
+  border-top: 1px solid $border-color;
+  padding: $spacing-lg;
+  text-align: center;
+
+  p {
+    margin: 0;
+    color: $text-muted;
+    font-size: 14px;
+  }
+}

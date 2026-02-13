@@ -1,11 +1,20 @@
-
-// Include theming for Angular Material with `mat.theme()`.
-// This Sass mixin will define CSS variables that are used for styling Angular Material
-// components according to the Material 3 design spec.
-// Learn more about theming and how to use it for your application's
-// custom components at https://material.angular.dev/guide/theming
+// ========================================
+// 1. MÓDULOS DEL SISTEMA (Sass y Material)
+// ========================================
+@use 'sass:color'; // Necesario para color.adjust
 @use '@angular/material' as mat;
 
+// ========================================
+// 2. TUS VARIABLES Y MIXINS
+// ========================================
+// IMPORTANTE: Asegúrate de que en _mixins.scss también 
+// hayas añadido: @use './variables' as *;
+@use './styles/variables' as *;
+@use './styles/mixins' as *;
+
+// ========================================
+// CONFIGURACIÓN DE TEMA (Angular Material)
+// ========================================
 html {
   height: 100%;
   @include mat.theme((
@@ -18,21 +27,182 @@ html {
   ));
 }
 
+// ========================================
+// RESET Y ESTILOS GLOBALES
+// ========================================
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
 body {
-  // Default the application to a light color theme. This can be changed to
-  // `dark` to enable the dark color theme, or to `light dark` to defer to the
-  // user's system settings.
-  color-scheme: light;
-
-  // Set a default background, font and text colors for the application using
-  // Angular Material's system-level CSS variables. Learn more about these
-  // variables at https://material.angular.dev/guide/system-variables
-  background-color: var(--mat-sys-surface);
-  color: var(--mat-sys-on-surface);
-  font: var(--mat-sys-body-medium);
-
-  // Reset the user agent margin.
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: $bg-dark;
+  color: $text-color;
+  line-height: 1.6;
   margin: 0;
   height: 100%;
+  @include custom-scrollbar;
 }
-/* You can add global styles to this file, and also import other style files */
+
+// ========================================
+// BOTONES GLOBALES
+// ========================================
+.btn {
+  @include button-base;
+  
+  &-primary {
+    background: $gradient-primary;
+    color: $darker-color;
+    
+    &:hover {
+      box-shadow: $shadow-neon-green;
+      transform: scale(1.05);
+    }
+  }
+  
+  &-secondary {
+    background: $gradient-gold;
+    color: $darker-color;
+    
+    &:hover {
+      box-shadow: $shadow-neon-yellow;
+      transform: scale(1.05);
+    }
+  }
+  
+  &-danger {
+    background: $danger-color;
+    color: $text-color;
+    
+    &:hover {
+      // CORRECCIÓN: darken() -> color.adjust()
+      background: color.adjust($danger-color, $lightness: -10%);
+      transform: scale(1.05);
+    }
+  }
+  
+  &-outline {
+    background: transparent;
+    border: 2px solid $primary-color;
+    color: $primary-color;
+    
+    &:hover {
+      background: $primary-color;
+      color: $darker-color;
+    }
+  }
+}
+
+// ========================================
+// CARDS GLOBALES
+// ========================================
+.card {
+  @include card;
+}
+
+// ========================================
+// UTILIDADES
+// ========================================
+.text-center {
+  text-align: center;
+}
+
+.text-muted {
+  color: $text-muted;
+}
+
+.mt-1 { margin-top: $spacing-sm; }
+.mt-2 { margin-top: $spacing-md; }
+.mt-3 { margin-top: $spacing-lg; }
+
+.mb-1 { margin-bottom: $spacing-sm; }
+.mb-2 { margin-bottom: $spacing-md; }
+.mb-3 { margin-bottom: $spacing-lg; }
+
+.p-1 { padding: $spacing-sm; }
+.p-2 { padding: $spacing-md; }
+.p-3 { padding: $spacing-lg; }
+
+// ========================================
+// ANIMACIONES GLOBALES
+// ========================================
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in {
+  animation: fadeIn $transition-normal;
+}
+
+// ========================================
+// ENLACES
+// ========================================
+a {
+  color: $primary-color;
+  text-decoration: none;
+  transition: color $transition-fast;
+  
+  &:hover {
+    color: $accent-color;
+  }
+}
+
+// ========================================
+// FORMULARIOS
+// ========================================
+input, textarea, select {
+  background: $bg-card;
+  border: 1px solid $border-color;
+  color: $text-color;
+  padding: $spacing-sm $spacing-md;
+  border-radius: $radius-md;
+  font-family: inherit;
+  transition: all $transition-fast;
+  
+  &:focus {
+    outline: none;
+    border-color: $primary-color;
+    box-shadow: $shadow-neon-green;
+  }
+  
+  &::placeholder {
+    color: $text-muted;
+  }
+}
+
+label {
+  color: $text-color;
+  font-weight: 500;
+  margin-bottom: $spacing-xs;
+  display: block;
+}
+
+// ========================================
+// SCROLLBAR GLOBAL
+// ========================================
+::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: $bg-dark;
+}
+
+::-webkit-scrollbar-thumb {
+  background: $primary-color;
+  border-radius: $radius-sm;
+  
+  &:hover {
+    background: $accent-color;
+  }
+}

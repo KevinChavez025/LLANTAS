@@ -1,0 +1,66 @@
+// Colores principales
+$primary-color: #1DB954;      // Verde Spotify
+$secondary-color: #FFD700;    // Amarillo/Oro
+$accent-color: #1ed760;       // Verde claro
+
+// Backgrounds
+$bg-dark: #121212;            // Negro principal
+$bg-card: #181818;            // Negro tarjetas
+$darker-color: #000000;       // Negro puro
+
+// Texto
+$text-color: #FFFFFF;         // Blanco
+$text-muted: #B3B3B3;         // Gris claro
+
+// Estados
+$success-color: #1DB954;
+$danger-color: #E22134;
+$warning-color: #FFD700;
+$info-color: #1E90FF;
+
+// Bordes
+$border-color: #282828;
+
+// Espaciado
+$spacing-xs: 4px;
+$spacing-sm: 8px;
+$spacing-md: 16px;
+$spacing-lg: 24px;
+$spacing-xl: 32px;
+$spacing-2xl: 48px;
+
+// Border radius
+$radius-sm: 4px;
+$radius-md: 8px;
+$radius-lg: 12px;
+$radius-xl: 16px;
+$radius-round: 50%;
+
+// Sombras
+$shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.3);
+$shadow-md: 0 4px 8px rgba(0, 0, 0, 0.4);
+$shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.5);
+$shadow-xl: 0 12px 24px rgba(0, 0, 0, 0.6);
+
+// Sombras neón
+$shadow-neon-green: 0 0 10px rgba(29, 185, 84, 0.5);
+$shadow-neon-yellow: 0 0 10px rgba(255, 215, 0, 0.5);
+
+// Transiciones
+$transition-fast: 0.2s ease;
+$transition-normal: 0.3s ease;
+$transition-slow: 0.5s ease;
+
+// Gradientes
+$gradient-primary: linear-gradient(135deg, $primary-color 0%, $accent-color 100%);
+$gradient-dark: linear-gradient(180deg, $bg-dark 0%, $darker-color 100%);
+$gradient-gold: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+
+// Z-index
+$z-dropdown: 1000;
+$z-sticky: 1020;
+$z-fixed: 1030;
+$z-modal-backdrop: 1040;
+$z-modal: 1050;
+$z-popover: 1060;
+$z-tooltip: 1070;

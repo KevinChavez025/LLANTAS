@@ -1,0 +1,310 @@
+@use '../../../../styles/variables' as *;
+@use '../../../../styles/mixins' as *;
+
+.navbar {
+  background: $bg-dark;
+  border-bottom: 2px solid $primary-color;
+  position: sticky;
+  top: 0;
+  z-index: $z-sticky;
+  box-shadow: 0 4px 20px rgba(29, 185, 84, 0.3);
+}
+
+// ... resto del código igual
+
+
+.navbar-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: $spacing-md $spacing-lg;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $spacing-lg;
+}
+
+// Logo
+.navbar-logo {
+  display: flex;
+  align-items: baseline;
+  gap: $spacing-xs;
+  text-decoration: none;
+  transition: transform $transition-fast;
+
+  &:hover {
+    transform: scale(1.05);
+  }
+
+  .logo-text {
+    font-size: 28px;
+    font-weight: 900;
+    color: $primary-color;
+    text-shadow: $shadow-neon-green;
+    letter-spacing: 2px;
+  }
+
+  .logo-subtext {
+    font-size: 16px;
+    color: $secondary-color;
+    font-weight: 600;
+  }
+}
+
+// Menú Desktop
+.navbar-menu {
+  display: flex;
+  list-style: none;
+  gap: $spacing-lg;
+  margin: 0;
+  padding: 0;
+
+  @include tablet {
+    display: none;
+  }
+
+  li a {
+    color: $text-color;
+    text-decoration: none;
+    font-weight: 500;
+    padding: $spacing-sm $spacing-md;
+    border-radius: $radius-sm;
+    transition: all $transition-fast;
+    position: relative;
+
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      width: 0;
+      height: 2px;
+      background: $primary-color;
+      transform: translateX(-50%);
+      transition: width $transition-fast;
+    }
+
+    &:hover {
+      color: $primary-color;
+      
+      &::after {
+        width: 80%;
+      }
+    }
+
+    &.active {
+      color: $primary-color;
+      background: rgba($primary-color, 0.1);
+      box-shadow: $shadow-neon-green;
+    }
+  }
+}
+
+// Acciones
+.navbar-actions {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+
+  @include tablet {
+    gap: $spacing-sm;
+  }
+}
+
+// Carrito
+.cart-btn {
+  position: relative;
+  padding: $spacing-sm;
+  color: $text-color;
+  transition: all $transition-fast;
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  border-radius: $radius-md;
+
+  &:hover {
+    color: $primary-color;
+    background: rgba($primary-color, 0.1);
+    transform: scale(1.1);
+  }
+
+  &.has-items {
+    color: $secondary-color;
+    animation: pulse 2s infinite;
+  }
+
+  .cart-count {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    background: $gradient-gold;
+    color: $darker-color;
+    font-size: 11px;
+    font-weight: bold;
+    padding: 2px 6px;
+    border-radius: $radius-round;
+    min-width: 18px;
+    text-align: center;
+    box-shadow: $shadow-neon-yellow;
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+// Usuario
+.user-menu {
+  position: relative;
+}
+
+.user-btn {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  background: rgba($primary-color, 0.1);
+  border: 1px solid $primary-color;
+  color: $text-color;
+  padding: $spacing-sm $spacing-md;
+  border-radius: $radius-md;
+  cursor: pointer;
+  transition: all $transition-fast;
+  font-weight: 500;
+
+  @include tablet {
+    display: none;
+  }
+
+  &:hover {
+    background: $primary-color;
+    color: $darker-color;
+    box-shadow: $shadow-neon-green;
+  }
+}
+
+.dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  background: $bg-card;
+  border: 1px solid $primary-color;
+  border-radius: $radius-md;
+  min-width: 200px;
+  box-shadow: $shadow-lg;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-10px);
+  transition: all $transition-fast;
+
+  &.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+
+  a, button {
+    display: block;
+    width: 100%;
+    padding: $spacing-sm $spacing-md;
+    color: $text-color;
+    text-decoration: none;
+    background: none;
+    border: none;
+    text-align: left;
+    cursor: pointer;
+    transition: all $transition-fast;
+    font-size: 14px;
+
+    &:hover {
+      background: rgba($primary-color, 0.1);
+      color: $primary-color;
+    }
+  }
+
+  hr {
+    margin: $spacing-xs 0;
+    border: none;
+    border-top: 1px solid $border-color;
+  }
+
+  .logout-btn {
+    color: $danger-color;
+
+    &:hover {
+      background: rgba($danger-color, 0.1);
+    }
+  }
+}
+
+// Mobile Toggle
+.mobile-toggle {
+  display: none;
+  flex-direction: column;
+  gap: 4px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: $spacing-sm;
+
+  @include tablet {
+    display: flex;
+  }
+
+  span {
+    width: 25px;
+    height: 3px;
+    background: $primary-color;
+    border-radius: 2px;
+    transition: all $transition-fast;
+  }
+}
+
+// Menú Mobile
+.mobile-menu {
+  display: none;
+  flex-direction: column;
+  background: $bg-card;
+  border-top: 1px solid $border-color;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height $transition-normal;
+
+  @include tablet {
+    display: flex;
+  }
+
+  &.show {
+    max-height: 500px;
+  }
+
+  a, button {
+    padding: $spacing-md $spacing-lg;
+    color: $text-color;
+    text-decoration: none;
+    background: none;
+    border: none;
+    text-align: left;
+    cursor: pointer;
+    transition: all $transition-fast;
+
+    &:hover, &.active {
+      background: rgba($primary-color, 0.1);
+      color: $primary-color;
+    }
+  }
+
+  hr {
+    margin: $spacing-sm 0;
+    border: none;
+    border-top: 1px solid $border-color;
+  }
+
+  .btn {
+    margin: $spacing-md $spacing-lg;
+    width: calc(100% - #{$spacing-lg * 2});
+  }
+}
