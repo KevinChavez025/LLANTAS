@@ -44,13 +44,3 @@ text
 - **features/**: Módulos lazy-loaded por funcionalidad
 - **layout/**: Wrappers con header/footer/sidebar
 
-## 📊 Estado del proyecto
-
-- [x] Estructura de carpetas
-- [ ] Modelos TypeScript
-- [ ] Servicios HTTP
-- [ ] Guards y Interceptors
-- [ ] Componentes shared
-- [ ] Páginas públicas
-- [ ] Panel admin
-- [ ] Testing E2E

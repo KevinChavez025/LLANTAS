@@ -1,8 +1,13 @@
 @use '../../../../styles/variables' as *;
 @use '../../../../styles/mixins' as *;
 
+// Variables del footer (mismo estilo que navbar)
+$footer-bg: #000000;          // Negro igual que navbar
+$footer-text: #FFFFFF;        // Texto blanco
+$footer-text-muted: #CCCCCC;  // Texto gris claro
+
 .footer {
-  background: $darker-color;
+  background: $footer-bg;
   border-top: 2px solid $primary-color;
   margin-top: auto;
   box-shadow: 0 -4px 20px rgba(29, 185, 84, 0.2);
@@ -41,7 +46,7 @@
   margin-bottom: $spacing-sm;
 
   .logo-text {
-    font-size: 32px;
+    font-size: 24px;
     font-weight: 900;
     color: $primary-color;
     text-shadow: $shadow-neon-green;
@@ -49,14 +54,14 @@
   }
 
   .logo-subtext {
-    font-size: 18px;
-    color: $secondary-color;
+    font-size: 20px;
+    color: $footer-text;
     font-weight: 600;
   }
 }
 
 .footer-description {
-  color: $text-muted;
+  color: $footer-text-muted;
   line-height: 1.6;
   margin: 0;
 }
@@ -82,7 +87,7 @@
 
   &:hover {
     background: $primary-color;
-    color: $darker-color;
+    color: $footer-bg;
     transform: translateY(-3px);
     box-shadow: $shadow-neon-green;
   }
@@ -108,7 +113,7 @@
   gap: $spacing-sm;
 
   li a {
-    color: $text-muted;
+    color: $footer-text-muted;
     text-decoration: none;
     transition: all $transition-fast;
     display: inline-block;
@@ -133,7 +138,7 @@
     display: flex;
     align-items: flex-start;
     gap: $spacing-sm;
-    color: $text-muted;
+    color: $footer-text-muted;
 
     svg {
       flex-shrink: 0;
@@ -149,14 +154,14 @@
 
 // Copyright
 .footer-bottom {
-  background: $bg-dark;
-  border-top: 1px solid $border-color;
+  background: #0A0A0A;  // Negro más oscuro que el footer
+  border-top: 1px solid rgba(29, 185, 84, 0.2);
   padding: $spacing-lg;
   text-align: center;
 
   p {
     margin: 0;
-    color: $text-muted;
+    color: $footer-text-muted;
     font-size: 14px;
   }
 }
