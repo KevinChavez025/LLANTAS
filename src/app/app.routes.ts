@@ -46,11 +46,11 @@ export const routes: Routes = [
     loadComponent: () => import('./features/auth/login/login').then(m => m.Login)
   },
   {
-    path: 'registro',
+    path: 'register',
     loadComponent: () => import('./features/auth/register/register').then(m => m.Register)
   },
   {
-    path: 'recuperar-password',
+    path: 'forgot-password',
     loadComponent: () => import('./features/auth/forgot-password/forgot-password').then(m => m.ForgotPassword)
   },
 
@@ -140,3 +140,4 @@ export const routes: Routes = [
     redirectTo: 'home'
   }
 ];
+  

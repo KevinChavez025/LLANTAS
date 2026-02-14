@@ -18,6 +18,13 @@ export interface AuthResponse {
   usuario: User;
 }
 
+export interface RegisterData {
+  nombreCompleto: string;
+  username: string;
+  email: string;
+  password: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -53,7 +60,7 @@ export class AuthService {
       );
   }
 
-  register(userData: any): Observable<AuthResponse> {
+  register(userData: RegisterData): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.apiUrl}/register`, userData)
       .pipe(
         tap(response => {

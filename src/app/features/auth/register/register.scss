@@ -1,0 +1,11 @@
+@use '../../../../styles/variables' as *;
+@use '../../../../styles/mixins' as *;
+@use "sass:color";
+
+// Usar los mismos estilos que login
+@use '../login/login';
+
+// Ajustes específicos para register (si los necesitas)
+.auth-card {
+  max-width: 500px;
+}

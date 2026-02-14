@@ -1,0 +1,227 @@
+@use './variables' as *;
+@use './mixins' as *;
+@use 'sass:color';
+
+// ========================================
+// BOTONES BASE
+// ========================================
+
+.btn {
+  @include button-base;
+  
+  // Variantes de color
+  &-primary {
+    background: $gradient-primary;
+    color: $darker-color;
+    border: 2px solid transparent;
+    
+    &:hover {
+      background: color.adjust($primary-color, $lightness: -8%);
+      box-shadow: $shadow-neon-green;
+      transform: translateY(-2px);
+    }
+
+    &:active {
+      transform: translateY(0);
+    }
+  }
+  
+  &-secondary {
+    background: $gradient-gold;
+    color: $darker-color;
+    border: 2px solid transparent;
+    
+    &:hover {
+      background: color.adjust($secondary-color, $lightness: -8%);
+      box-shadow: $shadow-neon-yellow;
+      transform: translateY(-2px);
+    }
+  }
+  
+  &-success {
+    background: $success-color;
+    color: $text-color;
+    
+    &:hover {
+      background: color.adjust($success-color, $lightness: -8%);
+    }
+  }
+  
+  &-danger {
+    background: $danger-color;
+    color: $text-color;
+    
+    &:hover {
+      background: color.adjust($danger-color, $lightness: -8%);
+    }
+  }
+
+  &-warning {
+    background: $warning-color;
+    color: $darker-color;
+    
+    &:hover {
+      background: color.adjust($warning-color, $lightness: -8%);
+    }
+  }
+
+  &-info {
+    background: $info-color;
+    color: $text-color;
+    
+    &:hover {
+      background: color.adjust($info-color, $lightness: -8%);
+    }
+  }
+  
+  // Botón con borde (outline)
+  &-outline {
+    background: transparent;
+    border: 2px solid $primary-color;
+    color: $primary-color;
+    
+    &:hover {
+      background: $primary-color;
+      color: $darker-color;
+    }
+
+    &-secondary {
+      border-color: $secondary-color;
+      color: $secondary-color;
+
+      &:hover {
+        background: $secondary-color;
+        color: $darker-color;
+      }
+    }
+
+    &-danger {
+      border-color: $danger-color;
+      color: $danger-color;
+
+      &:hover {
+        background: $danger-color;
+        color: $text-color;
+      }
+    }
+  }
+  
+  // Tamaños
+  &-sm {
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+
+  &-md {
+    padding: 10px 20px;
+    font-size: 14px;
+  }
+
+  &-lg {
+    padding: 14px 28px;
+    font-size: 16px;
+  }
+
+  &-xl {
+    padding: 18px 36px;
+    font-size: 18px;
+  }
+  
+  // Full width
+  &-block {
+    display: block;
+    width: 100%;
+  }
+  
+  // Botón con ícono
+  &-icon {
+    display: inline-flex;
+    align-items: center;
+    gap: $spacing-sm;
+
+    svg {
+      width: 18px;
+      height: 18px;
+    }
+  }
+
+  // Estado deshabilitado
+  &:disabled,
+  &.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
+  // Loading state
+  &.loading {
+    position: relative;
+    color: transparent;
+    pointer-events: none;
+
+    &::after {
+      content: '';
+      position: absolute;
+      width: 16px;
+      height: 16px;
+      top: 50%;
+      left: 50%;
+      margin-left: -8px;
+      margin-top: -8px;
+      border: 2px solid transparent;
+      border-top-color: currentColor;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+    }
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+// ========================================
+// GRUPOS DE BOTONES
+// ========================================
+
+.btn-group {
+  display: inline-flex;
+  gap: $spacing-sm;
+
+  &-vertical {
+    flex-direction: column;
+  }
+
+  &-justified {
+    width: 100%;
+
+    .btn {
+      flex: 1;
+    }
+  }
+}
+
+// ========================================
+// BOTONES FLOTANTES
+// ========================================
+
+.btn-float {
+  position: fixed;
+  bottom: $spacing-xl;
+  right: $spacing-xl;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  box-shadow: $shadow-lg;
+  z-index: $z-fixed;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  @include mobile {
+    bottom: $spacing-lg;
+    right: $spacing-lg;
+  }
+}
