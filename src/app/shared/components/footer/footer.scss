@@ -50,13 +50,14 @@ $footer-text-muted: #CCCCCC;  // Texto gris claro
     font-weight: 900;
     color: $primary-color;
     text-shadow: $shadow-neon-green;
-    letter-spacing: 2px;
+    letter-spacing: -0.5px;
   }
 
   .logo-subtext {
     font-size: 20px;
     color: $footer-text;
     font-weight: 600;
+    font-style: italic;
   }
 }
 
