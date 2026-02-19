@@ -1,0 +1,345 @@
+@use '../../../../styles/variables' as *;
+@use '../../../../styles/mixins' as *;
+@use "sass:color";
+// Usar los mismos estilos que login
+
+.auth-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: $spacing-xl $spacing-lg;
+  background: linear-gradient(135deg, #F5F5F5 0%, #E8E8E8 100%);
+  position: relative;
+}
+
+// Botón volver al home
+.back-to-home {
+  position: absolute;
+  top: $spacing-xl;
+  left: $spacing-xl;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  color: #495057;
+  text-decoration: none;
+  transition: all $transition-fast;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+
+  &:hover {
+    color: $primary-color;
+    background: #FFFFFF;
+    transform: translateX(-4px);
+    box-shadow: $shadow-md;
+  }
+
+  svg {
+    width: 24px;
+    height: 24px;
+  }
+
+  @include mobile {
+    top: $spacing-md;
+    left: $spacing-md;
+    width: 36px;
+    height: 36px;
+
+    svg {
+      width: 20px;
+      height: 20px;
+    }
+  }
+}
+
+.auth-card {
+  background: #FFFFFF;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-xl;
+  padding: $spacing-2xl;
+  width: 100%;
+  max-width: 450px;
+  position: relative;
+  z-index: 1;
+
+  @include mobile {
+    padding: $spacing-xl $spacing-lg;
+  }
+}
+
+// Logo
+.auth-logo {
+  text-align: center;
+  margin-bottom: $spacing-xl;
+
+  .logo-text {
+    font-size: 36px;
+    font-weight: 900;
+    color: $primary-color;
+    display: block;
+    text-shadow: $shadow-neon-green;
+  }
+
+  .logo-subtext {
+    font-size: 16px;
+    color: #4A4A4A;
+    font-weight: 600;
+    display: block;
+    margin-top: 4px;
+  }
+}
+
+// Título
+.auth-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: #212121;
+  text-align: center;
+  margin-bottom: $spacing-sm;
+}
+
+.auth-subtitle {
+  font-size: 14px;
+  color: #6C757D;
+  text-align: center;
+  margin-bottom: $spacing-xl;
+}
+
+// Formulario
+.auth-form {
+  .form-group {
+    margin-bottom: $spacing-lg;
+
+    label {
+      display: block;
+      color: #212121;
+      font-weight: 600;
+      margin-bottom: $spacing-sm;
+      font-size: 14px;
+    }
+  }
+}
+
+// Input con ícono
+.input-wrapper {
+  position: relative;
+
+  .input-icon {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #6C757D;
+    pointer-events: none;
+  }
+
+  .form-control {
+    width: 100%;
+    padding: 12px 14px 12px 44px;
+    background: #F8F9FA;
+    border: 2px solid #DEE2E6;
+    border-radius: $radius-md;
+    font-size: 14px;
+    color: #212121;
+    transition: all $transition-fast;
+
+    &::placeholder {
+      color: #ADB5BD;
+    }
+
+    &:focus {
+      outline: none;
+      border-color: $primary-color;
+      background: #FFFFFF;
+      box-shadow: 0 0 0 3px rgba($primary-color, 0.1);
+    }
+
+    &.is-invalid {
+      border-color: $danger-color;
+
+      &:focus {
+        box-shadow: 0 0 0 3px rgba($danger-color, 0.1);
+      }
+    }
+  }
+
+  .password-toggle {
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: #6C757D;
+    cursor: pointer;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    transition: color $transition-fast;
+
+    &:hover {
+      color: $primary-color;
+    }
+  }
+}
+
+.invalid-feedback {
+  display: block;
+  margin-top: $spacing-xs;
+  font-size: 12px;
+  color: $danger-color;
+}
+
+// Opciones del formulario
+.form-options {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: $spacing-xl;
+
+  @include mobile {
+    flex-direction: column;
+    gap: $spacing-sm;
+    align-items: flex-start;
+  }
+}
+
+.form-check {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  cursor: pointer;
+  font-size: 14px;
+  color: #495057;
+
+  input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    accent-color: $primary-color;
+  }
+}
+
+.forgot-link {
+  color: $primary-color;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 600;
+  transition: color $transition-fast;
+
+  &:hover {
+    color: color.adjust($primary-color, $lightness: -10%);
+    text-decoration: underline;
+  }
+}
+
+// Footer
+.auth-footer {
+  margin-top: $spacing-xl;
+  text-align: center;
+  padding-top: $spacing-lg;
+  border-top: 1px solid #DEE2E6;
+
+  p {
+    margin: 0;
+    font-size: 14px;
+    color: #6C757D;
+
+    a {
+      color: $primary-color;
+      text-decoration: none;
+      font-weight: 700;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+}
+
+// Botón loading state
+.btn.loading {
+  position: relative;
+  color: transparent;
+  pointer-events: none;
+
+  &::after {
+    content: '';
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    top: 50%;
+    left: 50%;
+    margin-left: -10px;
+    margin-top: -10px;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    border-top-color: #FFFFFF;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+// Estilos para forgot-password (mensaje de éxito)
+.success-message {
+  text-align: center;
+  padding: $spacing-xl 0;
+
+  .success-icon {
+    margin-bottom: $spacing-xl;
+    
+    svg {
+      color: $primary-color;
+      animation: checkmark 0.5s ease-in-out;
+    }
+  }
+
+  h2 {
+    font-size: 24px;
+    font-weight: 700;
+    color: $primary-color;
+    margin-bottom: $spacing-md;
+  }
+
+  p {
+    color: #495057;
+    font-size: 14px;
+    line-height: 1.6;
+    margin-bottom: $spacing-md;
+
+    strong {
+      color: $primary-color;
+    }
+
+    &.text-muted {
+      font-size: 12px;
+      color: #6C757D;
+    }
+  }
+
+  .btn {
+    margin-top: $spacing-lg;
+  }
+}
+
+@keyframes checkmark {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}

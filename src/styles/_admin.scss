@@ -1,0 +1,354 @@
+@use './variables' as *;
+@use './mixins' as *;
+@use 'sass:color';
+
+// ========================================
+// LAYOUT DE ADMIN
+// ========================================
+
+.admin-layout {
+  display: flex;
+  min-height: 100vh;
+
+  @include tablet {
+    flex-direction: column;
+  }
+}
+
+// ========================================
+// SIDEBAR
+// ========================================
+
+.admin-sidebar {
+  width: 260px;
+  background: $bg-card;
+  border-right: 1px solid $border-color;
+  padding: $spacing-lg;
+  position: fixed;
+  height: 100vh;
+  overflow-y: auto;
+  z-index: $z-fixed;
+
+  @include tablet {
+    position: static;
+    width: 100%;
+    height: auto;
+    border-right: none;
+    border-bottom: 1px solid $border-color;
+  }
+
+  .sidebar-header {
+    padding-bottom: $spacing-lg;
+    border-bottom: 1px solid $border-color;
+    margin-bottom: $spacing-lg;
+
+    h3 {
+      margin: 0;
+      color: $primary-color;
+      font-size: 20px;
+    }
+  }
+
+  .sidebar-nav {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+
+    li {
+      margin-bottom: $spacing-sm;
+
+      a {
+        display: flex;
+        align-items: center;
+        gap: $spacing-sm;
+        padding: $spacing-sm $spacing-md;
+        color: $text-muted;
+        text-decoration: none;
+        border-radius: $radius-md;
+        transition: all $transition-fast;
+
+        svg {
+          width: 20px;
+          height: 20px;
+          flex-shrink: 0;
+        }
+
+        &:hover {
+          background: rgba($primary-color, 0.1);
+          color: $primary-color;
+        }
+
+        &.active {
+          background: $primary-color;
+          color: $darker-color;
+        }
+      }
+    }
+  }
+}
+
+// ========================================
+// CONTENIDO PRINCIPAL
+// ========================================
+
+.admin-content {
+  flex: 1;
+  margin-left: 260px;
+  padding: $spacing-xl;
+  background: $bg-dark;
+
+  @include tablet {
+    margin-left: 0;
+    padding: $spacing-lg;
+  }
+
+  @include mobile {
+    padding: $spacing-md;
+  }
+}
+
+// ========================================
+// HEADER DE PÁGINA
+// ========================================
+
+.page-header {
+  margin-bottom: $spacing-xl;
+  padding-bottom: $spacing-lg;
+  border-bottom: 1px solid $border-color;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: $spacing-md;
+
+  @include mobile {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  h1 {
+    margin: 0;
+  }
+
+  .page-actions {
+    display: flex;
+    gap: $spacing-sm;
+
+    @include mobile {
+      width: 100%;
+
+      .btn {
+        flex: 1;
+      }
+    }
+  }
+}
+
+// ========================================
+// TABLA ADMIN
+// ========================================
+
+.admin-table {
+  width: 100%;
+  background: $bg-card;
+  border-radius: $radius-lg;
+  overflow: hidden;
+  box-shadow: $shadow-md;
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+
+    thead {
+      background: rgba($primary-color, 0.1);
+
+      th {
+        padding: $spacing-md;
+        text-align: left;
+        font-weight: 700;
+        color: $primary-color;
+        font-size: 14px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+    }
+
+    tbody {
+      tr {
+        border-bottom: 1px solid $border-color;
+        transition: background $transition-fast;
+
+        &:hover {
+          background: rgba($primary-color, 0.05);
+        }
+
+        &:last-child {
+          border-bottom: none;
+        }
+      }
+
+      td {
+        padding: $spacing-md;
+        color: $text-color;
+        font-size: 14px;
+
+        &.actions {
+          display: flex;
+          gap: $spacing-sm;
+        }
+      }
+    }
+  }
+
+  // Tabla responsive
+  @include tablet {
+    overflow-x: auto;
+
+    table {
+      min-width: 600px;
+    }
+  }
+}
+
+// ========================================
+// ESTADÍSTICAS (CARDS)
+// ========================================
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: $spacing-lg;
+  margin-bottom: $spacing-xl;
+}
+
+.stat-card {
+  @include card;
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+
+  .stat-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: $radius-md;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+
+    &.primary { background: rgba($primary-color, 0.2); color: $primary-color; }
+    &.secondary { background: rgba($secondary-color, 0.2); color: $secondary-color; }
+    &.success { background: rgba($success-color, 0.2); color: $success-color; }
+    &.danger { background: rgba($danger-color, 0.2); color: $danger-color; }
+
+    svg {
+      width: 30px;
+      height: 30px;
+    }
+  }
+
+  .stat-info {
+    flex: 1;
+
+    .stat-label {
+      color: $text-muted;
+      font-size: 14px;
+      margin-bottom: 4px;
+    }
+
+    .stat-value {
+      font-size: 28px;
+      font-weight: 700;
+      color: $text-color;
+      margin: 0;
+    }
+
+    .stat-change {
+      font-size: 12px;
+      margin-top: 4px;
+
+      &.positive {
+        color: $success-color;
+      }
+
+      &.negative {
+        color: $danger-color;
+      }
+    }
+  }
+}
+
+// ========================================
+// FILTROS Y BÚSQUEDA
+// ========================================
+
+.admin-filters {
+  background: $bg-card;
+  padding: $spacing-lg;
+  border-radius: $radius-lg;
+  margin-bottom: $spacing-lg;
+
+  .filters-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: $spacing-md;
+    align-items: end;
+  }
+}
+
+// ========================================
+// PAGINACIÓN
+// ========================================
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: $spacing-sm;
+  margin-top: $spacing-xl;
+
+  .page-link {
+    padding: $spacing-sm $spacing-md;
+    background: $bg-card;
+    border: 1px solid $border-color;
+    color: $text-color;
+    text-decoration: none;
+    border-radius: $radius-sm;
+    transition: all $transition-fast;
+
+    &:hover {
+      background: $primary-color;
+      color: $darker-color;
+      border-color: $primary-color;
+    }
+
+    &.active {
+      background: $primary-color;
+      color: $darker-color;
+      border-color: $primary-color;
+    }
+
+    &.disabled {
+      opacity: 0.5;
+      pointer-events: none;
+    }
+  }
+}
+
+// ========================================
+// MODAL ADMIN
+// ========================================
+
+.admin-modal {
+  .modal-content {
+    max-width: 800px;
+  }
+
+  .modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: $spacing-sm;
+    padding-top: $spacing-lg;
+    border-top: 1px solid $border-color;
+  }
+}

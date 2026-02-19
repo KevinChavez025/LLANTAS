@@ -4,23 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
-
-export interface ItemCarrito {
-  id: number;
-  llantaId: number;
-  llantaNombre: string;
-  llantaPrecio: number;
-  cantidad: number;
-  subtotal: number;
-}
-
-export interface Carrito {
-  id: number;
-  usuarioId: number;
-  items: ItemCarrito[];
-  cantidadItems: number;
-  total: number;
-}
+import { Carrito, CarritoItem, AgregarCarritoRequest, ActualizarCarritoRequest } from '../models/carrito.model';
 
 @Injectable({
   providedIn: 'root'
@@ -56,14 +40,16 @@ export class CarritoService {
     );
   }
 
-  agregarItem(llantaId: number, cantidad: number = 1): Observable<Carrito> {
-    return this.http.post<Carrito>(`${this.apiUrl}/agregar`, { llantaId, cantidad }).pipe(
+  agregarItem(productoId: number, cantidad: number = 1): Observable<Carrito> {
+    const body: AgregarCarritoRequest = { productoId, cantidad };
+    return this.http.post<Carrito>(`${this.apiUrl}/agregar`, body).pipe(
       tap(carrito => this.saveCarritoToStorage(carrito))
     );
   }
 
   actualizarCantidad(itemId: number, cantidad: number): Observable<Carrito> {
-    return this.http.put<Carrito>(`${this.apiUrl}/item/${itemId}`, { cantidad }).pipe(
+    const body: ActualizarCarritoRequest = { cantidad };
+    return this.http.put<Carrito>(`${this.apiUrl}/item/${itemId}`, body).pipe(
       tap(carrito => this.saveCarritoToStorage(carrito))
     );
   }
@@ -87,5 +73,9 @@ export class CarritoService {
 
   getCarritoActual(): Carrito | null {
     return this.carritoSubject.value;
+  }
+
+  getCantidadItems(): number {
+    return this.carritoSubject.value?.cantidadItems ?? 0;
   }
 }
