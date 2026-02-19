@@ -1,0 +1,360 @@
+@use '../../../styles/variables' as *;
+@use '../../../styles/mixins' as *;
+@use 'sass:color';
+
+.checkout-page {
+  background: $bg-dark;
+  min-height: 100vh;
+  padding: 32px 0 60px;
+}
+
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 24px;
+  @include mobile { padding: 0 16px; }
+}
+
+// ── HEADER ───────────────────────────────────
+.checkout-header {
+  @include flex-between;
+  margin-bottom: 28px;
+
+  &__title {
+    font-size: 22px;
+    font-weight: 800;
+    color: $text-color;
+  }
+
+  &__back {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    color: $text-muted;
+    text-decoration: none;
+    transition: color $transition-fast;
+    &:hover { color: $primary-color; }
+  }
+}
+
+// ── STEPS ────────────────────────────────────
+.checkout-steps {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  margin-bottom: 32px;
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $radius-md;
+  padding: 16px 24px;
+}
+
+.step {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  color: $text-muted;
+
+  &__num {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: $border-color;
+    color: $text-muted;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 700;
+    flex-shrink: 0;
+    transition: all $transition-normal;
+  }
+
+  &--active {
+    color: $text-color;
+    .step__num {
+      background: $primary-color;
+      color: #fff;
+    }
+  }
+
+  &--done {
+    color: $primary-color;
+    .step__num {
+      background: $primary-color;
+      color: #fff;
+    }
+  }
+
+  &__line {
+    flex: 1;
+    height: 2px;
+    background: $border-color;
+    margin: 0 16px;
+  }
+}
+
+// ── BODY LAYOUT ──────────────────────────────
+.checkout-body {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 24px;
+  align-items: start;
+
+  @include tablet { grid-template-columns: 1fr; }
+}
+
+.checkout-main {
+  @include flex-column;
+  gap: 20px;
+}
+
+// ── CARD ─────────────────────────────────────
+.checkout-card {
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $radius-lg;
+  padding: 28px;
+
+  @include mobile { padding: 20px; }
+
+  &__title {
+    font-size: 16px;
+    font-weight: 700;
+    color: $text-color;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid $border-color;
+  }
+
+  &__actions {
+    margin-top: 28px;
+    display: flex;
+    justify-content: flex-end;
+
+    &--between {
+      justify-content: space-between;
+    }
+  }
+}
+
+// ── FORMULARIO ──────────────────────────────
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+
+  @include mobile { grid-template-columns: 1fr; }
+}
+
+.form-group {
+  @include flex-column;
+  gap: 6px;
+
+  &--full { grid-column: 1 / -1; }
+
+  label {
+    font-size: 13px;
+    font-weight: 600;
+    color: $text-color;
+    margin: 0;
+  }
+
+  input, textarea, select {
+    padding: 10px 14px;
+    border: 1px solid $border-color;
+    border-radius: $radius-md;
+    font-size: 14px;
+    color: $text-color;
+    background: $bg-dark;
+    transition: border-color $transition-fast;
+    font-family: inherit;
+
+    &:focus {
+      outline: none;
+      border-color: $primary-color;
+      box-shadow: 0 0 0 3px rgba($primary-color, 0.1);
+    }
+
+    &::placeholder { color: $text-muted; }
+  }
+
+  textarea { resize: vertical; min-height: 80px; }
+}
+
+.form-error {
+  font-size: 12px;
+  color: $danger-color;
+  font-weight: 500;
+}
+
+// ── MÉTODOS DE PAGO ──────────────────────────
+.metodos-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+
+  @include mobile { grid-template-columns: repeat(2, 1fr); }
+}
+
+.metodo-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 16px 8px;
+  border: 2px solid $border-color;
+  border-radius: $radius-md;
+  cursor: pointer;
+  transition: all $transition-fast;
+  text-align: center;
+
+  input[type="radio"] { display: none; }
+
+  &:hover {
+    border-color: rgba($primary-color, 0.4);
+    background: rgba($primary-color, 0.03);
+  }
+
+  &--active {
+    border-color: $primary-color;
+    background: rgba($primary-color, 0.06);
+
+    .metodo-card__label { color: $primary-color; font-weight: 700; }
+  }
+
+  &__icono { font-size: 24px; line-height: 1; }
+
+  &__label {
+    font-size: 12px;
+    font-weight: 600;
+    color: $text-color;
+    transition: color $transition-fast;
+  }
+}
+
+// ── RESUMEN CHECKOUT ─────────────────────────
+.checkout-summary {
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $radius-lg;
+  padding: 24px;
+  position: sticky;
+  top: 80px;
+
+  @include tablet { position: static; }
+
+  &__title {
+    font-size: 15px;
+    font-weight: 700;
+    color: $text-color;
+    margin-bottom: 16px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid $border-color;
+  }
+
+  &__items {
+    @include flex-column;
+    gap: 14px;
+    margin-bottom: 16px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid $border-color;
+    max-height: 300px;
+    overflow-y: auto;
+  }
+
+  &__lines {
+    @include flex-column;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+
+  &__line {
+    @include flex-between;
+    font-size: 13px;
+    color: $text-muted;
+
+    .text-muted { font-style: italic; }
+  }
+
+  &__total {
+    @include flex-between;
+    font-size: 18px;
+    font-weight: 800;
+    color: $text-color;
+    padding-top: 14px;
+    border-top: 2px solid $border-color;
+    margin-top: 4px;
+  }
+}
+
+.summary-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  &__img {
+    position: relative;
+    width: 48px;
+    height: 48px;
+    flex-shrink: 0;
+    border: 1px solid $border-color;
+    border-radius: $radius-sm;
+    background: #f8f8f8;
+    overflow: visible;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      padding: 4px;
+      border-radius: $radius-sm;
+    }
+  }
+
+  &__qty {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    width: 18px;
+    height: 18px;
+    background: $primary-color;
+    color: #fff;
+    border-radius: 50%;
+    font-size: 10px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &__info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__nombre {
+    font-size: 12px;
+    font-weight: 600;
+    color: $text-color;
+    @include truncate;
+    margin: 0 0 2px;
+  }
+
+  &__medida {
+    font-size: 11px;
+    color: $text-muted;
+    margin: 0;
+  }
+
+  &__precio {
+    font-size: 13px;
+    font-weight: 700;
+    color: $text-color;
+    white-space: nowrap;
+  }
+}

@@ -1,1 +1,148 @@
-<p>cart works!</p>
+<div class="cart-page">
+  <div class="container">
+
+    <div class="cart-header">
+      <h1 class="cart-header__title">Mi carrito</h1>
+      <a routerLink="/catalogo" class="cart-header__back">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M19 12H5M12 5l-7 7 7 7"/>
+        </svg>
+        Seguir comprando
+      </a>
+    </div>
+
+    @if (carrito$ | async; as carrito) {
+
+      <!-- ── CARRITO VACÍO ── -->
+      @if (carrito.items.length === 0) {
+        <div class="cart-empty">
+          <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
+            <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4zM3 6h18M16 10a4 4 0 01-8 0"/>
+          </svg>
+          <h2>Tu carrito está vacío</h2>
+          <p>Agrega productos desde el catálogo para comenzar.</p>
+          <a routerLink="/catalogo" class="btn btn-primary btn-lg">Ver catálogo</a>
+        </div>
+      }
+
+      <!-- ── CARRITO CON ITEMS ── -->
+      @if (carrito.items.length > 0) {
+        <div class="cart-body">
+
+          <!-- Lista de items -->
+          <div class="cart-items">
+
+            <!-- Header tabla -->
+            <div class="cart-items__header">
+              <span>Producto</span>
+              <span>Precio</span>
+              <span>Cantidad</span>
+              <span>Subtotal</span>
+              <span></span>
+            </div>
+
+            @for (item of carrito.items; track item.id) {
+              <div class="cart-item">
+
+                <!-- Imagen + nombre -->
+                <div class="cart-item__product">
+                  <a [routerLink]="['/producto', item.producto.id]" class="cart-item__img">
+                    <img [src]="item.producto.urlImagen" [alt]="item.producto.nombre"/>
+                  </a>
+                  <div class="cart-item__info">
+                    <p class="cart-item__marca">{{ item.producto.marca }}</p>
+                    <a [routerLink]="['/producto', item.producto.id]" class="cart-item__nombre">
+                      {{ item.producto.nombre }}
+                    </a>
+                    <p class="cart-item__medida">{{ item.producto.medida }} · {{ item.producto.tipoVehiculo }}</p>
+                  </div>
+                </div>
+
+                <!-- Precio unitario -->
+                <div class="cart-item__precio">
+                  S/ {{ item.precioUnitario }}
+                </div>
+
+                <!-- Cantidad -->
+                <div class="cart-item__qty">
+                  <div class="qty-control">
+                    <button class="qty-btn" (click)="actualizar(item, -1)" [disabled]="item.cantidad <= 1">−</button>
+                    <span class="qty-value">{{ item.cantidad }}</span>
+                    <button class="qty-btn" (click)="actualizar(item, 1)" [disabled]="item.cantidad >= item.producto.stock">+</button>
+                  </div>
+                </div>
+
+                <!-- Subtotal -->
+                <div class="cart-item__subtotal">
+                  S/ {{ item.precioUnitario * item.cantidad }}
+                </div>
+
+                <!-- Eliminar -->
+                <button class="cart-item__remove" (click)="eliminar(item.id)" title="Eliminar">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M18 6L6 18M6 6l12 12"/>
+                  </svg>
+                </button>
+
+              </div>
+            }
+
+            <!-- Vaciar carrito -->
+            <div class="cart-items__footer">
+              <button class="btn-text-danger" (click)="vaciar()">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/>
+                </svg>
+                Vaciar carrito
+              </button>
+            </div>
+          </div>
+
+          <!-- Resumen -->
+          <aside class="cart-summary">
+            <h2 class="cart-summary__title">Resumen del pedido</h2>
+
+            <div class="cart-summary__lines">
+              <div class="cart-summary__line">
+                <span>Subtotal ({{ carrito.cantidadItems }} productos)</span>
+                <span>S/ {{ carrito.subtotal }}</span>
+              </div>
+              <div class="cart-summary__line">
+                <span>IGV (18%)</span>
+                <span>S/ {{ igv() }}</span>
+              </div>
+              <div class="cart-summary__line">
+                <span>Envío</span>
+                <span class="cart-summary__free">A calcular</span>
+              </div>
+            </div>
+
+            <div class="cart-summary__total">
+              <span>Total estimado</span>
+              <span>S/ {{ total() }}</span>
+            </div>
+
+            <a routerLink="/checkout" class="btn btn-primary btn-block btn-lg">
+              Proceder al checkout
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+              </svg>
+            </a>
+
+            <div class="cart-summary__payments">
+              <p>Métodos de pago aceptados</p>
+              <div class="cart-summary__methods">
+                <span class="pay-chip">Yape</span>
+                <span class="pay-chip">Plin</span>
+                <span class="pay-chip">Efectivo</span>
+                <span class="pay-chip">Tarjeta</span>
+                <span class="pay-chip">Transferencia</span>
+              </div>
+            </div>
+          </aside>
+
+        </div>
+      }
+    }
+  </div>
+</div>

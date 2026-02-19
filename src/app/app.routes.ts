@@ -30,6 +30,10 @@ export const routes: Routes = [
         loadComponent: () => import('./features/cart/cart').then(m => m.Cart)
       },
       {
+        path: 'checkout',
+        loadComponent: () => import('./features/checkout/checkout').then(m => m.Checkout)
+      },
+      {
         path: 'nosotros',
         loadComponent: () => import('./features/about/about').then(m => m.About)
       },
@@ -55,11 +59,6 @@ export const routes: Routes = [
   },
 
   // ========== RUTAS PROTEGIDAS (requieren login) ==========
-  {
-    path: 'checkout',
-    loadComponent: () => import('./features/checkout/checkout').then(m => m.Checkout),
-    canActivate: [authGuard]
-  },
   {
     path: 'usuario',
     loadComponent: () => import('./layout/main-layout/main-layout').then(m => m.MainLayout),
@@ -140,4 +139,3 @@ export const routes: Routes = [
     redirectTo: 'home'
   }
 ];
-  

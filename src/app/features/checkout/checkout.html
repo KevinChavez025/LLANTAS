@@ -1,1 +1,189 @@
-<p>checkout works!</p>
+<div class="checkout-page">
+  <div class="container">
+
+    <div class="checkout-header">
+      <h1 class="checkout-header__title">Finalizar pedido</h1>
+      <a routerLink="/carrito" class="checkout-header__back">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M19 12H5M12 5l-7 7 7 7"/>
+        </svg>
+        Volver al carrito
+      </a>
+    </div>
+
+    <!-- ── STEPS ── -->
+    <div class="checkout-steps">
+      <div class="step" [class.step--active]="paso() === 1" [class.step--done]="paso() > 1">
+        <div class="step__num">
+          @if (paso() > 1) {
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+              <path d="M20 6L9 17l-5-5"/>
+            </svg>
+          } @else { 1 }
+        </div>
+        <span>Datos de entrega</span>
+      </div>
+      <div class="step__line"></div>
+      <div class="step" [class.step--active]="paso() === 2">
+        <div class="step__num">2</div>
+        <span>Pago y confirmación</span>
+      </div>
+    </div>
+
+    <div class="checkout-body" [formGroup]="form">
+
+      <!-- ════════ PASO 1: DIRECCIÓN ════════ -->
+      @if (paso() === 1) {
+        <div class="checkout-main">
+          <div class="checkout-card">
+            <h2 class="checkout-card__title">Datos de entrega</h2>
+
+            <div class="form-grid">
+
+              <div class="form-group form-group--full">
+                <label>Nombre completo *</label>
+                <input type="text" formControlName="nombreCompleto" placeholder="Ej: Juan Pérez Quispe"/>
+                @if (f['nombreCompleto'].touched && f['nombreCompleto'].errors?.['required']) {
+                  <span class="form-error">Campo obligatorio</span>
+                }
+              </div>
+
+              <div class="form-group">
+                <label>Teléfono *</label>
+                <input type="tel" formControlName="telefono" placeholder="Ej: 987654321"/>
+                @if (f['telefono'].touched && f['telefono'].errors?.['pattern']) {
+                  <span class="form-error">Ingresa un número de 9 dígitos</span>
+                }
+              </div>
+
+              <div class="form-group">
+                <label>Ciudad *</label>
+                <input type="text" formControlName="ciudad" placeholder="Ej: Lima"/>
+              </div>
+
+              <div class="form-group form-group--full">
+                <label>Dirección *</label>
+                <input type="text" formControlName="direccion" placeholder="Ej: Av. Javier Prado 1234"/>
+                @if (f['direccion'].touched && f['direccion'].errors?.['required']) {
+                  <span class="form-error">Campo obligatorio</span>
+                }
+              </div>
+
+              <div class="form-group">
+                <label>Distrito *</label>
+                <input type="text" formControlName="distrito" placeholder="Ej: San Isidro"/>
+                @if (f['distrito'].touched && f['distrito'].errors?.['required']) {
+                  <span class="form-error">Campo obligatorio</span>
+                }
+              </div>
+
+              <div class="form-group">
+                <label>Referencia</label>
+                <input type="text" formControlName="referencia" placeholder="Ej: Frente al parque"/>
+              </div>
+
+            </div>
+
+            <div class="checkout-card__actions">
+              <button class="btn btn-primary btn-lg" (click)="siguientePaso()">
+                Continuar al pago
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      }
+
+      <!-- ════════ PASO 2: PAGO ════════ -->
+      @if (paso() === 2) {
+        <div class="checkout-main">
+          <div class="checkout-card">
+            <h2 class="checkout-card__title">Método de pago</h2>
+
+            <div class="metodos-grid">
+              @for (m of metodosPago; track m.valor) {
+                <label class="metodo-card" [class.metodo-card--active]="f['metodoPago'].value === m.valor">
+                  <input type="radio" formControlName="metodoPago" [value]="m.valor"/>
+                  <span class="metodo-card__icono">{{ m.icono }}</span>
+                  <span class="metodo-card__label">{{ m.label }}</span>
+                </label>
+              }
+            </div>
+
+            @if (f['metodoPago'].touched && f['metodoPago'].errors?.['required']) {
+              <span class="form-error">Selecciona un método de pago</span>
+            }
+
+            <div class="form-group" style="margin-top: 24px">
+              <label>Notas adicionales (opcional)</label>
+              <textarea formControlName="notas" rows="3"
+                        placeholder="Instrucciones especiales para la entrega..."></textarea>
+            </div>
+
+            <div class="checkout-card__actions checkout-card__actions--between">
+              <button class="btn btn-outline" (click)="volverPaso1()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M19 12H5M12 5l-7 7 7 7"/>
+                </svg>
+                Volver
+              </button>
+              <button class="btn btn-primary btn-lg"
+                      (click)="confirmarPedido()"
+                      [class.loading]="enviando()"
+                      [disabled]="enviando()">
+                @if (!enviando()) {
+                  Confirmar pedido
+                } @else {
+                  Procesando...
+                }
+              </button>
+            </div>
+          </div>
+        </div>
+      }
+
+      <!-- ── RESUMEN LATERAL ── -->
+      @if (carrito$ | async; as carrito) {
+        <aside class="checkout-summary">
+          <h2 class="checkout-summary__title">Tu pedido</h2>
+
+          <div class="checkout-summary__items">
+            @for (item of carrito.items; track item.id) {
+              <div class="summary-item">
+                <div class="summary-item__img">
+                  <img [src]="item.producto.urlImagen" [alt]="item.producto.nombre"/>
+                  <span class="summary-item__qty">{{ item.cantidad }}</span>
+                </div>
+                <div class="summary-item__info">
+                  <p class="summary-item__nombre">{{ item.producto.nombre }}</p>
+                  <p class="summary-item__medida">{{ item.producto.medida }}</p>
+                </div>
+                <span class="summary-item__precio">S/ {{ item.precioUnitario * item.cantidad }}</span>
+              </div>
+            }
+          </div>
+
+          <div class="checkout-summary__lines">
+            <div class="checkout-summary__line">
+              <span>Subtotal</span><span>S/ {{ carrito.subtotal }}</span>
+            </div>
+            <div class="checkout-summary__line">
+              <span>IGV (18%)</span><span>S/ {{ igv() }}</span>
+            </div>
+            <div class="checkout-summary__line">
+              <span>Envío</span><span class="text-muted">A calcular</span>
+            </div>
+          </div>
+
+          <div class="checkout-summary__total">
+            <span>Total</span>
+            <span>S/ {{ total() }}</span>
+          </div>
+        </aside>
+      }
+
+    </div>
+  </div>
+</div>
