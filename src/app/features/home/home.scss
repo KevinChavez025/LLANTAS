@@ -1,0 +1,493 @@
+@use '../../../styles/variables' as *;
+@use '../../../styles/mixins' as *;
+@use 'sass:color';
+
+// ══════════════════════════════════════════
+// LAYOUT BASE
+// ══════════════════════════════════════════
+.home {
+  background: $bg-dark;
+}
+
+.container {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 0 24px;
+  @include mobile { padding: 0 16px; }
+}
+
+.section {
+  padding: 56px 0;
+  @include tablet  { padding: 44px 0; }
+  @include mobile  { padding: 32px 0; }
+
+  &--gray { background: #f0f0f0; }
+}
+
+.section-head {
+  @include flex-between;
+  align-items: baseline;
+  margin-bottom: 28px;
+  @include mobile { flex-direction: column; gap: 8px; }
+}
+
+.section-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: $text-color;
+  position: relative;
+  padding-bottom: 10px;
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 40px;
+    height: 3px;
+    background: $primary-color;
+    border-radius: 2px;
+  }
+}
+
+.section-link {
+  font-size: 13px;
+  font-weight: 600;
+  color: $primary-color;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: color $transition-fast;
+
+  &:hover { color: color.adjust($primary-color, $lightness: -10%); }
+}
+
+// ══════════════════════════════════════════
+// HERO
+// ══════════════════════════════════════════
+.hero {
+  position: relative;
+  min-height: 480px;
+  background: linear-gradient(135deg, #0d2b0d 0%, #1a4a1a 50%, #0f3d1f 100%);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  overflow: hidden;
+
+  @include tablet { min-height: 400px; }
+  @include mobile { min-height: auto; padding: 60px 0 0; }
+
+  // Textura sutil
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(circle at 20% 50%, rgba(29,185,84,0.12) 0%, transparent 60%),
+                      radial-gradient(circle at 80% 20%, rgba(255,215,0,0.06) 0%, transparent 50%);
+    pointer-events: none;
+  }
+
+  // Patrón de trama
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.02'%3E%3Cpath d='M0 40L40 0H20L0 20M40 40V20L20 40'/%3E%3C/g%3E%3C/svg%3E");
+    pointer-events: none;
+  }
+
+  &__overlay { display: none; }
+
+  &__content {
+    position: relative;
+    z-index: 2;
+    max-width: 1240px;
+    margin: 0 auto;
+    padding: 64px 24px 48px;
+    @include mobile { padding: 48px 16px 32px; }
+  }
+
+  &__eyebrow {
+    display: inline-block;
+    background: rgba(29,185,84,0.2);
+    border: 1px solid rgba(29,185,84,0.4);
+    color: $primary-color;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 5px 14px;
+    border-radius: 100px;
+    margin-bottom: 20px;
+    animation: fadeUp 0.5s ease both;
+  }
+
+  &__title {
+    font-size: clamp(36px, 5.5vw, 64px);
+    font-weight: 800;
+    color: #ffffff;
+    line-height: 1.1;
+    margin-bottom: 16px;
+    animation: fadeUp 0.5s 0.1s ease both;
+
+    span { color: $primary-color; }
+  }
+
+  &__sub {
+    color: rgba(255,255,255,0.55);
+    font-size: 15px;
+    letter-spacing: 0.5px;
+    margin-bottom: 36px;
+    animation: fadeUp 0.5s 0.2s ease both;
+  }
+
+  &__actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    animation: fadeUp 0.5s 0.3s ease both;
+
+    .btn-ghost {
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.2);
+      color: #fff;
+      padding: 13px 24px;
+      border-radius: $radius-md;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all $transition-fast;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+
+      &:hover {
+        background: rgba(255,255,255,0.15);
+        border-color: rgba(255,255,255,0.4);
+      }
+    }
+  }
+
+  &__stats {
+    position: relative;
+    z-index: 2;
+    max-width: 1240px;
+    margin: 0 auto;
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    gap: 0;
+    border-top: 1px solid rgba(255,255,255,0.08);
+    margin-top: auto;
+
+    @include mobile { padding: 0 16px; flex-wrap: wrap; border-top: none; }
+  }
+
+  &__stat {
+    padding: 20px 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+
+    @include mobile { padding: 16px 20px; }
+
+    strong {
+      font-size: 24px;
+      font-weight: 800;
+      color: #fff;
+      line-height: 1;
+    }
+
+    span {
+      font-size: 11px;
+      color: rgba(255,255,255,0.4);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+  }
+
+  &__stat-div {
+    width: 1px;
+    height: 32px;
+    background: rgba(255,255,255,0.1);
+    flex-shrink: 0;
+    @include mobile { display: none; }
+  }
+}
+
+// ══════════════════════════════════════════
+// CATEGORÍAS
+// ══════════════════════════════════════════
+.cats-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 12px;
+
+  @include tablet { grid-template-columns: repeat(3, 1fr); }
+  @include mobile { grid-template-columns: repeat(2, 1fr); }
+}
+
+.cat-card {
+  text-decoration: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 8px;
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $radius-md;
+  transition: all $transition-normal;
+  text-align: center;
+
+  &:hover {
+    border-color: $primary-color;
+    box-shadow: 0 4px 16px rgba(29,185,84,0.12);
+    transform: translateY(-3px);
+
+    .cat-card__name { color: $primary-color; }
+  }
+
+  &__img {
+    width: 100%;
+    aspect-ratio: 3/2;
+    overflow: hidden;
+    border-radius: $radius-sm;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform $transition-normal;
+    }
+  }
+
+  &:hover &__img img { transform: scale(1.05); }
+
+  &__name {
+    font-size: 12px;
+    font-weight: 700;
+    color: $text-color;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: color $transition-fast;
+    line-height: 1.3;
+  }
+}
+
+// ══════════════════════════════════════════
+// PRODUCT CARD
+// ══════════════════════════════════════════
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+
+  @include tablet { grid-template-columns: repeat(3, 1fr); }
+  @include mobile { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+}
+
+.product-card {
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $radius-md;
+  overflow: hidden;
+  text-decoration: none;
+  display: flex;
+  flex-direction: column;
+  transition: all $transition-normal;
+
+  &:hover {
+    border-color: rgba($primary-color, 0.35);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+    transform: translateY(-3px);
+  }
+
+  &__img {
+    position: relative;
+    aspect-ratio: 1;
+    background: #f8f8f8;
+    overflow: hidden;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      padding: 12px;
+      transition: transform $transition-normal;
+    }
+  }
+
+  &:hover &__img img { transform: scale(1.04); }
+
+  &__badge {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    padding: 3px 8px;
+    border-radius: 2px;
+    text-transform: uppercase;
+
+    &--new  { background: $primary-color;    color: #fff; }
+    &--feat { background: $secondary-color;  color: #000; }
+    &--out  { background: #e5e5e5;           color: #666; }
+  }
+
+  &__body {
+    padding: 12px 14px 14px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    gap: 4px;
+  }
+
+  &__brand {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: $primary-color;
+    margin: 0;
+  }
+
+  &__name {
+    font-size: 13px;
+    font-weight: 700;
+    color: $text-color;
+    line-height: 1.35;
+    margin: 0;
+    @include line-clamp(2);
+  }
+
+  &__medida {
+    font-size: 11px;
+    color: $text-muted;
+    margin: 0;
+  }
+
+  &__footer {
+    @include flex-between;
+    align-items: center;
+    margin-top: auto;
+    padding-top: 10px;
+    border-top: 1px solid $border-color;
+  }
+
+  &__price {
+    font-size: 18px;
+    font-weight: 800;
+    color: $text-color;
+
+    &--consult {
+      font-size: 12px;
+      font-weight: 600;
+      color: $text-muted;
+    }
+  }
+
+  &__cta {
+    font-size: 11px;
+    font-weight: 700;
+    color: $primary-color;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: color $transition-fast;
+  }
+
+  &:hover &__cta {
+    color: color.adjust($primary-color, $lightness: -10%);
+  }
+}
+
+// ══════════════════════════════════════════
+// CTA STRIP
+// ══════════════════════════════════════════
+.cta-strip {
+  background: $primary-color;
+  padding: 36px 0;
+
+  &__inner {
+    @include flex-between;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+
+  &__text {
+    h3 {
+      font-size: 20px;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 4px;
+    }
+    p {
+      font-size: 14px;
+      color: rgba(255,255,255,0.75);
+    }
+  }
+
+  .btn-primary {
+    background: #fff !important;
+    color: $primary-color !important;
+    font-weight: 700;
+    white-space: nowrap;
+
+    &:hover {
+      background: color.adjust(#fff, $lightness: -5%) !important;
+      box-shadow: none !important;
+      transform: translateY(-1px);
+    }
+  }
+}
+
+// ══════════════════════════════════════════
+// INFO STRIP
+// ══════════════════════════════════════════
+.info-strip {
+  border-top: 1px solid $border-color;
+  border-bottom: 1px solid $border-color;
+  background: $bg-card;
+  padding: 32px 0;
+
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+
+    @include tablet { grid-template-columns: repeat(2, 1fr); }
+    @include mobile { grid-template-columns: 1fr 1fr; gap: 16px; }
+  }
+}
+
+.info-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+
+  svg { color: $primary-color; flex-shrink: 0; }
+
+  div {
+    @include flex-column;
+    gap: 2px;
+  }
+
+  strong {
+    font-size: 13px;
+    font-weight: 700;
+    color: $text-color;
+  }
+
+  span {
+    font-size: 12px;
+    color: $text-muted;
+  }
+}
+
+// ══════════════════════════════════════════
+// ANIMACIONES
+// ══════════════════════════════════════════
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}

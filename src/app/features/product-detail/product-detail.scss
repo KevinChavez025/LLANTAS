@@ -1,0 +1,435 @@
+@use '../../../styles/variables' as *;
+@use '../../../styles/mixins' as *;
+@use 'sass:color';
+
+.detail {
+  background: $bg-dark;
+  min-height: 100vh;
+  padding-bottom: 60px;
+}
+
+.container {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 0 24px;
+  @include mobile { padding: 0 16px; }
+}
+
+// ── BREADCRUMB ───────────────────────────────
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 20px 0 28px;
+  font-size: 13px;
+  color: $text-muted;
+  flex-wrap: wrap;
+
+  a {
+    color: $text-muted;
+    text-decoration: none;
+    transition: color $transition-fast;
+    &:hover { color: $primary-color; }
+  }
+
+  span:last-child {
+    color: $text-color;
+    font-weight: 500;
+    @include truncate;
+    max-width: 280px;
+  }
+}
+
+// ── LAYOUT PRINCIPAL ────────────────────────
+.detail-main {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 48px;
+  align-items: start;
+
+  @include tablet { gap: 32px; }
+  @include mobile { grid-template-columns: 1fr; gap: 24px; }
+}
+
+// ── GALERÍA ─────────────────────────────────
+.detail-gallery {
+  position: sticky;
+  top: 80px;
+  @include mobile { position: static; }
+
+  &__main {
+    background: $bg-card;
+    border: 1px solid $border-color;
+    border-radius: $radius-lg;
+    aspect-ratio: 1;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    img {
+      width: 85%;
+      height: 85%;
+      object-fit: contain;
+    }
+  }
+}
+
+.detail-badge {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  padding: 5px 12px;
+  border-radius: 2px;
+  text-transform: uppercase;
+
+  &--new { background: $primary-color; color: #fff; }
+  &--out { background: #e5e5e5;        color: #666; }
+}
+
+// ── INFO ─────────────────────────────────────
+.detail-info {
+  @include flex-column;
+  gap: 20px;
+
+  &__marca {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: $primary-color;
+    margin: 0;
+  }
+
+  &__nombre {
+    font-size: clamp(20px, 2.5vw, 28px);
+    font-weight: 800;
+    color: $text-color;
+    line-height: 1.25;
+    margin: 0;
+  }
+
+  &__desc {
+    font-size: 14px;
+    color: $text-muted;
+    line-height: 1.7;
+    margin: 0;
+    padding: 16px;
+    background: $bg-dark;
+    border-left: 3px solid $primary-color;
+    border-radius: 0 $radius-sm $radius-sm 0;
+  }
+}
+
+// ── SPECS CHIPS ─────────────────────────────
+.detail-specs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.spec-chip {
+  @include flex-column;
+  gap: 2px;
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $radius-md;
+  padding: 8px 14px;
+
+  &__label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: $text-muted;
+  }
+
+  &__value {
+    font-size: 14px;
+    font-weight: 700;
+    color: $text-color;
+  }
+}
+
+// ── PRECIO ──────────────────────────────────
+.detail-price {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  padding: 20px;
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $radius-md;
+
+  &__currency {
+    font-size: 20px;
+    font-weight: 700;
+    color: $text-muted;
+  }
+
+  &__value {
+    font-size: 44px;
+    font-weight: 900;
+    color: $text-color;
+    line-height: 1;
+  }
+
+  &__unit {
+    font-size: 13px;
+    color: $text-muted;
+  }
+
+  &__consult {
+    font-size: 18px;
+    font-weight: 700;
+    color: $text-muted;
+  }
+}
+
+// ── STOCK ───────────────────────────────────
+.detail-stock {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: $primary-color;
+  margin: 0;
+
+  &--low { color: $warning-color; }
+
+  svg { flex-shrink: 0; }
+}
+
+// ── ACCIONES ────────────────────────────────
+.detail-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.qty-control {
+  display: flex;
+  align-items: center;
+  border: 1px solid $border-color;
+  border-radius: $radius-md;
+  overflow: hidden;
+  background: $bg-card;
+}
+
+.qty-btn {
+  width: 40px;
+  height: 44px;
+  background: none;
+  border: none;
+  font-size: 20px;
+  font-weight: 300;
+  color: $text-color;
+  cursor: pointer;
+  transition: background $transition-fast;
+
+  &:hover:not(:disabled) { background: $bg-dark; }
+  &:disabled { opacity: 0.3; cursor: not-allowed; }
+}
+
+.qty-value {
+  width: 44px;
+  text-align: center;
+  font-size: 16px;
+  font-weight: 700;
+  color: $text-color;
+  border-left: 1px solid $border-color;
+  border-right: 1px solid $border-color;
+  line-height: 44px;
+}
+
+.detail-add-btn {
+  flex: 1;
+  min-width: 180px;
+  justify-content: center;
+  gap: 8px;
+}
+
+// ── WHATSAPP ────────────────────────────────
+.detail-whatsapp {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #25D366;
+  text-decoration: none;
+  padding: 12px 20px;
+  border: 1px solid #25D366;
+  border-radius: $radius-md;
+  transition: all $transition-fast;
+  width: fit-content;
+
+  &:hover {
+    background: #25D366;
+    color: #fff;
+  }
+}
+
+// ── RELACIONADOS ────────────────────────────
+.related {
+  margin-top: 56px;
+  padding-top: 40px;
+  border-top: 1px solid $border-color;
+
+  &__title {
+    font-size: 20px;
+    font-weight: 700;
+    color: $text-color;
+    margin-bottom: 24px;
+    position: relative;
+    padding-bottom: 10px;
+
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0;
+      width: 36px; height: 3px;
+      background: $primary-color;
+      border-radius: 2px;
+    }
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+
+    @include tablet { grid-template-columns: repeat(2, 1fr); }
+    @include mobile { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  }
+}
+
+// ── PRODUCT CARD (compartida) ────────────────
+.product-card {
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $radius-md;
+  overflow: hidden;
+  text-decoration: none;
+  display: flex;
+  flex-direction: column;
+  transition: all $transition-normal;
+
+  &:hover {
+    border-color: rgba($primary-color, 0.35);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+    transform: translateY(-3px);
+  }
+
+  &__img {
+    position: relative;
+    aspect-ratio: 1;
+    background: #f8f8f8;
+    overflow: hidden;
+
+    img {
+      width: 100%; height: 100%;
+      object-fit: contain;
+      padding: 12px;
+      transition: transform $transition-normal;
+    }
+  }
+
+  &:hover &__img img { transform: scale(1.04); }
+
+  &__badge {
+    position: absolute;
+    top: 8px; left: 8px;
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    padding: 3px 8px;
+    border-radius: 2px;
+    text-transform: uppercase;
+    &--new { background: $primary-color; color: #fff; }
+  }
+
+  &__body {
+    padding: 12px 14px 14px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    gap: 4px;
+  }
+
+  &__brand {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: $primary-color;
+    margin: 0;
+  }
+
+  &__name {
+    font-size: 13px;
+    font-weight: 700;
+    color: $text-color;
+    line-height: 1.35;
+    margin: 0;
+    @include line-clamp(2);
+  }
+
+  &__medida { font-size: 11px; color: $text-muted; margin: 0; }
+
+  &__footer {
+    @include flex-between;
+    align-items: center;
+    margin-top: auto;
+    padding-top: 10px;
+    border-top: 1px solid $border-color;
+  }
+
+  &__price {
+    font-size: 18px;
+    font-weight: 800;
+    color: $text-color;
+    &--consult { font-size: 12px; font-weight: 600; color: $text-muted; }
+  }
+
+  &__cta {
+    font-size: 11px;
+    font-weight: 700;
+    color: $primary-color;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+}
+
+// ── ESTADOS ─────────────────────────────────
+.detail-loading, .detail-empty {
+  @include flex-center;
+  flex-direction: column;
+  gap: 16px;
+  min-height: 50vh;
+  text-align: center;
+  color: $text-muted;
+
+  svg { opacity: 0.3; }
+  h2 { font-size: 22px; font-weight: 700; color: $text-color; }
+  p  { font-size: 14px; }
+}
+
+.spinner {
+  width: 36px;
+  height: 36px;
+  border: 3px solid $border-color;
+  border-top-color: $primary-color;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}

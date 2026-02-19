@@ -5,6 +5,9 @@ import { catchError, throwError } from 'rxjs';
 import { ToastrService } from 'ngx-toastr';
 import { AuthService } from '../services/auth.service';
 
+// Flag para evitar múltiples toasts/logouts si hay varias peticiones 401 simultáneas
+let handling401 = false;
+
 export const errorInterceptor: HttpInterceptorFn = (req, next) => {
   const router = inject(Router);
   const toastr = inject(ToastrService);
@@ -24,10 +27,16 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
             errorMessage = error.error?.message || 'Solicitud incorrecta';
             break;
           case 401:
-            errorMessage = 'No autorizado. Inicia sesión nuevamente';
-            authService.logout();
-            router.navigate(['/login']);
-            break;
+            // Evitar múltiples toasts y logouts si hay peticiones paralelas
+            if (!handling401) {
+              handling401 = true;
+              authService.logout();
+              router.navigate(['/login']).then(() => {
+                handling401 = false;
+              });
+              toastr.error('No autorizado. Inicia sesión nuevamente', 'Error');
+            }
+            return throwError(() => error);
           case 403:
             errorMessage = 'No tienes permisos para realizar esta acción';
             break;
@@ -45,9 +54,7 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
         }
       }
 
-      // Mostrar toast de error
       toastr.error(errorMessage, 'Error');
-
       return throwError(() => error);
     })
   );

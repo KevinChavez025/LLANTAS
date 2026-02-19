@@ -25,8 +25,7 @@ export class Login {
   constructor() {
     this.loginForm = this.fb.group({
       username: ['', [Validators.required, Validators.minLength(3)]],
-      password: ['', [Validators.required, Validators.minLength(6)]],
-      rememberMe: [false]
+      password: ['', [Validators.required, Validators.minLength(6)]]
     });
   }
 
@@ -53,10 +52,12 @@ export class Login {
 
     this.authService.login(username, password).subscribe({
       next: (response) => {
+        this.isLoading = false;
         this.toastr.success('¡Bienvenido!', 'Inicio de sesión exitoso');
-        
+
         // Redirigir según el rol
-        if (response.usuario.rol === 'ADMIN') {
+        const isAdmin = response.usuario.roles?.some(r => r.nombre === 'ADMIN');
+        if (isAdmin) {
           this.router.navigate(['/admin/dashboard']);
         } else {
           this.router.navigate(['/home']);

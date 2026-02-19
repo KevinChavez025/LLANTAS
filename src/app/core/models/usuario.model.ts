@@ -1,14 +1,19 @@
+// ============================================================
+// USUARIO MODEL — sincronizado con tabla `usuarios` y `roles`
+// ============================================================
+
 export interface Rol {
   id: number;
-  nombre: string;             // 'ROLE_ADMIN', 'ROLE_USER', etc.
+  nombre: 'ADMIN' | 'VENDEDOR' | 'USER';
+  descripcion?: string;
 }
 
 export interface Usuario {
   id: number;
   username: string;
   email: string;
-  password?: string;          // Nunca mostrar en UI, solo para requests
-  nombreCompleto?: string;
+  password?: string;           // Nunca mostrar en UI, solo para requests
+  nombreCompleto: string;
   telefono?: string;
   direccion?: string;
   ciudad?: string;
@@ -17,29 +22,56 @@ export interface Usuario {
   notas?: string;
   activo: boolean;
   roles: Rol[];
-  fechaCreacion?: string;
+  fechaCreacion?: string;      // ISO string — LocalDateTime en backend
   fechaActualizacion?: string;
   ultimoAcceso?: string;
 }
 
-// Para login
+// ——— Auth ———
+
 export interface LoginRequest {
   username: string;
   password: string;
 }
 
-// Para registro
 export interface RegisterRequest {
   username: string;
   email: string;
   password: string;
-  nombreCompleto?: string;
+  nombreCompleto: string;
   telefono?: string;
 }
 
-// Respuesta de autenticación (cuando implementen JWT)
 export interface AuthResponse {
   token: string;
-  tipo: string;               // 'Bearer'
+  tipo: string;                // 'Bearer'
   usuario: Usuario;
+}
+
+// ——— DTOs para admin ———
+
+export interface CrearUsuarioDTO {
+  username: string;
+  email: string;
+  password: string;
+  nombreCompleto: string;
+  telefono?: string;
+  direccion?: string;
+  ciudad?: string;
+  distrito?: string;
+  codigoPostal?: string;
+  notas?: string;
+  roles: string[];             // ['ADMIN', 'USER', ...]
+}
+
+export interface ActualizarUsuarioDTO {
+  nombreCompleto?: string;
+  telefono?: string;
+  direccion?: string;
+  ciudad?: string;
+  distrito?: string;
+  codigoPostal?: string;
+  notas?: string;
+  activo?: boolean;
+  roles?: string[];
 }

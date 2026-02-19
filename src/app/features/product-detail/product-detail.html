@@ -1,1 +1,179 @@
-<p>product-detail works!</p>
+<div class="detail">
+
+  <!-- ── LOADING ── -->
+  @if (cargando()) {
+    <div class="detail-loading">
+      <div class="spinner"></div>
+      <p>Cargando producto...</p>
+    </div>
+  }
+
+  <!-- ── NO ENCONTRADO ── -->
+  @if (!cargando() && noEncontrado()) {
+    <div class="detail-empty">
+      <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+      </svg>
+      <h2>Producto no encontrado</h2>
+      <p>El producto que buscas no existe o fue eliminado.</p>
+      <a routerLink="/catalogo" class="btn btn-primary">Volver al catálogo</a>
+    </div>
+  }
+
+  <!-- ── DETALLE ── -->
+  @if (!cargando() && producto()) {
+    <div class="container">
+
+      <!-- Breadcrumb -->
+      <nav class="breadcrumb">
+        <a routerLink="/home">Inicio</a>
+        <span>/</span>
+        <a routerLink="/catalogo">Catálogo</a>
+        <span>/</span>
+        <span>{{ producto()!.nombre }}</span>
+      </nav>
+
+      <div class="detail-main">
+
+        <!-- ── IMAGEN ── -->
+        <div class="detail-gallery">
+          <div class="detail-gallery__main">
+            <img [src]="producto()!.urlImagen" [alt]="producto()!.nombre"/>
+            @if (producto()!.esNuevo) {
+              <span class="detail-badge detail-badge--new">NUEVO</span>
+            }
+            @if (!producto()!.disponible) {
+              <span class="detail-badge detail-badge--out">AGOTADO</span>
+            }
+          </div>
+        </div>
+
+        <!-- ── INFO ── -->
+        <div class="detail-info">
+
+          <p class="detail-info__marca">{{ producto()!.marca }}</p>
+          <h1 class="detail-info__nombre">{{ producto()!.nombre }}</h1>
+
+          <!-- Specs chips -->
+          <div class="detail-specs">
+            @if (producto()!.medida) {
+              <div class="spec-chip">
+                <span class="spec-chip__label">Medida</span>
+                <span class="spec-chip__value">{{ producto()!.medida }}</span>
+              </div>
+            }
+            @if (producto()!.tipoVehiculo) {
+              <div class="spec-chip">
+                <span class="spec-chip__label">Vehículo</span>
+                <span class="spec-chip__value">{{ producto()!.tipoVehiculo }}</span>
+              </div>
+            }
+            @if (producto()!.categoria) {
+              <div class="spec-chip">
+                <span class="spec-chip__label">Categoría</span>
+                <span class="spec-chip__value">{{ producto()!.categoria }}</span>
+              </div>
+            }
+            @if (producto()!.modelo) {
+              <div class="spec-chip">
+                <span class="spec-chip__label">Modelo</span>
+                <span class="spec-chip__value">{{ producto()!.modelo }}</span>
+              </div>
+            }
+          </div>
+
+          <!-- Descripción -->
+          @if (producto()!.descripcion) {
+            <p class="detail-info__desc">{{ producto()!.descripcion }}</p>
+          }
+
+          <!-- Precio -->
+          <div class="detail-price">
+            @if (producto()!.precio && producto()!.disponible) {
+              <span class="detail-price__currency">S/</span>
+              <span class="detail-price__value">{{ producto()!.precio }}</span>
+              <span class="detail-price__unit">/ unidad</span>
+            } @else {
+              <span class="detail-price__consult">Precio a consultar</span>
+            }
+          </div>
+
+          <!-- Stock -->
+          <p class="detail-stock" [class.detail-stock--low]="producto()!.stock < 5">
+            @if (producto()!.stock > 0) {
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+              @if (producto()!.stock < 5) {
+                ¡Quedan solo {{ producto()!.stock }} unidades!
+              } @else {
+                En stock ({{ producto()!.stock }} disponibles)
+              }
+            } @else {
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+              Agotado
+            }
+          </p>
+
+          <!-- Cantidad + Botón -->
+          @if (producto()!.disponible && producto()!.stock > 0) {
+            <div class="detail-actions">
+              <div class="qty-control">
+                <button class="qty-btn" (click)="decrementar()" [disabled]="cantidad() <= 1">−</button>
+                <span class="qty-value">{{ cantidad() }}</span>
+                <button class="qty-btn" (click)="incrementar()" [disabled]="cantidad() >= producto()!.stock">+</button>
+              </div>
+              <button class="btn btn-primary btn-lg detail-add-btn" (click)="agregarAlCarrito()">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4zM3 6h18M16 10a4 4 0 01-8 0"/>
+                </svg>
+                Agregar al carrito
+              </button>
+            </div>
+          }
+
+          <!-- Consulta por WhatsApp -->
+          <a href="https://wa.me/51981143648?text=Hola,%20consulto%20por%20la%20llanta:%20{{ producto()!.nombre }}"
+             target="_blank" class="detail-whatsapp">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+            </svg>
+            Consultar por WhatsApp
+          </a>
+
+        </div>
+      </div>
+
+      <!-- ── RELACIONADOS ── -->
+      @if (relacionados().length > 0) {
+        <section class="related">
+          <h2 class="related__title">Productos relacionados</h2>
+          <div class="related__grid">
+            @for (p of relacionados(); track p.id) {
+              <a [routerLink]="['/producto', p.id]" class="product-card">
+                <div class="product-card__img">
+                  <img [src]="p.urlImagen" [alt]="p.nombre" loading="lazy"/>
+                  @if (p.esNuevo) {
+                    <span class="product-card__badge product-card__badge--new">NUEVO</span>
+                  }
+                </div>
+                <div class="product-card__body">
+                  <p class="product-card__brand">{{ p.marca }}</p>
+                  <h3 class="product-card__name">{{ p.nombre }}</h3>
+                  <p class="product-card__medida">{{ p.medida }}</p>
+                  <div class="product-card__footer">
+                    @if (p.precio) {
+                      <span class="product-card__price">S/ {{ p.precio }}</span>
+                    } @else {
+                      <span class="product-card__price product-card__price--consult">Consultar</span>
+                    }
+                    <span class="product-card__cta">Ver más</span>
+                  </div>
+                </div>
+              </a>
+            }
+          </div>
+        </section>
+      }
+
+    </div>
+  }
+</div>

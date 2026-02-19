@@ -1,1 +1,166 @@
-<p>catalog works!</p>
+<div class="catalog">
+
+  <!-- ── HEADER ── -->
+  <div class="catalog-header">
+    <div class="container">
+      <div class="catalog-header__inner">
+        <div>
+          <h1 class="catalog-header__title">Catálogo de llantas</h1>
+          <p class="catalog-header__count">
+            @if (!cargando()) {
+              {{ productos().length }} producto{{ productos().length !== 1 ? 's' : '' }} encontrado{{ productos().length !== 1 ? 's' : '' }}
+            }
+          </p>
+        </div>
+        <!-- Buscador -->
+        <div class="catalog-search">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+          </svg>
+          <input type="text" placeholder="Buscar por nombre, marca o medida..."
+                 [value]="busqueda()" (input)="onBusqueda($event)" class="catalog-search__input"/>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container catalog-body">
+
+    <!-- ── SIDEBAR FILTROS ── -->
+    <aside class="filters">
+      <div class="filters__head">
+        <span class="filters__title">Filtros</span>
+        @if (hayFiltrosActivos()) {
+          <button class="filters__clear" (click)="limpiarFiltros()">Limpiar</button>
+        }
+      </div>
+
+      <!-- Tipo de vehículo -->
+      <div class="filter-group">
+        <p class="filter-group__label">Tipo de vehículo</p>
+        <div class="filter-group__options">
+          <label class="filter-option" [class.filter-option--active]="filtroTipo() === ''">
+            <input type="radio" name="tipo" [value]="''" [(ngModel)]="filtroTipo"
+                   (change)="filtroTipo.set('')"/>
+            <span>Todos</span>
+          </label>
+          @for (tipo of tiposVehiculo(); track tipo) {
+            <label class="filter-option" [class.filter-option--active]="filtroTipo() === tipo">
+              <input type="radio" name="tipo" [value]="tipo"
+                     (change)="filtroTipo.set(tipo)"/>
+              <span>{{ tipo }}</span>
+            </label>
+          }
+        </div>
+      </div>
+
+      <!-- Categoría -->
+      <div class="filter-group">
+        <p class="filter-group__label">Categoría</p>
+        <div class="filter-group__options">
+          <label class="filter-option" [class.filter-option--active]="filtroCategoria() === ''">
+            <input type="radio" name="cat" [value]="''" (change)="filtroCategoria.set('')"/>
+            <span>Todas</span>
+          </label>
+          @for (cat of categorias(); track cat) {
+            <label class="filter-option" [class.filter-option--active]="filtroCategoria() === cat">
+              <input type="radio" name="cat" [value]="cat" (change)="filtroCategoria.set(cat)"/>
+              <span>{{ cat }}</span>
+            </label>
+          }
+        </div>
+      </div>
+
+      <!-- Precio -->
+      <div class="filter-group">
+        <p class="filter-group__label">
+          Precio máximo
+          <strong>S/ {{ filtroPrecioMax() }}</strong>
+        </p>
+        <input type="range" class="filter-range"
+               [min]="0" [max]="precioMaximo()"
+               [value]="filtroPrecioMax()"
+               (input)="onPrecioMax($event)"/>
+        <div class="filter-range__labels">
+          <span>S/ 0</span>
+          <span>S/ {{ precioMaximo() }}</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ── GRID PRODUCTOS ── -->
+    <div class="catalog-main">
+
+      <!-- Ordenar -->
+      <div class="catalog-toolbar">
+        <span class="catalog-toolbar__info">
+          @if (hayFiltrosActivos()) {
+            <button class="tag-filter" (click)="limpiarFiltros()">
+              Limpiar filtros ✕
+            </button>
+          }
+        </span>
+        <div class="catalog-toolbar__sort">
+          <label>Ordenar por:</label>
+          <select [(ngModel)]="orden" class="sort-select">
+            <option value="nombre">Nombre A-Z</option>
+            <option value="precio-asc">Menor precio</option>
+            <option value="precio-desc">Mayor precio</option>
+            <option value="nuevo">Más nuevos</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Loading -->
+      @if (cargando()) {
+        <div class="catalog-loading">
+          <div class="spinner"></div>
+          <p>Cargando productos...</p>
+        </div>
+      }
+
+      <!-- Sin resultados -->
+      @if (!cargando() && productos().length === 0) {
+        <div class="catalog-empty">
+          <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+          </svg>
+          <h3>No encontramos productos</h3>
+          <p>Prueba con otros filtros o <button (click)="limpiarFiltros()">limpia la búsqueda</button></p>
+        </div>
+      }
+
+      <!-- Grid -->
+      @if (!cargando() && productos().length > 0) {
+        <div class="products-grid">
+          @for (p of productos(); track p.id) {
+            <a [routerLink]="['/producto', p.id]" class="product-card">
+              <div class="product-card__img">
+                <img [src]="p.urlImagen" [alt]="p.nombre" loading="lazy"/>
+                @if (p.esNuevo) {
+                  <span class="product-card__badge product-card__badge--new">NUEVO</span>
+                }
+                @if (!p.disponible) {
+                  <span class="product-card__badge product-card__badge--out">AGOTADO</span>
+                }
+              </div>
+              <div class="product-card__body">
+                <p class="product-card__brand">{{ p.marca }}</p>
+                <h3 class="product-card__name">{{ p.nombre }}</h3>
+                <p class="product-card__medida">{{ p.medida }} · {{ p.tipoVehiculo }}</p>
+                <div class="product-card__footer">
+                  @if (p.precio && p.disponible) {
+                    <span class="product-card__price">S/ {{ p.precio }}</span>
+                  } @else {
+                    <span class="product-card__price product-card__price--consult">Consultar precio</span>
+                  }
+                  <span class="product-card__cta">Ver más</span>
+                </div>
+              </div>
+            </a>
+          }
+        </div>
+      }
+    </div>
+  </div>
+</div>

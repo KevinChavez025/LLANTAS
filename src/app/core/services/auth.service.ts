@@ -4,13 +4,14 @@ import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
 import { Router } from '@angular/router';
 import { environment } from '../../../environments/environment';
+import { Rol } from '../models/usuario.model';
 
 export interface User {
   id: number;
   username: string;
   email: string;
   nombreCompleto: string;
-  rol: 'ADMIN' | 'USER';
+  roles: Rol[];              // Array — alineado con usuario.model.ts y la BD
 }
 
 export interface AuthResponse {
@@ -96,6 +97,10 @@ export class AuthService {
   }
 
   isAdmin(): boolean {
-    return this.getCurrentUser()?.rol === 'ADMIN';
+    return this.getCurrentUser()?.roles?.some(r => r.nombre === 'ADMIN') ?? false;
+  }
+
+  hasRole(role: 'ADMIN' | 'VENDEDOR' | 'USER'): boolean {
+    return this.getCurrentUser()?.roles?.some(r => r.nombre === role) ?? false;
   }
 }

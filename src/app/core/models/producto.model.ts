@@ -1,24 +1,31 @@
+// ============================================================
+// PRODUCTO MODEL — sincronizado con tabla `productos`
+// ============================================================
+
 export interface Producto {
   id: number;
   nombre: string;
-  marca?: string;
-  tipoVehiculo?: string;      // Moto, Mototaxi, Camión, Minería, Auto, etc.
-  medida?: string;            // 3.00-18, 205/55R16, etc.
-  categoria?: string;         // Delantero, Posterior, Mixta
-  precio: number;
+  marca: string;               // NOT NULL en BD
+  modelo?: string;             // Campo nuevo en BD
+  tipoVehiculo?: string;       // Moto, Mototaxi, Camión, Auto, etc.
+  medida?: string;             // 3.00-18, 205/55R16, etc.
+  categoria?: string;          // Delantero, Posterior, Mixta
+  precio: number;              // NUMERIC(10,2) — CHECK > 0
   descripcion?: string;
-  stock?: number;
+  stock: number;               // NOT NULL DEFAULT 0 — CHECK >= 0
   disponible: boolean;
   esNuevo: boolean;
   esDestacado: boolean;
   urlImagen?: string;
-  fechaCreacion?: string;     // ISO string (LocalDateTime en backend)
+  fechaCreacion?: string;      // ISO string
+  fechaActualizacion?: string;
 }
 
-// Para crear/actualizar productos desde el admin
+// Para crear producto (admin)
 export interface CrearProductoDTO {
   nombre: string;
-  marca?: string;
+  marca: string;
+  modelo?: string;
   tipoVehiculo?: string;
   medida?: string;
   categoria?: string;
@@ -31,6 +38,9 @@ export interface CrearProductoDTO {
   urlImagen?: string;
 }
 
+// Para actualizar producto (admin) — todos opcionales
+export type ActualizarProductoDTO = Partial<CrearProductoDTO>;
+
 // Para filtros en catálogo
 export interface ProductoFiltros {
   marca?: string;
@@ -41,5 +51,5 @@ export interface ProductoFiltros {
   disponible?: boolean;
   esNuevo?: boolean;
   esDestacado?: boolean;
-  textoBusqueda?: string; // nombre o descripción
+  textoBusqueda?: string;      // Busca en nombre y descripción
 }
