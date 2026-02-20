@@ -14,13 +14,14 @@ import { Pedido } from '../../../../core/models/pedido.model';
 })
 export class OrderList implements OnInit {
   private pedidoService = inject(PedidoService);
+  private authService  = inject(AuthService); // ✅ movido aquí
 
   pedidos  = signal<Pedido[]>([]);
   cargando = signal(true);
   error    = signal(false);
 
   ngOnInit(): void {
-    const user = inject(AuthService).getCurrentUser();
+    const user = this.authService.getCurrentUser(); // ✅ usar this.authService
     if (user) {
       this.pedidoService.obtenerMisPedidos(user.id).subscribe({
         next:  d  => { this.pedidos.set(d); this.cargando.set(false); },

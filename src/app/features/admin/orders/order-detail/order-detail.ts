@@ -18,7 +18,6 @@ export class AdminOrderDetail implements OnInit {
   private toastr = inject(ToastrService);
 
   pedido    = signal<Pedido | null>(null);
-  /** El backend no expone historial de estados — se mantiene vacío */
   historial = signal<any[]>([]);
   cargando  = signal(true);
 
@@ -29,8 +28,8 @@ export class AdminOrderDetail implements OnInit {
 
   ngOnInit(): void {
     const id = +this.route.snapshot.params['id'];
-    this.svc.obtenerPorId(id).subscribe({
-      next: d => { this.pedido.set(d); this.cargando.set(false); },
+    this.svc.obtenerMiPedidoPorId(id).subscribe({
+      next: (d: Pedido) => { this.pedido.set(d); this.cargando.set(false); }, // ✅ tipo agregado
       error: () => this.cargando.set(false)
     });
   }
@@ -39,7 +38,7 @@ export class AdminOrderDetail implements OnInit {
     const estado = (e.target as HTMLSelectElement).value as EstadoPedido;
     const id = this.pedido()!.id;
     this.svc.cambiarEstado(id, estado).subscribe({
-      next: p => { this.pedido.set(p); this.toastr.success('Estado actualizado'); }
+      next: (p: Pedido) => { this.pedido.set(p); this.toastr.success('Estado actualizado'); } // ✅ tipo agregado
     });
   }
 }

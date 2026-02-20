@@ -40,7 +40,7 @@
         <p class="filter-group__label">Tipo de vehículo</p>
         <div class="filter-group__options">
           <label class="filter-option" [class.filter-option--active]="filtroTipo() === ''">
-            <input type="radio" name="tipo" [value]="''" [(ngModel)]="filtroTipo"
+            <input type="radio" name="tipo" [value]="''" [checked]="filtroTipo() === ''"
                    (change)="filtroTipo.set('')"/>
             <span>Todos</span>
           </label>
@@ -102,7 +102,7 @@
         </span>
         <div class="catalog-toolbar__sort">
           <label>Ordenar por:</label>
-          <select [(ngModel)]="orden" class="sort-select">
+          <select [value]="orden()" (change)="orden.set($any($event.target).value)" class="sort-select">
             <option value="nombre">Nombre A-Z</option>
             <option value="precio-asc">Menor precio</option>
             <option value="precio-desc">Mayor precio</option>

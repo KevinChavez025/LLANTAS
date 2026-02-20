@@ -5,11 +5,6 @@ import { environment } from '../../../environments/environment';
 import { Pedido, CrearPedidoRequest, EstadoPedido } from '../models/pedido.model';
 import { Page } from './producto.service';
 
-/**
- * PedidoResponse del backend coincide con el modelo Pedido del frontend,
- * pero usa `detalles` en lugar de `items` y algunos campos con nombres distintos.
- * El servicio retorna Pedido para simplificar la capa de componentes.
- */
 @Injectable({ providedIn: 'root' })
 export class PedidoService {
   private http = inject(HttpClient);
@@ -25,9 +20,14 @@ export class PedidoService {
     return this.http.get<Pedido[]>(`${this.base}/usuario/${usuarioId}`);
   }
 
-  /** Ver un pedido por ID (admin o dueño) */
+  /** Ver un pedido por ID — solo ADMIN */
   obtenerPorId(id: number): Observable<Pedido> {
     return this.http.get<Pedido>(`${this.base}/${id}`);
+  }
+
+  /** Ver un pedido propio por ID — usuario autenticado */
+  obtenerMiPedidoPorId(id: number): Observable<Pedido> {  // ✅ nuevo
+    return this.http.get<Pedido>(`${this.base}/mis-pedidos/${id}`);
   }
 
   // ── Admin ─────────────────────────────────────────────────

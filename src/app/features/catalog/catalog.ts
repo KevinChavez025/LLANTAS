@@ -1,14 +1,13 @@
 import { Component, OnInit, signal, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, ActivatedRoute } from '@angular/router';
-import { FormsModule } from '@angular/forms';
 import { ProductoService } from '../../core/services/producto.service';
 import { Producto } from '../../core/models/producto.model';
 
 @Component({
   selector: 'app-catalog',
   standalone: true,
-  imports: [CommonModule, RouterLink, FormsModule],
+  imports: [CommonModule, RouterLink],
   templateUrl: './catalog.html',
   styleUrl: './catalog.scss'
 })

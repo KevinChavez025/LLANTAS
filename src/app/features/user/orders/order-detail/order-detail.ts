@@ -21,13 +21,12 @@ export class OrderDetail implements OnInit {
 
   ngOnInit(): void {
     const id = +this.route.snapshot.params['id'];
-    this.pedidoService.obtenerPorId(id).subscribe({
-      next:  d  => { this.pedido.set(d); this.cargando.set(false); },
-      error: () => { this.error.set(true); this.cargando.set(false); }
+    this.pedidoService.obtenerMiPedidoPorId(id).subscribe({ // ✅ corregido
+      next:  (d: Pedido) => { this.pedido.set(d); this.cargando.set(false); },
+      error: ()          => { this.error.set(true); this.cargando.set(false); }
     });
   }
 
-  // Métodos que resuelven el tipado — sin "as string" en el template
   estadoLabel(estado: string): string {
     const map: Record<string, string> = {
       PENDIENTE: 'Pendiente', CONFIRMADO: 'Confirmado',
