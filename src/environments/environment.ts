@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://tu-dominio-produccion.com'  // Cambiar cuando tengan servidor en producción
+  apiUrl: 'http://localhost:8080' // Cambiar cuando tengan servidor en producción
 };

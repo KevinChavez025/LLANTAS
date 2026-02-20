@@ -1,55 +1,48 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../../environments/environment';
 import { Pedido, CrearPedidoRequest, EstadoPedido } from '../models/pedido.model';
-import { ApiService } from './api.service';
+import { Page } from './producto.service';
 
-@Injectable({
-  providedIn: 'root'
-})
+/**
+ * PedidoResponse del backend coincide con el modelo Pedido del frontend,
+ * pero usa `detalles` en lugar de `items` y algunos campos con nombres distintos.
+ * El servicio retorna Pedido para simplificar la capa de componentes.
+ */
+@Injectable({ providedIn: 'root' })
 export class PedidoService {
-  private endpoint = '/api/pedidos';
+  private http = inject(HttpClient);
+  private base = `${environment.apiUrl}/api/pedidos`;
 
-  constructor(private api: ApiService) {}
-
-  /**
-   * Crear pedido desde el checkout
-   * POST /api/pedidos
-   */
-  crearPedido(request: CrearPedidoRequest): Observable<Pedido> {
-    return this.api.post<Pedido>(this.endpoint, request);
+  /** Crear pedido — público (usuarios registrados e invitados) */
+  crearPedido(req: CrearPedidoRequest): Observable<Pedido> {
+    return this.http.post<Pedido>(this.base, req);
   }
 
-  /**
-   * Obtener pedidos del usuario actual
-   * GET /api/pedidos/mis-pedidos
-   */
-  obtenerMisPedidos(): Observable<Pedido[]> {
-    return this.api.get<Pedido[]>(`${this.endpoint}/mis-pedidos`);
+  /** Pedidos del usuario autenticado */
+  obtenerMisPedidos(usuarioId: number): Observable<Pedido[]> {
+    return this.http.get<Pedido[]>(`${this.base}/usuario/${usuarioId}`);
   }
 
-  /**
-   * Obtener detalle de un pedido
-   * GET /api/pedidos/{id}
-   */
+  /** Ver un pedido por ID (admin o dueño) */
   obtenerPorId(id: number): Observable<Pedido> {
-    return this.api.get<Pedido>(`${this.endpoint}/${id}`);
+    return this.http.get<Pedido>(`${this.base}/${id}`);
   }
 
-  // ========== ENDPOINTS ADMIN ==========
+  // ── Admin ─────────────────────────────────────────────────
 
-  /**
-   * Obtener todos los pedidos (admin)
-   * GET /api/pedidos
-   */
-  obtenerTodos(): Observable<Pedido[]> {
-    return this.api.get<Pedido[]>(this.endpoint);
+  /** Todos los pedidos paginado (solo ADMIN) */
+  obtenerTodosPaginado(page = 0, size = 20): Observable<Page<Pedido>> {
+    const params = new HttpParams()
+      .set('page', page)
+      .set('size', size)
+      .set('sort', 'fechaCreacion,desc');
+    return this.http.get<Page<Pedido>>(this.base, { params });
   }
 
-  /**
-   * Cambiar estado de un pedido (admin)
-   * PUT /api/pedidos/{id}/estado
-   */
+  /** Cambiar estado del pedido (solo ADMIN) */
   cambiarEstado(id: number, estado: EstadoPedido): Observable<Pedido> {
-    return this.api.put<Pedido>(`${this.endpoint}/${id}/estado`, { estado });
+    return this.http.put<Pedido>(`${this.base}/${id}/estado`, { estado });
   }
 }

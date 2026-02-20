@@ -1,10 +1,10 @@
 import { Component, OnInit, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink, ActivatedRoute, Router } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
+import { RouterLink, ActivatedRoute } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
-import { Producto } from '../../core/models/producto.model';
+import { ProductoService } from '../../core/services/producto.service';
 import { CarritoService } from '../../core/services/carrito.service';
+import { Producto } from '../../core/models/producto.model';
 
 @Component({
   selector: 'app-product-detail',
@@ -14,12 +14,10 @@ import { CarritoService } from '../../core/services/carrito.service';
   styleUrl: './product-detail.scss'
 })
 export class ProductDetail implements OnInit {
-
-  private http           = inject(HttpClient);
-  private route          = inject(ActivatedRoute);
-  private router         = inject(Router);
-  private carritoService = inject(CarritoService);
-  private toastr         = inject(ToastrService);
+  private productoService = inject(ProductoService);
+  private route           = inject(ActivatedRoute);
+  private carritoService  = inject(CarritoService);
+  private toastr          = inject(ToastrService);
 
   producto     = signal<Producto | null>(null);
   relacionados = signal<Producto[]>([]);
@@ -28,38 +26,28 @@ export class ProductDetail implements OnInit {
   cantidad     = signal(1);
 
   ngOnInit(): void {
-    this.route.params.subscribe(params => {
-      this.cargarProducto(+params['id']);
-    });
+    this.route.params.subscribe(p => this.cargar(+p['id']));
   }
 
-  private cargarProducto(id: number): void {
-    this.cargando.set(true);
-    this.noEncontrado.set(false);
-    this.cantidad.set(1);
-
-    this.http.get<Producto[]>('assets/data/mock-products.json').subscribe({
-      next: productos => {
-        const producto = productos.find(p => p.id === id);
-        if (!producto) { this.noEncontrado.set(true); this.cargando.set(false); return; }
-        this.producto.set(producto);
-        this.relacionados.set(
-          productos.filter(p => p.tipoVehiculo === producto.tipoVehiculo && p.id !== id).slice(0, 4)
-        );
-        this.cargando.set(false);
+  private cargar(id: number): void {
+    this.cargando.set(true); this.noEncontrado.set(false); this.cantidad.set(1);
+    this.productoService.obtenerPorId(id).subscribe({
+      next: p => {
+        this.producto.set(p); this.cargando.set(false);
+        if (p.tipoVehiculo) {
+          this.productoService.obtenerPorTipoVehiculo(p.tipoVehiculo).subscribe({
+            next: rel => this.relacionados.set(rel.filter(r => r.id !== id).slice(0, 4))
+          });
+        }
       },
       error: () => { this.noEncontrado.set(true); this.cargando.set(false); }
     });
   }
 
   incrementar(): void {
-    const max = this.producto()?.stock ?? 1;
-    if (this.cantidad() < max) this.cantidad.update(v => v + 1);
+    if (this.cantidad() < (this.producto()?.stock ?? 1)) this.cantidad.update(v => v + 1);
   }
-
-  decrementar(): void {
-    if (this.cantidad() > 1) this.cantidad.update(v => v - 1);
-  }
+  decrementar(): void { if (this.cantidad() > 1) this.cantidad.update(v => v - 1); }
 
   agregarAlCarrito(): void {
     const p = this.producto();

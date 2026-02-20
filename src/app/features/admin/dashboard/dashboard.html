@@ -1,1 +1,56 @@
-<p>dashboard works!</p>
+<div class="container-fluid py-4">
+  <h2 class="mb-4">Dashboard</h2>
+  @if (cargando()) {
+    <div class="text-center py-5"><div class="spinner-border text-success"></div></div>
+  } @else {
+    <div class="row g-4 mb-4">
+      <div class="col-sm-4">
+        <div class="card border-0 shadow-sm h-100">
+          <div class="card-body d-flex align-items-center gap-3">
+            <div class="bg-success bg-opacity-10 rounded p-3 fs-2">📦</div>
+            <div><div class="text-muted small">Total pedidos</div><div class="fw-bold fs-3">{{ totalPedidos() }}</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-4">
+        <div class="card border-0 shadow-sm h-100">
+          <div class="card-body d-flex align-items-center gap-3">
+            <div class="bg-warning bg-opacity-10 rounded p-3 fs-2">⏳</div>
+            <div><div class="text-muted small">Pendientes</div><div class="fw-bold fs-3 text-warning">{{ pedidosPendientes() }}</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-4">
+        <div class="card border-0 shadow-sm h-100">
+          <div class="card-body d-flex align-items-center gap-3">
+            <div class="bg-info bg-opacity-10 rounded p-3 fs-2">🔧</div>
+            <div><div class="text-muted small">Productos</div><div class="fw-bold fs-3">{{ totalProductos() }}</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <strong>Pedidos recientes</strong>
+        <a routerLink="/admin/pedidos" class="btn btn-sm btn-outline-success">Ver todos</a>
+      </div>
+      <div class="table-responsive">
+        <table class="table mb-0 align-middle">
+          <thead class="table-light"><tr><th>N°</th><th>Cliente</th><th>Total</th><th>Estado</th><th></th></tr></thead>
+          <tbody>
+            @for (p of recientes(); track p.id) {
+              <tr>
+                <td>{{ p.numeroPedido }}</td>
+                <td>{{ p.nombreInvitado ?? p.emailInvitado }}</td>
+                <td>S/ {{ p.total | number:'1.2-2' }}</td>
+                <td><span class="badge" [class]="estadoBadge(p.estado)">{{ ESTADO_LABEL[p.estado] }}</span></td>
+                <td><a [routerLink]="['/admin/pedidos', p.id]" class="btn btn-sm btn-outline-secondary">Ver</a></td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  }
+</div>

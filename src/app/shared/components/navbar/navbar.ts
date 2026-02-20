@@ -28,7 +28,7 @@ export class Navbar implements OnInit {
     this.authService.currentUser$.subscribe(user => {
       this.isAuthenticated = !!user;
       this.isAdmin = this.authService.isAdmin();
-      this.userName = user?.nombreCompleto || user?.username || '';
+      this.userName = user?.nombre || user?.email || '';
     });
 
     // Suscribirse al carrito para obtener el contador

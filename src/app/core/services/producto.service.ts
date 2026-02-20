@@ -1,107 +1,72 @@
-import { Injectable } from '@angular/core';
-import { HttpParams } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { Producto, CrearProductoDTO, ProductoFiltros } from '../models/producto.model';
-import { ApiService } from './api.service';
+import { Injectable, inject } from '@angular/core';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { Observable, map } from 'rxjs';
+import { environment } from '../../../environments/environment';
+import { Producto, CrearProductoDTO } from '../models/producto.model';
 
-@Injectable({
-  providedIn: 'root'
-})
+export interface Page<T> {
+  content: T[];
+  totalElements: number;
+  totalPages: number;
+  size: number;
+  number: number;
+  first: boolean;
+  last: boolean;
+}
+
+@Injectable({ providedIn: 'root' })
 export class ProductoService {
-  private endpoint = '/api/productos';
+  private http = inject(HttpClient);
+  private base = `${environment.apiUrl}/api/productos`;
 
-  constructor(private api: ApiService) {}
+  // ── Públicos ──────────────────────────────────────────────
+  obtenerPaginado(page = 0, size = 20): Observable<Page<Producto>> {
+    const params = new HttpParams().set('page', page).set('size', size).set('sort', 'nombre,asc');
+    return this.http.get<Page<Producto>>(this.base, { params });
+  }
 
-  // ========== ENDPOINTS PÚBLICOS ==========
-
-  /**
-   * Obtener todos los productos
-   * GET /api/productos
-   */
+  /** Shortcut: primer página completa → array (home/catálogo) */
   obtenerTodos(): Observable<Producto[]> {
-    return this.api.get<Producto[]>(this.endpoint);
+    return this.obtenerPaginado(0, 100).pipe(map(p => p.content));
   }
 
-  /**
-   * Obtener producto por ID
-   * GET /api/productos/{id}
-   */
   obtenerPorId(id: number): Observable<Producto> {
-    return this.api.get<Producto>(`${this.endpoint}/${id}`);
+    return this.http.get<Producto>(`${this.base}/${id}`);
   }
 
-  /**
-   * Obtener productos con filtros
-   * GET /api/productos?marca=Kumho&tipoVehiculo=Auto
-   */
-  obtenerConFiltros(filtros: ProductoFiltros): Observable<Producto[]> {
-    let params = new HttpParams();
-
-    if (filtros.marca) params = params.set('marca', filtros.marca);
-    if (filtros.tipoVehiculo) params = params.set('tipoVehiculo', filtros.tipoVehiculo);
-    if (filtros.categoria) params = params.set('categoria', filtros.categoria);
-    if (filtros.precioMin !== undefined) params = params.set('precioMin', filtros.precioMin.toString());
-    if (filtros.precioMax !== undefined) params = params.set('precioMax', filtros.precioMax.toString());
-    if (filtros.disponible !== undefined) params = params.set('disponible', filtros.disponible.toString());
-    if (filtros.esNuevo !== undefined) params = params.set('esNuevo', filtros.esNuevo.toString());
-    if (filtros.esDestacado !== undefined) params = params.set('esDestacado', filtros.esDestacado.toString());
-    if (filtros.textoBusqueda) params = params.set('q', filtros.textoBusqueda);
-
-    return this.api.get<Producto[]>(this.endpoint, params);
-  }
-
-  /**
-   * Obtener productos destacados
-   */
   obtenerDestacados(): Observable<Producto[]> {
-    return this.obtenerConFiltros({ esDestacado: true });
+    return this.http.get<Producto[]>(`${this.base}/destacados`);
   }
 
-  /**
-   * Obtener productos nuevos
-   */
   obtenerNuevos(): Observable<Producto[]> {
-    return this.obtenerConFiltros({ esNuevo: true });
+    return this.http.get<Producto[]>(`${this.base}/nuevos`);
   }
 
-  /**
-   * Buscar productos por texto
-   */
-  buscar(termino: string): Observable<Producto[]> {
-    return this.obtenerConFiltros({ textoBusqueda: termino });
+  obtenerDisponibles(): Observable<Producto[]> {
+    return this.http.get<Producto[]>(`${this.base}/disponibles`);
   }
 
-  // ========== ENDPOINTS ADMIN (requieren autenticación) ==========
-
-  /**
-   * Crear producto
-   * POST /api/productos
-   */
-  crear(producto: CrearProductoDTO): Observable<Producto> {
-    return this.api.post<Producto>(this.endpoint, producto);
+  obtenerPorTipoVehiculo(tipo: string): Observable<Producto[]> {
+    return this.http.get<Producto[]>(`${this.base}/tipo-vehiculo/${encodeURIComponent(tipo)}`);
   }
 
-  /**
-   * Actualizar producto
-   * PUT /api/productos/{id}
-   */
-  actualizar(id: number, producto: Partial<Producto>): Observable<Producto> {
-    return this.api.put<Producto>(`${this.endpoint}/${id}`, producto);
+  buscar(q: string): Observable<Producto[]> {
+    return this.http.get<Producto[]>(`${this.base}/buscar`, {
+      params: new HttpParams().set('q', q)
+    });
   }
 
-  /**
-   * Eliminar producto
-   * DELETE /api/productos/{id}
-   */
+  // ── Admin ─────────────────────────────────────────────────
+  crear(dto: CrearProductoDTO): Observable<Producto> {
+    return this.http.post<Producto>(this.base, dto);
+  }
+
+  actualizar(id: number, dto: Partial<CrearProductoDTO>): Observable<Producto> {
+    return this.http.put<Producto>(`${this.base}/${id}`, dto);
+  }
+
+  /** Soft delete: marca disponible=false */
   eliminar(id: number): Observable<void> {
-    return this.api.delete<void>(`${this.endpoint}/${id}`);
-  }
-
-  /**
-   * Subir imagen de producto
-   * POST /api/productos/{id}/imagen
-   */
-  subirImagen(id: number, file: File): Observable<Producto> {
-    return this.api.uploadFile<Producto>(`${this.endpoint}/${id}/imagen`, file);
+    return this.http.delete<void>(`${this.base}/${id}`);
   }
 }

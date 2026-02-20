@@ -53,17 +53,19 @@ export interface Pedido {
 
   // Cliente: registrado o invitado (la BD exige uno de los dos)
   usuario?: Pick<Usuario, 'id' | 'username' | 'email' | 'nombreCompleto'>;
-  nombreInvitado?: string;
-  emailInvitado?: string;
-  telefonoInvitado?: string;
+  nombreInvitado?: string;     // alias de nombreCliente en el backend
+  emailInvitado?: string;      // alias de emailCliente en el backend
+  telefonoInvitado?: string;   // alias de telefonoCliente en el backend
 
-  items: DetallePedido[];
+  // El backend devuelve detalles (no items)
+  items?: DetallePedido[];
+  detalles?: DetallePedido[];  // campo real del backend (PedidoResponse)
 
   // Totales
-  subtotal?: number;           // Sin IGV ni envío
-  igv?: number;                // 18% en Perú
+  subtotal?: number;
+  igv?: number;
   costoEnvio?: number;
-  total: number;               // CHECK > 0
+  total: number;
 
   // Estado
   estado: EstadoPedido;
@@ -71,10 +73,11 @@ export interface Pedido {
   metodoPago?: MetodoPago;
   fechaPago?: string;
 
-  // Dirección de envío (campos planos, no objeto separado)
+  // Dirección de envío
   direccionEnvio: string;
-  ciudadEnvio?: string;
+  ciudadEnvio?: string;        // usado en HTMLs
   departamentoEnvio?: string;
+  distritoEnvio?: string;
   codigoPostalEnvio?: string;
   telefonoContacto?: string;
 
@@ -89,22 +92,36 @@ export interface Pedido {
 }
 
 // ——— Request para crear pedido (desde checkout) ———
+// Campos alineados con CrearPedidoRequest.java del backend
 
 export interface CrearPedidoRequest {
-  // Dirección de envío
+  // Clave idempotente (anti doble-submit)
+  idempotencyKey?: string;
+
+  // Para usuarios registrados
+  usuarioId?: number;
+
+  // Para usuarios invitados
+  sessionId?: string;
+
+  // Datos del cliente invitado (backend usa nombreCliente, emailCliente, telefonoCliente)
+  nombreCliente?: string;
+  emailCliente?: string;
+  telefonoCliente?: string;
+
+  // Dirección de envío (backend usa ciudad, distrito, departamento — sin sufijo "Envio")
   direccionEnvio: string;
-  ciudadEnvio?: string;
-  departamentoEnvio?: string;
-  codigoPostalEnvio?: string;
+  ciudad?: string;
+  distrito?: string;
+  departamento?: string;
+  codigoPostal?: string;
   telefonoContacto?: string;
 
+  // Pago
   metodoPago: MetodoPago;
-  notas?: string;
 
-  // Solo si es invitado (sin cuenta)
-  nombreInvitado?: string;
-  emailInvitado?: string;
-  telefonoInvitado?: string;
+  // Notas
+  notasAdicionales?: string;
 }
 
 // ——— Request para cambiar estado (admin) ———
@@ -140,3 +157,4 @@ export const METODO_PAGO_LABEL: Record<MetodoPago, string> = {
   YAPE:            'Yape',
   PLIN:            'Plin'
 };
+// Los campos de PedidoResponse del backend ya están cubiertos en la interfaz Pedido arriba.

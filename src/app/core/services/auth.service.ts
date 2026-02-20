@@ -1,106 +1,98 @@
 import { Injectable, inject, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable, tap } from 'rxjs';
+import { BehaviorSubject, Observable, throwError } from 'rxjs';
+import { tap } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { environment } from '../../../environments/environment';
-import { Rol } from '../models/usuario.model';
 
 export interface User {
   id: number;
-  username: string;
   email: string;
-  nombreCompleto: string;
-  roles: Rol[];              // Array — alineado con usuario.model.ts y la BD
+  nombre: string;
+  rol: string; // 'ADMIN' | 'USER'
 }
 
+/**
+ * Respuesta real del backend:
+ * { token, type, id, username, email, nombre, rol }
+ * El backend NO usa accessToken/refreshToken — solo un JWT estático.
+ */
 export interface AuthResponse {
-  token: string;
-  usuario: User;
-}
-
-export interface RegisterData {
-  nombreCompleto: string;
-  username: string;
+  token: string;       // JWT — el backend lo llama "token", no "accessToken"
+  type: string;        // "Bearer"
+  id: number;
+  username: string;    // = email (alias)
   email: string;
-  password: string;
+  nombre: string;
+  rol: string;
 }
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class AuthService {
-  private http = inject(HttpClient);
-  private router = inject(Router);
+  private http       = inject(HttpClient);
+  private router     = inject(Router);
   private platformId = inject(PLATFORM_ID);
-  private isBrowser = isPlatformBrowser(this.platformId);
+  private isBrowser  = isPlatformBrowser(this.platformId);
 
-  private currentUserSubject = new BehaviorSubject<User | null>(this.getUserFromStorage());
-  public currentUser$ = this.currentUserSubject.asObservable();
+  private readonly apiUrl = `${environment.apiUrl}/api/auth`;
 
-  private apiUrl = `${environment.apiUrl}/api/auth`;
+  private currentUserSubject = new BehaviorSubject<User | null>(this.loadUser());
+  currentUser$ = this.currentUserSubject.asObservable();
 
-  constructor() {}
-
-  private getUserFromStorage(): User | null {
+  // ── Storage ───────────────────────────────────────────────
+  private loadUser(): User | null {
     if (!this.isBrowser) return null;
-    const userJson = localStorage.getItem('user');
-    return userJson ? JSON.parse(userJson) : null;
+    try { return JSON.parse(localStorage.getItem('user') ?? 'null'); } catch { return null; }
   }
 
-  login(username: string, password: string): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.apiUrl}/login`, { username, password })
-      .pipe(
-        tap(response => {
-          if (this.isBrowser) {
-            localStorage.setItem('token', response.token);
-            localStorage.setItem('user', JSON.stringify(response.usuario));
-          }
-          this.currentUserSubject.next(response.usuario);
-        })
-      );
+  /** Devuelve el token JWT almacenado (guardado como 'accessToken' por compatibilidad con interceptor) */
+  getToken(): string | null {
+    return this.isBrowser ? localStorage.getItem('accessToken') : null;
   }
 
-  register(userData: RegisterData): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.apiUrl}/register`, userData)
-      .pipe(
-        tap(response => {
-          if (this.isBrowser) {
-            localStorage.setItem('token', response.token);
-            localStorage.setItem('user', JSON.stringify(response.usuario));
-          }
-          this.currentUserSubject.next(response.usuario);
-        })
-      );
+  private save(res: AuthResponse): void {
+    if (!this.isBrowser) return;
+    // Guardamos res.token como 'accessToken' para que el interceptor lo encuentre
+    localStorage.setItem('accessToken', res.token);
+    const user: User = { id: res.id, email: res.email, nombre: res.nombre, rol: res.rol };
+    localStorage.setItem('user', JSON.stringify(user));
+    this.currentUserSubject.next(user);
+  }
+
+  private clear(): void {
+    if (!this.isBrowser) return;
+    ['accessToken', 'user'].forEach(k => localStorage.removeItem(k));
+    this.currentUserSubject.next(null);
+  }
+
+  // ── API ───────────────────────────────────────────────────
+  login(email: string, password: string): Observable<AuthResponse> {
+    return this.http.post<AuthResponse>(`${this.apiUrl}/login`, { email, password })
+      .pipe(tap(res => this.save(res)));
+  }
+
+  register(data: { nombre: string; email: string; password: string; telefono?: string }): Observable<AuthResponse> {
+    return this.http.post<AuthResponse>(`${this.apiUrl}/register`, data)
+      .pipe(tap(res => this.save(res)));
+  }
+
+  /**
+   * El backend actual NO implementa refresh de token.
+   * Este método existe por compatibilidad con el interceptor:
+   * si recibe 401, simplemente hace logout.
+   */
+  refresh(): Observable<AuthResponse> {
+    return throwError(() => new Error('Refresh no disponible — inicia sesión nuevamente'));
   }
 
   logout(): void {
-    if (this.isBrowser) {
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-    }
-    this.currentUserSubject.next(null);
+    this.clear();
     this.router.navigate(['/login']);
   }
 
-  getToken(): string | null {
-    if (!this.isBrowser) return null;
-    return localStorage.getItem('token');
-  }
-
-  getCurrentUser(): User | null {
-    return this.currentUserSubject.value;
-  }
-
-  isAuthenticated(): boolean {
-    return !!this.getToken() && !!this.getCurrentUser();
-  }
-
-  isAdmin(): boolean {
-    return this.getCurrentUser()?.roles?.some(r => r.nombre === 'ADMIN') ?? false;
-  }
-
-  hasRole(role: 'ADMIN' | 'VENDEDOR' | 'USER'): boolean {
-    return this.getCurrentUser()?.roles?.some(r => r.nombre === role) ?? false;
-  }
+  // ── Helpers ───────────────────────────────────────────────
+  getCurrentUser(): User | null { return this.currentUserSubject.value; }
+  isAuthenticated(): boolean    { return !!this.getToken() && !!this.getCurrentUser(); }
+  isAdmin(): boolean            { return this.getCurrentUser()?.rol === 'ADMIN'; }
 }

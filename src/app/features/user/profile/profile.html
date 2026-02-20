@@ -1,1 +1,34 @@
-<p>profile works!</p>
+<div class="container py-4" style="max-width:560px">
+  <h2 class="mb-4">Mi perfil</h2>
+  <div class="card">
+    <div class="card-body">
+      <form [formGroup]="form" (ngSubmit)="guardar()" novalidate>
+        <div class="mb-3">
+          <label class="form-label">Nombre completo</label>
+          <input type="text" class="form-control" formControlName="nombreCompleto">
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Teléfono</label>
+          <input type="text" class="form-control" formControlName="telefono">
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Dirección</label>
+          <input type="text" class="form-control" formControlName="direccion">
+        </div>
+        <div class="row g-3 mb-3">
+          <div class="col">
+            <label class="form-label">Ciudad</label>
+            <input type="text" class="form-control" formControlName="ciudad">
+          </div>
+          <div class="col">
+            <label class="form-label">Distrito</label>
+            <input type="text" class="form-control" formControlName="distrito">
+          </div>
+        </div>
+        <button type="submit" class="btn btn-success" [disabled]="guardando()">
+          {{ guardando() ? 'Guardando...' : 'Guardar cambios' }}
+        </button>
+      </form>
+    </div>
+  </div>
+</div>

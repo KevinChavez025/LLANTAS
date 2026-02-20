@@ -1,55 +1,27 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../../environments/environment';
 import { Usuario } from '../models/usuario.model';
-import { ApiService } from './api.service';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class UsuarioService {
-  private endpoint = '/api/usuarios';
+  private http = inject(HttpClient);
+  private base = `${environment.apiUrl}/api/usuarios`;
 
-  constructor(private api: ApiService) {}
-
-  /**
-   * Obtener perfil del usuario actual
-   * GET /api/usuarios/perfil
-   */
-  obtenerPerfil(): Observable<Usuario> {
-    return this.api.get<Usuario>(`${this.endpoint}/perfil`);
-  }
-
-  /**
-   * Actualizar perfil del usuario actual
-   * PUT /api/usuarios/perfil
-   */
-  actualizarPerfil(usuario: Partial<Usuario>): Observable<Usuario> {
-    return this.api.put<Usuario>(`${this.endpoint}/perfil`, usuario);
-  }
-
-  // ========== ENDPOINTS ADMIN ==========
-
-  /**
-   * Obtener todos los usuarios (admin)
-   * GET /api/usuarios
-   */
   obtenerTodos(): Observable<Usuario[]> {
-    return this.api.get<Usuario[]>(this.endpoint);
+    return this.http.get<Usuario[]>(this.base);
   }
 
-  /**
-   * Obtener usuario por ID (admin)
-   * GET /api/usuarios/{id}
-   */
   obtenerPorId(id: number): Observable<Usuario> {
-    return this.api.get<Usuario>(`${this.endpoint}/${id}`);
+    return this.http.get<Usuario>(`${this.base}/${id}`);
   }
 
-  /**
-   * Activar/desactivar usuario (admin)
-   * PUT /api/usuarios/{id}/estado
-   */
-  cambiarEstado(id: number, activo: boolean): Observable<Usuario> {
-    return this.api.put<Usuario>(`${this.endpoint}/${id}/estado`, { activo });
+  actualizar(id: number, data: Partial<Usuario>): Observable<Usuario> {
+    return this.http.put<Usuario>(`${this.base}/${id}`, data);
+  }
+
+  toggleActivo(id: number, activo: boolean): Observable<Usuario> {
+    return this.http.patch<Usuario>(`${this.base}/${id}/activo`, { activo });
   }
 }

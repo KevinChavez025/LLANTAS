@@ -1,1 +1,99 @@
-<p>product-form works!</p>
+<div class="container py-4" style="max-width:760px">
+  <div class="d-flex align-items-center gap-3 mb-4">
+    <a routerLink="/admin/productos" class="btn btn-outline-secondary btn-sm">← Volver</a>
+    <h2 class="mb-0">{{ esEdicion() ? 'Editar producto' : 'Nuevo producto' }}</h2>
+  </div>
+
+  @if (cargando()) {
+    <div class="text-center py-5"><div class="spinner-border text-success"></div></div>
+  } @else {
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+
+      <div class="card mb-4">
+        <div class="card-header"><strong>Información básica</strong></div>
+        <div class="card-body">
+          <div class="row g-3">
+            <div class="col-md-8">
+              <label class="form-label">Nombre <span class="text-danger">*</span></label>
+              <input type="text" class="form-control" formControlName="nombre"
+                     [class.is-invalid]="f['nombre'].invalid && f['nombre'].touched">
+              @if (f['nombre'].errors?.['required'] && f['nombre'].touched) {
+                <div class="invalid-feedback">Obligatorio</div>
+              }
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Marca <span class="text-danger">*</span></label>
+              <input type="text" class="form-control" formControlName="marca"
+                     [class.is-invalid]="f['marca'].invalid && f['marca'].touched">
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Modelo</label>
+              <input type="text" class="form-control" formControlName="modelo">
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Tipo vehículo</label>
+              <select class="form-select" formControlName="tipoVehiculo">
+                <option value="">— Seleccionar —</option>
+                @for (t of tiposVehiculo; track t) { <option [value]="t">{{ t }}</option> }
+              </select>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Categoría</label>
+              <select class="form-select" formControlName="categoria">
+                <option value="">— Seleccionar —</option>
+                @for (c of categorias; track c) { <option [value]="c">{{ c }}</option> }
+              </select>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Medida</label>
+              <input type="text" class="form-control" formControlName="medida" placeholder="205/55R16">
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Precio (S/) <span class="text-danger">*</span></label>
+              <input type="number" class="form-control" formControlName="precio" step="0.01" min="0.01"
+                     [class.is-invalid]="f['precio'].invalid && f['precio'].touched">
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Stock <span class="text-danger">*</span></label>
+              <input type="number" class="form-control" formControlName="stock" min="0"
+                     [class.is-invalid]="f['stock'].invalid && f['stock'].touched">
+            </div>
+            <div class="col-12">
+              <label class="form-label">Descripción</label>
+              <textarea class="form-control" formControlName="descripcion" rows="3"></textarea>
+            </div>
+            <div class="col-12">
+              <label class="form-label">URL imagen</label>
+              <input type="text" class="form-control" formControlName="urlImagen" placeholder="https://...">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card mb-4">
+        <div class="card-header"><strong>Visibilidad</strong></div>
+        <div class="card-body d-flex gap-4 flex-wrap">
+          <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" formControlName="disponible" id="disp">
+            <label class="form-check-label" for="disp">Disponible</label>
+          </div>
+          <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" formControlName="esNuevo" id="nuevo">
+            <label class="form-check-label" for="nuevo">Nuevo</label>
+          </div>
+          <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" formControlName="esDestacado" id="dest">
+            <label class="form-check-label" for="dest">Destacado</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="d-flex gap-2">
+        <button type="submit" class="btn btn-success px-4" [disabled]="guardando()">
+          {{ guardando() ? 'Guardando...' : (esEdicion() ? 'Actualizar' : 'Crear producto') }}
+        </button>
+        <a routerLink="/admin/productos" class="btn btn-outline-secondary">Cancelar</a>
+      </div>
+    </form>
+  }
+</div>

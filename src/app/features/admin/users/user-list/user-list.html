@@ -1,1 +1,27 @@
-<p>user-list works!</p>
+<div class="container-fluid py-4">
+  <h2 class="mb-4">Usuarios</h2>
+  @if (cargando()) {
+    <div class="text-center py-5"><div class="spinner-border text-success"></div></div>
+  } @else {
+    <div class="table-responsive">
+      <table class="table table-hover align-middle">
+        <thead class="table-light"><tr><th>Nombre</th><th>Email</th><th>Rol</th><th>Activo</th><th></th></tr></thead>
+        <tbody>
+          @for (u of usuarios(); track u.id) {
+            <tr>
+              <td>{{ u.nombreCompleto }}</td>
+              <td>{{ u.email }}</td>
+              <td>{{ u.roles[0]?.nombre ?? '—' }}</td>
+              <td>
+                <span class="badge" [class]="u.activo ? 'bg-success' : 'bg-secondary'">
+                  {{ u.activo ? 'Activo' : 'Inactivo' }}
+                </span>
+              </td>
+              <td><a [routerLink]="['/admin/usuarios', u.id]" class="btn btn-sm btn-outline-secondary">Ver</a></td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>

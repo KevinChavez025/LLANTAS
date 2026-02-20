@@ -13,61 +13,40 @@ import { ToastrService } from 'ngx-toastr';
   styleUrls: ['./login.scss']
 })
 export class Login {
-  private fb = inject(FormBuilder);
-  private authService = inject(AuthService);
-  private router = inject(Router);
-  private toastr = inject(ToastrService);
+  private fb      = inject(FormBuilder);
+  private auth    = inject(AuthService);
+  private router  = inject(Router);
+  private toastr  = inject(ToastrService);
 
-  loginForm: FormGroup;
-  isLoading = false;
+  // El HTML usa [formGroup]="loginForm"
+  loginForm: FormGroup = this.fb.group({
+    username: ['', [Validators.required, Validators.minLength(3)]],
+    password: ['', [Validators.required, Validators.minLength(6)]]
+  });
+
+  isLoading    = false;
   showPassword = false;
 
-  constructor() {
-    this.loginForm = this.fb.group({
-      username: ['', [Validators.required, Validators.minLength(3)]],
-      password: ['', [Validators.required, Validators.minLength(6)]]
-    });
-  }
+  // Getters que usa el HTML para validaciones
+  get username() { return this.loginForm.get('username'); }
+  get password() { return this.loginForm.get('password'); }
 
-  get username() {
-    return this.loginForm.get('username');
-  }
-
-  get password() {
-    return this.loginForm.get('password');
-  }
-
-  togglePasswordVisibility(): void {
-    this.showPassword = !this.showPassword;
-  }
+  togglePasswordVisibility(): void { this.showPassword = !this.showPassword; }
 
   onSubmit(): void {
-    if (this.loginForm.invalid) {
-      this.loginForm.markAllAsTouched();
-      return;
-    }
-
+    if (this.loginForm.invalid) { this.loginForm.markAllAsTouched(); return; }
     this.isLoading = true;
-    const { username, password } = this.loginForm.value;
+    // El backend acepta email en el campo email — el username del form es el email del usuario
+    const email    = this.loginForm.value.username!;
+    const password = this.loginForm.value.password!;
 
-    this.authService.login(username, password).subscribe({
-      next: (response) => {
+    this.auth.login(email, password).subscribe({
+      next: res => {
         this.isLoading = false;
         this.toastr.success('¡Bienvenido!', 'Inicio de sesión exitoso');
-
-        // Redirigir según el rol
-        const isAdmin = response.usuario.roles?.some(r => r.nombre === 'ADMIN');
-        if (isAdmin) {
-          this.router.navigate(['/admin/dashboard']);
-        } else {
-          this.router.navigate(['/home']);
-        }
+        this.router.navigate(res.rol === 'ADMIN' ? ['/admin/dashboard'] : ['/home']);
       },
-      error: (error) => {
-        this.isLoading = false;
-        this.toastr.error('Usuario o contraseña incorrectos', 'Error');
-        console.error('Error de login:', error);
-      }
+      error: () => { this.isLoading = false; }
     });
   }
 }

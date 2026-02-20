@@ -1,1 +1,95 @@
-<p>order-detail works!</p>
+<div class="container-fluid py-4">
+  @if (cargando()) {
+    <div class="text-center py-5"><div class="spinner-border text-success"></div></div>
+  } @else if (!pedido()) {
+    <div class="alert alert-danger">Pedido no encontrado.</div>
+  } @else {
+    <div class="d-flex align-items-center gap-3 mb-4">
+      <a routerLink="/admin/pedidos" class="btn btn-outline-secondary btn-sm">← Pedidos</a>
+      <h2 class="mb-0">{{ pedido()!.numeroPedido }}</h2>
+      <select class="form-select" style="width:auto" [value]="pedido()!.estado" (change)="cambiarEstado($event)">
+        @for (e of ESTADOS; track e) { <option [value]="e">{{ ESTADO_LABEL[e] }}</option> }
+      </select>
+    </div>
+
+    <div class="row g-4">
+      <div class="col-lg-8">
+        <!-- Productos -->
+        <div class="card mb-4">
+          <div class="card-header"><strong>Productos</strong></div>
+          <table class="table mb-0">
+            <thead class="table-light"><tr><th>Producto</th><th>Medida</th><th>Cant.</th><th>Precio</th><th>Subtotal</th></tr></thead>
+            <tbody>
+              @for (d of pedido()!.detalles; track d.id) {
+                <tr>
+                  <td>{{ d.nombreProducto }}<br><small class="text-muted">{{ d.marcaProducto }}</small></td>
+                  <td>{{ d.medidaProducto ?? '—' }}</td>
+                  <td>{{ d.cantidad }}</td>
+                  <td>S/ {{ d.precioUnitario | number:'1.2-2' }}</td>
+                  <td><strong>S/ {{ d.subtotal | number:'1.2-2' }}</strong></td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Historial de cambios -->
+        @if (historial().length > 0) {
+          <div class="card">
+            <div class="card-header"><strong>Historial de estados</strong></div>
+            <div class="card-body p-0">
+              <table class="table mb-0 small">
+                <thead class="table-light"><tr><th>Fecha</th><th>De</th><th>A</th><th>Por</th></tr></thead>
+                <tbody>
+                  @for (h of historial(); track h.id) {
+                    <tr>
+                      <td>{{ h.fechaCambio | date:'dd/MM/yy HH:mm' }}</td>
+                      <td>{{ h.estadoAnterior ?? '—' }}</td>
+                      <td>{{ h.estadoNuevo }}</td>
+                      <td>{{ h.cambiadoPor }}</td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          </div>
+        }
+      </div>
+
+      <div class="col-lg-4">
+        <!-- Resumen -->
+        <div class="card mb-3">
+          <div class="card-header"><strong>Resumen</strong></div>
+          <div class="card-body">
+            <div class="d-flex justify-content-between mb-1"><span class="text-muted">Subtotal</span><span>S/ {{ pedido()!.subtotal | number:'1.2-2' }}</span></div>
+            <div class="d-flex justify-content-between mb-1"><span class="text-muted">IGV</span><span>S/ {{ pedido()!.igv | number:'1.2-2' }}</span></div>
+            <div class="d-flex justify-content-between mb-1"><span class="text-muted">Envío</span><span>S/ {{ pedido()!.costoEnvio | number:'1.2-2' }}</span></div>
+            <hr>
+            <div class="d-flex justify-content-between fw-bold fs-5"><span>Total</span><span class="text-success">S/ {{ pedido()!.total | number:'1.2-2' }}</span></div>
+            <p class="small text-muted mt-2 mb-0">
+              Método: {{ pedido()!.metodoPago ? METODO_LABEL[pedido()!.metodoPago!] : '—' }}<br>
+              Pago: {{ PAGO_LABEL[pedido()!.estadoPago] }}
+            </p>
+          </div>
+        </div>
+
+        <!-- Cliente -->
+        <div class="card">
+          <div class="card-header"><strong>Cliente</strong></div>
+          <div class="card-body small">
+            @if (pedido()!.nombreInvitado) {
+              <p class="mb-1"><strong>{{ pedido()!.nombreInvitado }}</strong> (invitado)</p>
+              <p class="mb-1">{{ pedido()!.emailInvitado }}</p>
+              <p class="mb-0">{{ pedido()!.telefonoInvitado }}</p>
+            } @else {
+              <p class="mb-0">Usuario registrado #{{ pedido()!.usuario?.id }}</p>
+            }
+            <hr>
+            <p class="mb-1"><strong>Dirección:</strong> {{ pedido()!.direccionEnvio }}</p>
+            <p class="mb-0 text-muted">{{ pedido()!.ciudadEnvio }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+</div>
