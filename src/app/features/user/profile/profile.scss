@@ -1,0 +1,147 @@
+@use '../../../../styles/variables' as *;
+@use '../../../../styles/mixins' as *;
+@use 'sass:color';
+
+.profile-page {
+  background: $bg-dark;
+  min-height: 100vh;
+  padding: 32px 0 60px;
+}
+
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 24px;
+  @include mobile { padding: 0 16px; }
+}
+
+.page-header {
+  margin-bottom: 28px;
+  &__title { font-size: 22px; font-weight: 800; color: $text-color; margin-bottom: 6px; }
+  &__breadcrumb {
+    font-size: 13px; color: $text-muted;
+    a { color: $text-muted; text-decoration: none; &:hover { color: $primary-color; } }
+    span { color: $text-color; }
+  }
+}
+
+// ── LAYOUT ───────────────────────────────────
+.profile-layout {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 24px;
+  align-items: start;
+  @include tablet { grid-template-columns: 1fr; }
+}
+
+// ── SIDEBAR ──────────────────────────────────
+.user-sidebar {
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $radius-lg;
+  overflow: hidden;
+  position: sticky;
+  top: 80px;
+  @include tablet { position: static; }
+
+  &__avatar {
+    padding: 24px 16px;
+    text-align: center;
+    border-bottom: 1px solid $border-color;
+    background: linear-gradient(135deg, rgba($primary-color, 0.05), transparent);
+  }
+
+  &__name { font-size: 14px; font-weight: 700; color: $text-color; margin: 10px 0 3px; }
+  &__email { font-size: 11px; color: $text-muted; margin: 0; @include truncate; }
+  &__nav { padding: 6px 0; }
+}
+
+.avatar-circle {
+  width: 64px; height: 64px;
+  border-radius: 50%;
+  background: $primary-color;
+  color: #fff;
+  font-size: 26px; font-weight: 800;
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto;
+}
+
+.user-nav-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 11px 18px;
+  font-size: 13px; font-weight: 500;
+  color: $text-muted; text-decoration: none;
+  transition: all $transition-fast;
+
+  &:hover { background: $bg-dark; color: $text-color; }
+  &.active {
+    background: rgba($primary-color, 0.08);
+    color: $primary-color; font-weight: 700;
+    border-right: 3px solid $primary-color;
+  }
+  svg { flex-shrink: 0; }
+}
+
+// ── PROFILE CARD ─────────────────────────────
+.profile-card {
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $radius-lg;
+  padding: 28px;
+  @include mobile { padding: 20px; }
+
+  &__header {
+    @include flex-between;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid $border-color;
+  }
+
+  &__title { font-size: 16px; font-weight: 700; color: $text-color; }
+
+  &__actions {
+    display: flex; gap: 12px; justify-content: flex-end;
+    margin-top: 28px; padding-top: 20px;
+    border-top: 1px solid $border-color;
+  }
+}
+
+// ── FORM ─────────────────────────────────────
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  @include mobile { grid-template-columns: 1fr; }
+}
+
+.form-group {
+  @include flex-column; gap: 6px;
+  &--full { grid-column: 1 / -1; }
+
+  label { font-size: 13px; font-weight: 600; color: $text-color; }
+
+  input {
+    padding: 10px 14px;
+    border: 1px solid $border-color;
+    border-radius: $radius-md;
+    font-size: 14px; color: $text-color;
+    background: $bg-dark;
+    font-family: inherit;
+    transition: border-color $transition-fast, box-shadow $transition-fast;
+
+    &:focus:not([readonly]) {
+      outline: none;
+      border-color: $primary-color;
+      box-shadow: 0 0 0 3px rgba($primary-color, 0.1);
+    }
+
+    &[readonly] {
+      background: color.adjust($bg-dark, $lightness: -2%);
+      color: $text-muted; cursor: default;
+    }
+
+    &::placeholder { color: color.adjust($text-muted, $lightness: -10%); }
+  }
+}
+
+.form-error { font-size: 12px; color: $danger-color; font-weight: 500; }

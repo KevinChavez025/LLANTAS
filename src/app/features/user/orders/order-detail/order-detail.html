@@ -1,65 +1,150 @@
-<div class="container py-4">
-  @if (cargando()) {
-    <div class="text-center py-5"><div class="spinner-border text-success"></div></div>
-  } @else if (error() || !pedido()) {
-    <div class="alert alert-danger">No se pudo cargar el pedido.</div>
-  } @else {
-    <div class="d-flex align-items-center gap-3 mb-4">
-      <a routerLink="/usuario/pedidos" class="btn btn-outline-secondary btn-sm">← Mis pedidos</a>
-      <h2 class="mb-0">{{ pedido()!.numeroPedido }}</h2>
-      <span class="badge bg-success fs-6">{{ ESTADO_LABEL[pedido()!.estado] }}</span>
-    </div>
+<div class="order-detail-page">
+  <div class="container">
 
-    <div class="row g-4">
-      <div class="col-lg-8">
-        <div class="card">
-          <div class="card-header"><strong>Productos</strong></div>
-          <table class="table mb-0">
-            <thead class="table-light">
-              <tr><th>Producto</th><th>Medida</th><th>Cant.</th><th>Precio</th><th>Subtotal</th></tr>
-            </thead>
-            <tbody>
-              @for (d of pedido()!.detalles; track d.id) {
-                <tr>
-                  <td>{{ d.nombreProducto }}<br><small class="text-muted">{{ d.marcaProducto }}</small></td>
-                  <td>{{ d.medidaProducto ?? '—' }}</td>
-                  <td>{{ d.cantidad }}</td>
-                  <td>S/ {{ d.precioUnitario | number:'1.2-2' }}</td>
-                  <td><strong>S/ {{ d.subtotal | number:'1.2-2' }}</strong></td>
-                </tr>
-              }
-            </tbody>
-          </table>
-        </div>
+    @if (cargando()) {
+      <div class="state-box"><div class="spinner"></div><p>Cargando pedido...</p></div>
+    }
+
+    @if (!cargando() && error()) {
+      <div class="state-box state-box--error">
+        <h3>No se pudo cargar el pedido</h3>
+        <a routerLink="/usuario/pedidos" class="btn btn-outline">← Mis pedidos</a>
       </div>
-      <div class="col-lg-4">
-        <div class="card mb-3">
-          <div class="card-header"><strong>Resumen de pago</strong></div>
-          <div class="card-body">
-            <div class="d-flex justify-content-between mb-1"><span class="text-muted">Subtotal</span><span>S/ {{ pedido()!.subtotal | number:'1.2-2' }}</span></div>
-            <div class="d-flex justify-content-between mb-1"><span class="text-muted">IGV (18%)</span><span>S/ {{ pedido()!.igv | number:'1.2-2' }}</span></div>
-            <div class="d-flex justify-content-between mb-1"><span class="text-muted">Envío</span><span>S/ {{ pedido()!.costoEnvio | number:'1.2-2' }}</span></div>
-            <hr>
-            <div class="d-flex justify-content-between fw-bold fs-5">
-              <span>Total</span><span class="text-success">S/ {{ pedido()!.total | number:'1.2-2' }}</span>
+    }
+
+    @if (!cargando() && !error() && pedido()) {
+
+      <div class="page-header">
+        <div>
+          <h1 class="page-header__title">Pedido #{{ pedido()!.id }}</h1>
+          <nav class="page-header__breadcrumb">
+            <a routerLink="/home">Inicio</a> /
+            <a routerLink="/usuario/pedidos">Mis pedidos</a> /
+            <span>#{{ pedido()!.id }}</span>
+          </nav>
+        </div>
+        <a routerLink="/usuario/pedidos" class="btn btn-outline">← Volver</a>
+      </div>
+
+      <div class="detail-layout">
+
+        <!-- Columna principal -->
+        <div class="detail-main">
+
+          <!-- Timeline de estado -->
+          <div class="detail-card">
+            <div class="detail-card__header">
+              <h2 class="detail-card__title">Estado del pedido</h2>
+              <span class="badge" [ngClass]="estadoClass(pedido()!.estado)">
+                {{ estadoLabel(pedido()!.estado) }}
+              </span>
             </div>
-            <p class="text-muted small mt-2 mb-0">
-              Método: {{ pedido()!.metodoPago ? METODO_LABEL[pedido()!.metodoPago!] : '—' }}<br>
-              Estado pago: {{ PAGO_LABEL[pedido()!.estadoPago] }}
-            </p>
+            <div class="timeline">
+              @for (step of ['PENDIENTE','CONFIRMADO','EN_PREPARACION','ENVIADO','ENTREGADO']; track step) {
+                <div class="timeline__step"
+                     [class.done]="isStepDone(pedido()!.estado, step)"
+                     [class.active]="pedido()!.estado === step">
+                  <div class="timeline__dot"></div>
+                  <span class="timeline__label">{{ estadoLabel(step) }}</span>
+                </div>
+              }
+            </div>
           </div>
-        </div>
-        <div class="card">
-          <div class="card-header"><strong>Dirección de entrega</strong></div>
-          <div class="card-body small">
-            <p class="mb-1">{{ pedido()!.direccionEnvio }}</p>
-            <p class="mb-0 text-muted">{{ pedido()!.ciudadEnvio }}</p>
-            @if (pedido()!.fechaEntregaEstimada) {
-              <hr><p class="mb-0"><strong>Entrega estimada:</strong> {{ pedido()!.fechaEntregaEstimada | date:'dd/MM/yyyy' }}</p>
-            }
+
+          <!-- Productos -->
+          <div class="detail-card">
+            <h2 class="detail-card__title">Productos</h2>
+            <table class="products-table">
+              <thead>
+                <tr>
+                  <th>Producto</th><th>Medida</th>
+                  <th>Cant.</th><th>Precio unit.</th><th>Subtotal</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (item of (pedido()?.detalles || pedido()?.items || []); track item.id) {
+                  <tr>
+                    <td>
+                      <p class="prod-nombre">{{ item.nombreProducto }}</p>
+                      <p class="prod-marca">{{ item.marcaProducto }}</p>
+                    </td>
+                    <td class="td-center">{{ item.medidaProducto || '—' }}</td>
+                    <td class="td-center">{{ item.cantidad }}</td>
+                    <td class="td-right">S/ {{ item.precioUnitario | number:'1.2-2' }}</td>
+                    <td class="td-right td-bold">S/ {{ item.subtotal | number:'1.2-2' }}</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
           </div>
+
+          <!-- Dirección -->
+          <div class="detail-card">
+            <h2 class="detail-card__title">Datos de entrega</h2>
+            <div class="address-grid">
+              <div class="address-field">
+                <span class="address-field__label">Nombre</span>
+                <span>{{ pedido()?.usuario?.nombreCompleto || pedido()?.nombreInvitado }}</span>
+              </div>
+              <div class="address-field">
+                <span class="address-field__label">Teléfono</span>
+                <span>{{ pedido()?.telefonoContacto || pedido()?.telefonoInvitado }}</span>
+              </div>
+              <div class="address-field">
+                <span class="address-field__label">Dirección</span>
+                <span>{{ pedido()?.direccionEnvio }}</span>
+              </div>
+              <div class="address-field">
+                <span class="address-field__label">Distrito / Ciudad</span>
+                <span>{{ pedido()?.distritoEnvio }}, {{ pedido()?.ciudadEnvio }}</span>
+              </div>
+            </div>
+          </div>
+
         </div>
+
+        <!-- Resumen lateral -->
+        <aside class="detail-aside">
+          <div class="detail-card">
+            <h2 class="detail-card__title">Resumen de pago</h2>
+            <div class="summary-lines">
+              <div class="summary-line">
+                <span>Subtotal (sin IGV)</span>
+                <span>S/ {{ subtotal() | number:'1.2-2' }}</span>
+              </div>
+              <div class="summary-line">
+                <span>IGV (18%)</span>
+                <span>S/ {{ igv() | number:'1.2-2' }}</span>
+              </div>
+              <div class="summary-line">
+                <span>Envío</span>
+                <span class="text-muted">Incluido</span>
+              </div>
+            </div>
+            <div class="summary-total">
+              <span>Total</span>
+              <strong>S/ {{ pedido()!.total | number:'1.2-2' }}</strong>
+            </div>
+            <div class="summary-meta">
+              <div class="meta-item">
+                <span class="meta-item__label">Método de pago</span>
+                <span>{{ metodoLabel(pedido()!.metodoPago) }}</span>
+              </div>
+              <div class="meta-item">
+                <span class="meta-item__label">Fecha del pedido</span>
+                <span>{{ pedido()!.fechaCreacion | date:'dd/MM/yyyy HH:mm' }}</span>
+              </div>
+              @if (pedido()!.notas) {
+                <div class="meta-item">
+                  <span class="meta-item__label">Notas</span>
+                  <span>{{ pedido()!.notas }}</span>
+                </div>
+              }
+            </div>
+          </div>
+        </aside>
+
       </div>
-    </div>
-  }
+    }
+  </div>
 </div>

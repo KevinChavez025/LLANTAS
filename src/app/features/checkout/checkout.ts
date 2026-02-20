@@ -32,6 +32,9 @@ export class Checkout {
   enviando = signal(false);
   paso     = signal<1 | 2>(1);
 
+  // Detectar si el usuario está logueado
+  esUsuarioLogueado = !!this.auth.getCurrentUser();
+
   metodosPago: { valor: MetodoPago; label: string; icono: string }[] = [
     { valor: 'EFECTIVO',        label: 'Efectivo',               icono: '💵' },
     { valor: 'YAPE',            label: 'Yape',                   icono: '📱' },
@@ -43,7 +46,8 @@ export class Checkout {
 
   form: FormGroup = this.fb.group({
     nombreCompleto: ['', [Validators.required, Validators.minLength(3)]],
-    email:          ['', [Validators.required, Validators.email]],
+    // Email solo requerido para invitados
+    email:          ['', this.esUsuarioLogueado ? [Validators.email] : [Validators.required, Validators.email]],
     telefono:       ['', [Validators.required, Validators.pattern(/^[0-9]{9}$/)]],
     direccion:      ['', [Validators.required, Validators.minLength(5)]],
     distrito:       ['', Validators.required],
@@ -57,7 +61,9 @@ export class Checkout {
   get f() { return this.form.controls; }
 
   siguientePaso(): void {
-    const campos = ['nombreCompleto', 'email', 'telefono', 'direccion', 'distrito', 'ciudad'];
+    // Email solo se valida en paso 1 si es invitado
+    const campos = ['nombreCompleto', 'telefono', 'direccion', 'distrito', 'ciudad'];
+    if (!this.esUsuarioLogueado) campos.push('email');
     campos.forEach(c => this.form.get(c)?.markAsTouched());
     if (campos.every(c => this.form.get(c)?.valid)) this.paso.set(2);
   }
