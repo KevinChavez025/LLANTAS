@@ -13,8 +13,8 @@ export class Footer {
   currentYear = new Date().getFullYear();
 
   socialLinks = [
-    { name: 'Facebook', icon: 'facebook', url: 'https://facebook.com' },
-    { name: 'Instagram', icon: 'instagram', url: 'https://instagram.com' },
+    { name: 'Facebook', icon: 'facebook', url: 'https://www.facebook.com/people/Haidainversiones/61587763911202/?rdid=ek144z2D0PoC2gmg&share_url=https%3A%2F%2Fwww.facebook.com%2Fshare%2F1AMEjxR6QW%2F' },
+    { name: 'Instagram', icon: 'instagram', url: 'https://www.instagram.com/haidainversiones/' },
     { name: 'Twitter', icon: 'twitter', url: 'https://twitter.com' }
   ];
 
