@@ -15,7 +15,7 @@ export class Footer {
   socialLinks = [
     { name: 'Facebook', icon: 'facebook', url: 'https://www.facebook.com/people/Haidainversiones/61587763911202/?rdid=ek144z2D0PoC2gmg&share_url=https%3A%2F%2Fwww.facebook.com%2Fshare%2F1AMEjxR6QW%2F' },
     { name: 'Instagram', icon: 'instagram', url: 'https://www.instagram.com/haidainversiones/' },
-    { name: 'Twitter', icon: 'twitter', url: 'https://twitter.com' }
+    { name: 'WhatsApp', icon: 'whatsapp', url: 'https://wa.me/51923402825' }
   ];
 
   quickLinks = [

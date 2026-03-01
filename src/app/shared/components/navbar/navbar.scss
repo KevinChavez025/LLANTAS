@@ -3,9 +3,9 @@
 @use "sass:color";
 
 // Colores específicos del navbar
-$navbar-bg: #000000;          // Negro puro
-$texto-navbar: #FFFFFF;       // Texto blanco
-$texto-navbar-muted: #CCCCCC; // Texto gris claro
+$navbar-bg: #000000;
+$texto-navbar: #FFFFFF;
+$texto-navbar-muted: #CCCCCC;
 
 .navbar {
   background: $navbar-bg;
@@ -34,9 +34,7 @@ $texto-navbar-muted: #CCCCCC; // Texto gris claro
   text-decoration: none;
   transition: transform $transition-fast;
 
-  &:hover {
-    transform: scale(1.02);
-  }
+  &:hover { transform: scale(1.02); }
 
   .logo-text {
     font-size: 24px;
@@ -54,7 +52,7 @@ $texto-navbar-muted: #CCCCCC; // Texto gris claro
   }
 }
 
-// Menú Desktop - SIN fondo gris, directo en negro
+// Menú Desktop
 .navbar-menu {
   display: flex;
   list-style: none;
@@ -63,12 +61,8 @@ $texto-navbar-muted: #CCCCCC; // Texto gris claro
   padding: 0;
   flex: 1;
   justify-content: center;
-  // ← QUITAMOS: background: $navbar-menu-bg;
-  // ← QUITAMOS: border-radius: 8px;
 
-  @include tablet {
-    display: none;
-  }
+  @include tablet { display: none; }
 
   li a {
     color: $texto-navbar-muted;
@@ -81,13 +75,8 @@ $texto-navbar-muted: #CCCCCC; // Texto gris claro
     letter-spacing: 0.3px;
     text-transform: uppercase;
 
-    &:hover {
-      color: $primary-color;
-    }
-
-    &.active {
-      color: $primary-color;
-    }
+    &:hover { color: $primary-color; }
+    &.active { color: $primary-color; }
   }
 }
 
@@ -115,9 +104,7 @@ $texto-navbar-muted: #CCCCCC; // Texto gris claro
     transform: scale(1.08);
   }
 
-  &.has-items {
-    color: $secondary-color;
-  }
+  &.has-items { color: $secondary-color; }
 
   .cart-count {
     position: absolute;
@@ -135,7 +122,7 @@ $texto-navbar-muted: #CCCCCC; // Texto gris claro
   }
 }
 
-// Botones principales
+// Botones
 .btn {
   padding: 10px 20px;
   border-radius: 6px;
@@ -152,9 +139,7 @@ $texto-navbar-muted: #CCCCCC; // Texto gris claro
   text-transform: uppercase;
   letter-spacing: 0.5px;
 
-  @include tablet {
-    display: none;
-  }
+  @include tablet { display: none; }
 
   &-primary {
     background: $primary-color;
@@ -166,9 +151,7 @@ $texto-navbar-muted: #CCCCCC; // Texto gris claro
       box-shadow: 0 4px 12px rgba(29, 185, 84, 0.5);
     }
 
-    &:active {
-      transform: translateY(0);
-    }
+    &:active { transform: translateY(0); }
   }
 
   &-danger {
@@ -176,16 +159,12 @@ $texto-navbar-muted: #CCCCCC; // Texto gris claro
     color: $texto-navbar;
     margin: $spacing-sm $spacing-lg;
 
-    &:hover {
-      background: color.adjust($danger-color, $lightness: -8%);
-    }
+    &:hover { background: color.adjust($danger-color, $lightness: -8%); }
   }
 }
 
 // Usuario
-.user-menu {
-  position: relative;
-}
+.user-menu { position: relative; }
 
 .user-btn {
   display: flex;
@@ -201,9 +180,7 @@ $texto-navbar-muted: #CCCCCC; // Texto gris claro
   font-weight: 600;
   font-size: 12px;
 
-  @include tablet {
-    display: none;
-  }
+  @include tablet { display: none; }
 
   &:hover {
     background: $primary-color;
@@ -211,9 +188,7 @@ $texto-navbar-muted: #CCCCCC; // Texto gris claro
     box-shadow: 0 4px 12px rgba(29, 185, 84, 0.5);
   }
 
-  svg {
-    flex-shrink: 0;
-  }
+  svg { flex-shrink: 0; }
 }
 
 .dropdown {
@@ -264,10 +239,7 @@ $texto-navbar-muted: #CCCCCC; // Texto gris claro
 
   .logout-btn {
     color: $danger-color;
-
-    &:hover {
-      background: rgba($danger-color, 0.15);
-    }
+    &:hover { background: rgba($danger-color, 0.15); }
   }
 }
 
@@ -281,9 +253,7 @@ $texto-navbar-muted: #CCCCCC; // Texto gris claro
   cursor: pointer;
   padding: $spacing-sm;
 
-  @include tablet {
-    display: flex;
-  }
+  @include tablet { display: flex; }
 
   span {
     width: 28px;
@@ -304,13 +274,9 @@ $texto-navbar-muted: #CCCCCC; // Texto gris claro
   overflow: hidden;
   transition: max-height $transition-normal;
 
-  @include tablet {
-    display: flex;
-  }
+  @include tablet { display: flex; }
 
-  &.show {
-    max-height: 700px;
-  }
+  &.show { max-height: 700px; }
 
   a {
     padding: $spacing-md $spacing-lg;
@@ -334,14 +300,96 @@ $texto-navbar-muted: #CCCCCC; // Texto gris claro
     border-top: 1px solid rgba(255, 255, 255, 0.15);
   }
 
-  button {
-    width: calc(100% - #{$spacing-lg * 2});
-  }
+  button { width: calc(100% - #{$spacing-lg * 2}); }
 
   .btn {
     display: flex;
     margin: $spacing-sm $spacing-lg;
     text-align: center;
     justify-content: center;
+  }
+}
+
+// ══════════════════════════════════════════
+// BARRA DE CATEGORÍAS
+// ══════════════════════════════════════════
+.cat-bar {
+  background: #ffffff;
+  border-bottom: 1px solid #e8e8e8;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  position: sticky;
+  top: 70px; // altura del navbar
+  z-index: calc(#{$z-sticky} - 1);
+
+  @include tablet { top: 70px; }
+  @include mobile { overflow-x: auto; top: 70px; }
+
+  &__container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 $spacing-lg;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+
+    @include mobile {
+      justify-content: flex-start;
+      padding: 0 $spacing-md;
+      gap: 0;
+    }
+  }
+
+  &__item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 12px 24px;
+    text-decoration: none;
+    color: #555;
+    transition: all $transition-fast;
+    border-bottom: 3px solid transparent;
+    white-space: nowrap;
+    flex-shrink: 0;
+
+    @include tablet { padding: 10px 16px; }
+    @include mobile { padding: 10px 14px; }
+
+    &:hover {
+      color: $primary-color;
+      border-bottom-color: rgba($primary-color, 0.4);
+      background: rgba($primary-color, 0.04);
+    }
+
+    &--active {
+      color: $primary-color;
+      border-bottom-color: $primary-color;
+    }
+  }
+
+  &__icon {
+    width: 40px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    @include mobile { width: 32px; height: 24px; }
+
+    svg {
+      width: 100%;
+      height: 100%;
+      stroke: currentColor;
+    }
+  }
+
+  &__label {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    line-height: 1.2;
+    text-align: center;
   }
 }

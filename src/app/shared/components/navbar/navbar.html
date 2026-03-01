@@ -59,19 +59,11 @@
 
         <!-- Dropdown -->
         <div class="dropdown" [class.show]="isMenuOpen">
-          <a routerLink="/usuario/perfil" (click)="toggleMenu()">
-            Mi Perfil
-          </a>
-          <a routerLink="/usuario/pedidos" (click)="toggleMenu()">
-            Mis Pedidos
-          </a>
-          <a *ngIf="isAdmin" routerLink="/admin/dashboard" (click)="toggleMenu()">
-            Panel Admin
-          </a>
+          <a routerLink="/usuario/perfil" (click)="toggleMenu()">Mi Perfil</a>
+          <a routerLink="/usuario/pedidos" (click)="toggleMenu()">Mis Pedidos</a>
+          <a *ngIf="isAdmin" routerLink="/admin/dashboard" (click)="toggleMenu()">Panel Admin</a>
           <hr>
-          <button (click)="logout()" class="logout-btn">
-            Cerrar Sesión
-          </button>
+          <button (click)="logout()" class="logout-btn">Cerrar Sesión</button>
         </div>
       </div>
     </div>
@@ -90,18 +82,25 @@
     <a routerLink="/catalogo" routerLinkActive="active" (click)="toggleMenu()">Catálogo</a>
     <a routerLink="/nosotros" routerLinkActive="active" (click)="toggleMenu()">Nosotros</a>
     <a routerLink="/contacto" routerLinkActive="active" (click)="toggleMenu()">Contacto</a>
-    
     <hr>
-    
     <a *ngIf="isAuthenticated" routerLink="/usuario/perfil" (click)="toggleMenu()">Mi Perfil</a>
     <a *ngIf="isAuthenticated" routerLink="/usuario/pedidos" (click)="toggleMenu()">Mis Pedidos</a>
     <a *ngIf="isAdmin" routerLink="/admin/dashboard" (click)="toggleMenu()">Panel Admin</a>
-    
-    <button *ngIf="isAuthenticated" (click)="logout()" class="btn btn-danger">
-      Cerrar Sesión
-    </button>
-    <a *ngIf="!isAuthenticated" routerLink="/login" (click)="toggleMenu()" class="btn btn-primary">
-      Iniciar Sesión
-    </a>
+    <button *ngIf="isAuthenticated" (click)="logout()" class="btn btn-danger">Cerrar Sesión</button>
+    <a *ngIf="!isAuthenticated" routerLink="/login" (click)="toggleMenu()" class="btn btn-primary">Iniciar Sesión</a>
   </div>
 </nav>
+
+<!-- ═══════════════ BARRA DE CATEGORÍAS ══════════════════ -->
+<div class="cat-bar">
+  <div class="cat-bar__container">
+    @for (cat of categorias; track cat.query) {
+      <a [routerLink]="['/catalogo']" [queryParams]="{tipo: cat.query}"
+         routerLinkActive="cat-bar__item--active"
+         class="cat-bar__item">
+        <div class="cat-bar__icon" [innerHTML]="cat.svg"></div>
+        <span class="cat-bar__label">{{ cat.nombre }}</span>
+      </a>
+    }
+  </div>
+</div>
