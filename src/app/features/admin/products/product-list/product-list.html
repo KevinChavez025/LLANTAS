@@ -1,48 +1,114 @@
-<div class="container-fluid py-4">
-  <div class="d-flex justify-content-between align-items-center mb-4">
-    <h2 class="mb-0">Productos</h2>
-    <a routerLink="/admin/productos/nuevo" class="btn btn-success">+ Nuevo</a>
+<div class="plist">
+
+  <!-- Header -->
+  <div class="plist-header">
+    <div>
+      <h1 class="plist-title">Productos</h1>
+      <p class="plist-sub">{{ pagina()?.totalElements ?? 0 }} productos registrados</p>
+    </div>
+    <a routerLink="/admin/productos/nuevo" class="btn-new">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Nuevo producto
+    </a>
   </div>
 
-  <div class="input-group mb-4" style="max-width:400px">
-    <input type="text" class="form-control" placeholder="Buscar..." [(ngModel)]="busqueda" (keyup.enter)="buscar()">
-    <button class="btn btn-outline-secondary" (click)="buscar()">Buscar</button>
-    <button class="btn btn-outline-danger" (click)="busqueda=''; cargar(0)">✕</button>
+  <!-- Search bar -->
+  <div class="plist-search">
+    <div class="search-wrap">
+      <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input
+        class="search-input"
+        type="text"
+        placeholder="Buscar por nombre, marca..."
+        [(ngModel)]="busqueda"
+        (keyup.enter)="buscar()"
+      />
+      @if (busqueda) {
+        <button class="search-clear" (click)="busqueda=''; cargar(0)">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      }
+    </div>
+    <button class="btn-search" (click)="buscar()">Buscar</button>
   </div>
 
+  <!-- Loading -->
   @if (cargando()) {
-    <div class="text-center py-5"><div class="spinner-border text-success"></div></div>
-  } @else if (!pagina()?.content?.length) {
-    <div class="alert alert-info">No hay productos.</div>
-  } @else {
-    <div class="table-responsive">
-      <table class="table table-hover align-middle">
-        <thead class="table-light">
-          <tr><th>Nombre</th><th>Marca</th><th>Medida</th><th>Precio</th><th>Stock</th><th>Estado</th><th>Acciones</th></tr>
+    <div class="plist-loading">
+      <div class="spin-ring"></div>
+      <span>Cargando productos...</span>
+    </div>
+  }
+
+  <!-- Empty -->
+  @else if (!pagina()?.content?.length) {
+    <div class="plist-empty">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3"/><line x1="12" y1="3" x2="12" y2="9"/><line x1="12" y1="15" x2="12" y2="21"/><line x1="3" y1="12" x2="9" y2="12"/><line x1="15" y1="12" x2="21" y2="12"/></svg>
+      <p>No se encontraron productos</p>
+    </div>
+  }
+
+  <!-- Table -->
+  @else {
+    <div class="plist-table-wrap">
+      <table class="plist-table">
+        <thead>
+          <tr>
+            <th>Producto</th>
+            <th>Marca</th>
+            <th>Medida</th>
+            <th>Precio</th>
+            <th>Stock</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
         </thead>
         <tbody>
-          @for (p of pagina()!.content; track p.id) {
-            <tr>
+          @for (p of pagina()!.content; track p.id; let i = $index) {
+            <tr [style.animation-delay]="(i * 35) + 'ms'">
               <td>
-                <strong>{{ p.nombre }}</strong><br>
-                <small class="text-muted">{{ p.tipoVehiculo }}</small>
+                <div class="prod-name">{{ p.nombre }}</div>
+                <div class="prod-type">{{ p.tipoVehiculo }}</div>
               </td>
-              <td>{{ p.marca }}</td>
-              <td>{{ p.medida ?? '—' }}</td>
-              <td>S/ {{ p.precio | number:'1.2-2' }}</td>
-              <td [class]="p.stock > 0 ? 'text-success fw-bold' : 'text-danger'">{{ p.stock }}</td>
+              <td class="td-brand">{{ p.marca }}</td>
+              <td class="td-medida">{{ p.medida ?? '—' }}</td>
+              <td class="td-price">S/ {{ p.precio | number:'1.2-2' }}</td>
               <td>
-                <span class="badge" [class]="p.disponible ? 'bg-success' : 'bg-secondary'">
+                <span class="stock-badge" [class.stock-badge--ok]="p.stock > 5" [class.stock-badge--low]="p.stock > 0 && p.stock <= 5" [class.stock-badge--out]="p.stock === 0">
+                  {{ p.stock }}
+                </span>
+              </td>
+              <td>
+                <span class="status-dot" [class.status-dot--on]="p.disponible" [class.status-dot--off]="!p.disponible">
+                  <span class="dot-circle"></span>
                   {{ p.disponible ? 'Activo' : 'Inactivo' }}
                 </span>
               </td>
               <td>
-                <div class="d-flex gap-1">
-                  <a [routerLink]="['/admin/productos/editar', p.id]" class="btn btn-sm btn-outline-primary">Editar</a>
-                  <button class="btn btn-sm btn-outline-danger" (click)="desactivar(p)"
-                          [disabled]="eliminandoId() === p.id">
-                    {{ eliminandoId() === p.id ? '...' : 'Desactivar' }}
-                  </button>
+                <div class="actions">
+                  <a [routerLink]="['/admin/productos/editar', p.id]" class="btn-edit">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                    Editar
+                  </a>
+                  @if (p.disponible) {
+                    <button
+                      class="btn-deact"
+                      (click)="desactivar(p)"
+                      [disabled]="accionId() === p.id">
+                      @if (accionId() === p.id) { <span class="mini-spin"></span> }
+                      @else { <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg> }
+                      {{ accionId() === p.id ? '...' : 'Desactivar' }}
+                    </button>
+                  } @else {
+                    <button
+                      class="btn-act"
+                      (click)="activar(p)"
+                      [disabled]="accionId() === p.id">
+                      @if (accionId() === p.id) { <span class="mini-spin"></span> }
+                      @else { <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> }
+                      {{ accionId() === p.id ? '...' : 'Activar' }}
+                    </button>
+                  }
                 </div>
               </td>
             </tr>
@@ -52,19 +118,14 @@
     </div>
 
     @if ((pagina()?.totalPages ?? 0) > 1) {
-      <nav class="mt-3"><ul class="pagination">
-        <li class="page-item" [class.disabled]="pagina()?.first">
-          <button class="page-link" (click)="cargar(paginaActual-1)">‹</button>
-        </li>
+      <div class="pagination">
+        <button class="pag-btn" [disabled]="pagina()?.first" (click)="cargar(paginaActual - 1)">‹</button>
         @for (p of paginas; track p) {
-          <li class="page-item" [class.active]="p === paginaActual">
-            <button class="page-link" (click)="cargar(p)">{{ p+1 }}</button>
-          </li>
+          <button class="pag-btn" [class.pag-btn--active]="p === paginaActual" (click)="cargar(p)">{{ p + 1 }}</button>
         }
-        <li class="page-item" [class.disabled]="pagina()?.last">
-          <button class="page-link" (click)="cargar(paginaActual+1)">›</button>
-        </li>
-      </ul></nav>
+        <button class="pag-btn" [disabled]="pagina()?.last" (click)="cargar(paginaActual + 1)">›</button>
+      </div>
     }
   }
+
 </div>

@@ -10,19 +10,16 @@ export interface User {
   id: number;
   email: string;
   nombre: string;
-  rol: string; // 'ADMIN' | 'USER'
+  rol: string;
 }
 
-/**
- * Respuesta real del backend:
- * { token, type, id, username, email, nombre, rol }
- * El backend NO usa accessToken/refreshToken — solo un JWT estático.
- */
+// ✅ Coincide exactamente con lo que devuelve el backend
 export interface AuthResponse {
-  token: string;       // JWT — el backend lo llama "token", no "accessToken"
-  type: string;        // "Bearer"
+  accessToken: string;   // el backend lo llama accessToken
+  refreshToken: string;
+  type: string;
   id: number;
-  username: string;    // = email (alias)
+  username: string;
   email: string;
   nombre: string;
   rol: string;
@@ -46,15 +43,20 @@ export class AuthService {
     try { return JSON.parse(localStorage.getItem('user') ?? 'null'); } catch { return null; }
   }
 
-  /** Devuelve el token JWT almacenado (guardado como 'accessToken' por compatibilidad con interceptor) */
   getToken(): string | null {
     return this.isBrowser ? localStorage.getItem('accessToken') : null;
   }
 
+  getRefreshToken(): string | null {
+    return this.isBrowser ? localStorage.getItem('refreshToken') : null;
+  }
+
   private save(res: AuthResponse): void {
     if (!this.isBrowser) return;
-    // Guardamos res.token como 'accessToken' para que el interceptor lo encuentre
-    localStorage.setItem('accessToken', res.token);
+    localStorage.setItem('accessToken', res.accessToken);  // ✅ res.accessToken
+    if (res.refreshToken) {
+      localStorage.setItem('refreshToken', res.refreshToken);
+    }
     const user: User = { id: res.id, email: res.email, nombre: res.nombre, rol: res.rol };
     localStorage.setItem('user', JSON.stringify(user));
     this.currentUserSubject.next(user);
@@ -62,7 +64,7 @@ export class AuthService {
 
   private clear(): void {
     if (!this.isBrowser) return;
-    ['accessToken', 'user'].forEach(k => localStorage.removeItem(k));
+    ['accessToken', 'refreshToken', 'user'].forEach(k => localStorage.removeItem(k));
     this.currentUserSubject.next(null);
   }
 
@@ -77,13 +79,11 @@ export class AuthService {
       .pipe(tap(res => this.save(res)));
   }
 
-  /**
-   * El backend actual NO implementa refresh de token.
-   * Este método existe por compatibilidad con el interceptor:
-   * si recibe 401, simplemente hace logout.
-   */
   refresh(): Observable<AuthResponse> {
-    return throwError(() => new Error('Refresh no disponible — inicia sesión nuevamente'));
+    const refreshToken = this.getRefreshToken();
+    if (!refreshToken) return throwError(() => new Error('Sin refresh token'));
+    return this.http.post<AuthResponse>(`${this.apiUrl}/refresh`, { refreshToken })
+      .pipe(tap(res => this.save(res)));
   }
 
   logout(): void {

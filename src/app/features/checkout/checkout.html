@@ -40,6 +40,7 @@
 
             <div class="form-grid">
 
+              <!-- Nombre completo -->
               <div class="form-group form-group--full">
                 <label>Nombre completo *</label>
                 <input type="text" formControlName="nombreCompleto" placeholder="Ej: Juan Pérez Quispe"/>
@@ -48,6 +49,7 @@
                 }
               </div>
 
+              <!-- Teléfono -->
               <div class="form-group">
                 <label>Teléfono *</label>
                 <input type="tel" formControlName="telefono" placeholder="Ej: 987654321"/>
@@ -56,30 +58,80 @@
                 }
               </div>
 
+              <!-- Departamento -->
               <div class="form-group">
-                <label>Ciudad *</label>
-                <input type="text" formControlName="ciudad" placeholder="Ej: Lima"/>
+                <label>Departamento *</label>
+                <div class="select-wrapper">
+                  <select formControlName="departamento" (change)="onDepartamentoChange($event)">
+                    <option value="" disabled>Selecciona un departamento</option>
+                    @for (dep of departamentos; track dep.nombre) {
+                      <option [value]="dep.nombre">{{ dep.nombre }}</option>
+                    }
+                  </select>
+                  <svg class="select-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M6 9l6 6 6-6"/>
+                  </svg>
+                </div>
+                @if (f['departamento'].touched && f['departamento'].errors?.['required']) {
+                  <span class="form-error">Selecciona un departamento</span>
+                }
               </div>
 
+              <!-- Provincia / Ciudad -->
+              <div class="form-group">
+                <label>Provincia / Ciudad *</label>
+                <div class="select-wrapper" [class.select-wrapper--disabled]="provincias.length === 0">
+                  <select formControlName="ciudad" (change)="onProvinciaChange($event)" [attr.disabled]="provincias.length === 0 ? true : null">
+                    <option value="" disabled>
+                      {{ provincias.length === 0 ? 'Primero elige un departamento' : 'Selecciona una provincia' }}
+                    </option>
+                    @for (prov of provincias; track prov.nombre) {
+                      <option [value]="prov.nombre">{{ prov.nombre }}</option>
+                    }
+                  </select>
+                  <svg class="select-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M6 9l6 6 6-6"/>
+                  </svg>
+                </div>
+                @if (f['ciudad'].touched && f['ciudad'].errors?.['required']) {
+                  <span class="form-error">Selecciona una provincia</span>
+                }
+              </div>
+
+              <!-- Distrito -->
+              <div class="form-group">
+                <label>Distrito *</label>
+                <div class="select-wrapper" [class.select-wrapper--disabled]="distritos.length === 0">
+                  <select formControlName="distrito" [attr.disabled]="distritos.length === 0 ? true : null">
+                    <option value="" disabled>
+                      {{ distritos.length === 0 ? 'Primero elige una provincia' : 'Selecciona un distrito' }}
+                    </option>
+                    @for (dist of distritos; track dist) {
+                      <option [value]="dist">{{ dist }}</option>
+                    }
+                  </select>
+                  <svg class="select-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M6 9l6 6 6-6"/>
+                  </svg>
+                </div>
+                @if (f['distrito'].touched && f['distrito'].errors?.['required']) {
+                  <span class="form-error">Selecciona un distrito</span>
+                }
+              </div>
+
+              <!-- Referencia -->
+              <div class="form-group">
+                <label>Referencia</label>
+                <input type="text" formControlName="referencia" placeholder="Ej: Frente al parque"/>
+              </div>
+
+              <!-- Dirección (fila completa, al final) -->
               <div class="form-group form-group--full">
                 <label>Dirección *</label>
                 <input type="text" formControlName="direccion" placeholder="Ej: Av. Javier Prado 1234"/>
                 @if (f['direccion'].touched && f['direccion'].errors?.['required']) {
                   <span class="form-error">Campo obligatorio</span>
                 }
-              </div>
-
-              <div class="form-group">
-                <label>Distrito *</label>
-                <input type="text" formControlName="distrito" placeholder="Ej: San Isidro"/>
-                @if (f['distrito'].touched && f['distrito'].errors?.['required']) {
-                  <span class="form-error">Campo obligatorio</span>
-                }
-              </div>
-
-              <div class="form-group">
-                <label>Referencia</label>
-                <input type="text" formControlName="referencia" placeholder="Ej: Frente al parque"/>
               </div>
 
             </div>

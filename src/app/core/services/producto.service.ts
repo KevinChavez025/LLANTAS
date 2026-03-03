@@ -69,4 +69,9 @@ export class ProductoService {
   eliminar(id: number): Observable<void> {
     return this.http.delete<void>(`${this.base}/${id}`);
   }
+
+  /** Activar producto: marca disponible=true */
+  activar(id: number): Observable<void> {
+    return this.http.patch<void>(`${this.base}/${id}/activar`, {});
+  }
 }

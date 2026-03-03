@@ -1,175 +1,158 @@
+@use 'sass:color';
 @use '../../../../../styles/variables' as *;
 @use '../../../../../styles/mixins' as *;
+
+$green: #1DB954; $amber: #f59e0b; $blue: #3b82f6;
+$purple: #8b5cf6; $red: #ef4444;
 
 .orders-page {
   background: $bg-dark;
   min-height: 100vh;
-  padding: 32px 0 60px;
+  padding: 36px 0 80px;
 }
 
-.container {
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 0 24px;
-  @include mobile { padding: 0 16px; }
-}
+.container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
 
 .page-header {
-  margin-bottom: 28px;
-  &__title { font-size: 22px; font-weight: 800; color: $text-color; margin-bottom: 6px; }
+  margin-bottom: 30px;
+  &__title { font-size: 1.4rem; font-weight: 800; color: $text-color; margin: 0 0 6px; }
   &__breadcrumb {
-    font-size: 13px; color: $text-muted;
+    font-size: 12px; color: $text-muted;
     a { color: $text-muted; text-decoration: none; &:hover { color: $primary-color; } }
-    span { color: $text-color; }
   }
 }
 
 .profile-layout {
   display: grid;
-  grid-template-columns: 220px 1fr;
+  grid-template-columns: 210px 1fr;
   gap: 24px;
   align-items: start;
   @include tablet { grid-template-columns: 1fr; }
 }
 
-// Sidebar (igual que profile)
+// Sidebar
 .user-sidebar {
-  background: $bg-card;
-  border: 1px solid $border-color;
-  border-radius: $radius-lg;
-  overflow: hidden;
-  position: sticky;
-  top: 80px;
+  background: $bg-card; border: 1px solid $border-color;
+  border-radius: 14px; overflow: hidden;
+  position: sticky; top: 80px;
   @include tablet { position: static; }
-  &__nav { padding: 6px 0; }
+  &__nav { padding: 8px 0; }
 }
 
 .user-nav-item {
   display: flex; align-items: center; gap: 10px;
-  padding: 11px 18px;
-  font-size: 13px; font-weight: 500;
+  padding: 11px 18px; font-size: 13px; font-weight: 500;
   color: $text-muted; text-decoration: none;
-  transition: all $transition-fast;
+  transition: all 0.15s;
+  border-left: 3px solid transparent;
 
   &:hover { background: $bg-dark; color: $text-color; }
   &.active {
-    background: rgba($primary-color, 0.08);
+    background: rgba($primary-color, 0.07);
     color: $primary-color; font-weight: 700;
-    border-right: 3px solid $primary-color;
+    border-left-color: $primary-color;
   }
   svg { flex-shrink: 0; }
 }
 
-// ── TABLA ────────────────────────────────────
-.orders-main { @include flex-column; gap: 16px; }
+// Main
+.orders-main { display: flex; flex-direction: column; gap: 16px; }
 
+// Cards (mobile-first design for orders)
 .orders-table-wrap {
-  background: $bg-card;
-  border: 1px solid $border-color;
-  border-radius: $radius-lg;
-  overflow: hidden;
-  overflow-x: auto;
+  background: $bg-card; border: 1px solid $border-color;
+  border-radius: 14px; overflow: hidden; overflow-x: auto;
+  animation: fadeUp 0.35s ease both;
 }
 
 .orders-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 13px;
+  width: 100%; border-collapse: collapse; font-size: 0.85rem;
 
   thead tr {
-    background: $bg-dark;
-    border-bottom: 1px solid $border-color;
+    background: #f9fafb; border-bottom: 1px solid $border-color;
   }
-
   th {
-    padding: 12px 16px;
-    font-size: 11px; font-weight: 700;
-    text-transform: uppercase; letter-spacing: 0.8px;
-    color: $text-muted; text-align: left;
-    white-space: nowrap;
+    padding: 11px 18px; font-size: 0.68rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.07em;
+    color: $text-muted; text-align: left; white-space: nowrap;
   }
 
   tbody tr {
     border-bottom: 1px solid $border-color;
-    transition: background $transition-fast;
+    animation: fadeIn 0.3s ease both;
+    transition: background 0.15s;
     &:last-child { border-bottom: none; }
     &:hover { background: rgba($primary-color, 0.02); }
+
+    @for $i from 1 through 20 {
+      &:nth-child(#{$i}) { animation-delay: #{($i - 1) * 40}ms; }
+    }
   }
 
-  td { padding: 14px 16px; color: $text-color; vertical-align: middle; }
+  td { padding: 15px 18px; color: $text-color; vertical-align: middle; }
 }
 
-.td-num  { font-weight: 700; color: $primary-color; }
-.td-date { color: $text-muted; white-space: nowrap; }
-.td-total { font-weight: 800; white-space: nowrap; }
+.td-num {
+  font-weight: 800; color: $primary-color; font-size: 0.9rem;
+}
+.td-date  { color: $text-muted; white-space: nowrap; font-size: 0.8rem; }
+.td-total { font-weight: 800; white-space: nowrap; font-size: 0.9rem; }
 
 .td-items {
-  @include flex-column;
-  gap: 4px;
-  max-width: 260px;
+  display: flex; flex-direction: column; gap: 3px;
+  max-width: 240px;
 }
-
 .item-chip {
-  font-size: 11px; color: $text-muted;
-  @include truncate;
+  font-size: 0.75rem; color: $text-muted;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
-
 .item-more {
-  font-size: 11px; color: $primary-color; font-weight: 600;
+  font-size: 0.72rem; color: $primary-color; font-weight: 700;
 }
 
 .btn-ver {
-  font-size: 12px; font-weight: 700;
-  color: $primary-color; text-decoration: none;
-  padding: 5px 10px;
-  border: 1px solid rgba($primary-color, 0.3);
-  border-radius: $radius-sm;
-  transition: all $transition-fast;
-  white-space: nowrap;
-
-  &:hover {
-    background: $primary-color;
-    color: #fff;
-  }
+  font-size: 0.75rem; font-weight: 700; color: $primary-color;
+  text-decoration: none; padding: 6px 14px;
+  border: 1px solid rgba($primary-color, 0.3); border-radius: 8px;
+  transition: all 0.15s; white-space: nowrap; display: inline-block;
+  &:hover { background: $primary-color; color: white; }
 }
 
-// ── BADGES ───────────────────────────────────
+// Badges
 .badge {
-  font-size: 10px; font-weight: 700;
-  letter-spacing: 0.5px; text-transform: uppercase;
-  padding: 3px 9px; border-radius: 100px;
-  white-space: nowrap;
+  display: inline-block; font-size: 0.68rem; font-weight: 700;
+  letter-spacing: 0.05em; text-transform: uppercase;
+  padding: 4px 10px; border-radius: 20px; white-space: nowrap;
 
-  &--success   { background: rgba($primary-color, 0.12); color: $primary-color; }
-  &--warning   { background: rgba($warning-color, 0.15); color: $warning-color; }
-  &--danger    { background: rgba($danger-color, 0.12);  color: $danger-color; }
-  &--info      { background: rgba(#3b82f6, 0.12); color: #3b82f6; }
-  &--primary   { background: rgba(#8b5cf6, 0.12); color: #8b5cf6; }
-  &--secondary { background: rgba($text-muted, 0.12); color: $text-muted; }
+  &--success  { background: rgba($green, 0.1);   color: color.adjust($green, $lightness: -8%);  }
+  &--warning  { background: rgba($amber, 0.12);  color: color.adjust($amber, $lightness: -12%); }
+  &--danger   { background: rgba($red, 0.1);     color: $red;                }
+  &--info     { background: rgba($blue, 0.1);    color: $blue;               }
+  &--primary  { background: rgba($purple, 0.1);  color: $purple;             }
+  &--secondary{ background: #f3f4f6;             color: $text-muted;         }
 }
 
-// ── ESTADOS ──────────────────────────────────
+// States
 .state-box {
-  @include flex-center;
-  flex-direction: column; gap: 14px;
-  padding: 60px 20px; text-align: center;
-  background: $bg-card;
-  border: 1px solid $border-color;
-  border-radius: $radius-lg;
-  color: $text-muted;
+  display: flex; flex-direction: column; align-items: center;
+  gap: 14px; padding: 70px 20px; text-align: center;
+  background: $bg-card; border: 1px solid $border-color;
+  border-radius: 14px; color: $text-muted;
 
-  svg { opacity: 0.25; }
-  h3 { font-size: 17px; font-weight: 700; color: $text-color; margin: 0; }
-  p  { font-size: 13px; margin: 0; }
-
-  &--error svg { opacity: 0.4; color: $danger-color; }
+  svg { opacity: 0.2; }
+  h3 { font-size: 1.1rem; font-weight: 700; color: $text-color; margin: 0; }
+  p  { font-size: 0.85rem; margin: 0; }
+  &--error svg { opacity: 0.35; color: $danger-color; }
 }
+
+.btn { padding: 9px 22px; border-radius: 8px; font-size: 0.85rem; font-weight: 700; text-decoration: none; }
+.btn-primary { background: $primary-color; color: white; }
 
 .spinner {
-  width: 34px; height: 34px;
-  border: 3px solid $border-color;
-  border-top-color: $primary-color;
-  border-radius: 50%;
-  animation: spin 0.7s linear infinite;
+  width: 36px; height: 36px;
+  border: 3px solid $border-color; border-top-color: $primary-color;
+  border-radius: 50%; animation: spin 0.7s linear infinite;
 }
-@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes spin   { to { transform: rotate(360deg); } }
+@keyframes fadeUp { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+@keyframes fadeIn { from { opacity:0; } to { opacity:1; } }

@@ -21,7 +21,7 @@ export class ProductList implements OnInit {
   cargando     = signal(true);
   paginaActual = 0;
   busqueda     = '';
-  eliminandoId = signal<number | null>(null);
+  accionId     = signal<number | null>(null);
 
   ngOnInit() { this.cargar(); }
 
@@ -47,10 +47,19 @@ export class ProductList implements OnInit {
 
   desactivar(p: Producto): void {
     if (!confirm(`¿Desactivar "${p.nombre}"?`)) return;
-    this.eliminandoId.set(p.id);
+    this.accionId.set(p.id);
     this.svc.eliminar(p.id).subscribe({
-      next: () => { this.toastr.success('Producto desactivado'); this.eliminandoId.set(null); this.cargar(this.paginaActual); },
-      error: () => this.eliminandoId.set(null)
+      next: () => { this.toastr.success('Producto desactivado'); this.accionId.set(null); this.cargar(this.paginaActual); },
+      error: () => this.accionId.set(null)
+    });
+  }
+
+  activar(p: Producto): void {
+    if (!confirm(`¿Activar "${p.nombre}"?`)) return;
+    this.accionId.set(p.id);
+    this.svc.activar(p.id).subscribe({
+      next: () => { this.toastr.success('Producto activado'); this.accionId.set(null); this.cargar(this.paginaActual); },
+      error: () => this.accionId.set(null)
     });
   }
 

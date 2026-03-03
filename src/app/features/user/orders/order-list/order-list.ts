@@ -14,18 +14,21 @@ import { Pedido } from '../../../../core/models/pedido.model';
 })
 export class OrderList implements OnInit {
   private pedidoService = inject(PedidoService);
+  private authService   = inject(AuthService);  // ✅ inject() a nivel de campo, no dentro de ngOnInit
 
   pedidos  = signal<Pedido[]>([]);
   cargando = signal(true);
   error    = signal(false);
 
   ngOnInit(): void {
-    const user = inject(AuthService).getCurrentUser();
+    const user = this.authService.getCurrentUser();  // ✅ uso correcto
     if (user) {
       this.pedidoService.obtenerMisPedidos(user.id).subscribe({
         next:  d  => { this.pedidos.set(d); this.cargando.set(false); },
         error: () => { this.error.set(true); this.cargando.set(false); }
       });
+    } else {
+      this.cargando.set(false);
     }
   }
 

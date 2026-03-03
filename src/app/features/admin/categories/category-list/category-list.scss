@@ -1,0 +1,108 @@
+$green:#1DB954; $border:#e5e7eb; $text:#111827; $muted:#6b7280;
+$amber:#f59e0b; $red:#ef4444; $blue:#3b82f6;
+
+.cats { max-width: 1100px; }
+
+.cats-header {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  gap: 16px; margin-bottom: 28px; flex-wrap: wrap;
+}
+.cats-title { font-size:1.5rem; font-weight:800; color:$text; margin:0 0 4px; letter-spacing:-0.5px; }
+.cats-sub   { font-size:0.82rem; color:$muted; margin:0; }
+.cats-summary { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+.sum-chip {
+  font-size:0.78rem; font-weight:600; padding:5px 14px;
+  border-radius:20px; background:#f3f4f6; color:$muted;
+  &--green { background:rgba($green,0.1); color:#15803d; }
+}
+
+.cats-loading {
+  display:flex; flex-direction:column; align-items:center;
+  gap:14px; padding:80px 0; color:$muted; font-size:0.85rem;
+}
+.spin-ring {
+  width:36px; height:36px; border:3px solid #e5e7eb; border-top-color:$green;
+  border-radius:50%; animation:spin 0.7s linear infinite;
+}
+
+// Grid
+.cats-grid { display:flex; flex-direction:column; gap:12px; }
+
+.cat-card {
+  background:white; border:1px solid $border; border-radius:14px;
+  overflow:hidden; animation:fadeUp 0.4s ease both;
+  transition:box-shadow 0.15s;
+  &:hover { box-shadow:0 4px 16px rgba(0,0,0,0.06); }
+}
+
+.cat-card-header {
+  display:flex; align-items:center; gap:16px;
+  padding:16px 20px; cursor:pointer; user-select:none;
+  transition:background 0.15s;
+  &:hover { background:#fafafa; }
+}
+
+.cat-icon { font-size:1.6rem; flex-shrink:0; width:40px; text-align:center; }
+
+.cat-info { flex:1; min-width:0; }
+.cat-name  { display:block; font-size:0.95rem; font-weight:700; color:$text; }
+.cat-count { display:block; font-size:0.75rem; color:$muted; margin-top:1px; }
+
+.cat-stats { display:flex; gap:24px; flex-shrink:0; }
+.stat { text-align:center; }
+.stat-val { display:block; font-size:1.1rem; font-weight:800; color:$text; }
+.stat-lbl { display:block; font-size:0.65rem; text-transform:uppercase; letter-spacing:0.06em; color:$muted; }
+
+.cat-chevron {
+  flex-shrink:0; color:$muted; transition:transform 0.2s ease;
+  &--open { transform:rotate(180deg); color:$green; }
+}
+
+// Products table inside card
+.cat-products {
+  border-top:1px solid $border;
+  animation:fadeIn 0.2s ease both;
+}
+.cat-table {
+  width:100%; border-collapse:collapse; font-size:0.82rem;
+  thead tr { background:#f9fafb; }
+  th {
+    padding:9px 16px; font-size:0.65rem; font-weight:700;
+    text-transform:uppercase; letter-spacing:0.07em; color:$muted; text-align:left;
+  }
+  tbody tr {
+    border-top:1px solid $border; animation:fadeIn 0.2s ease both;
+    transition:background 0.12s;
+    &:hover { background:#fafafa; }
+  }
+  td { padding:11px 16px; color:$text; vertical-align:middle; }
+}
+
+.p-name  { font-weight:600; font-size:0.82rem; }
+.p-cat   { display:inline-block; font-size:0.65rem; color:$muted; margin-left:6px; background:#f3f4f6; padding:1px 6px; border-radius:4px; }
+.p-brand { color:$muted; }
+.p-medida{ font-family:monospace; font-size:0.78rem; color:#374151; }
+.p-price { font-weight:700; white-space:nowrap; }
+
+.mini-stock {
+  display:inline-flex; align-items:center; justify-content:center;
+  width:32px; height:22px; border-radius:6px; font-size:0.75rem; font-weight:800;
+  &--ok  { background:rgba($green,0.1); color:#15803d; }
+  &--low { background:rgba($amber,0.12); color:#b45309; }
+  &--out { background:rgba($red,0.1); color:$red; }
+}
+.mini-dot {
+  font-size:0.72rem; font-weight:600;
+  &--on  { color:#15803d; } &--off { color:$muted; }
+}
+.p-edit {
+  font-size:0.72rem; font-weight:600; color:$blue;
+  text-decoration:none; padding:3px 9px;
+  border:1px solid rgba($blue,0.25); border-radius:6px;
+  transition:all 0.12s;
+  &:hover { background:rgba($blue,0.07); }
+}
+
+@keyframes spin   { to { transform:rotate(360deg); } }
+@keyframes fadeUp { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+@keyframes fadeIn { from { opacity:0; } to { opacity:1; } }

@@ -14,10 +14,10 @@ import { UsuarioService } from '../../../core/services/usuario.service';
   styleUrl: './profile.scss'
 })
 export class Profile implements OnInit {
-  private auth    = inject(AuthService);
-  private svc     = inject(UsuarioService);
-  private fb      = inject(FormBuilder);
-  private toastr  = inject(ToastrService);
+  private auth   = inject(AuthService);
+  private svc    = inject(UsuarioService);
+  private fb     = inject(FormBuilder);
+  private toastr = inject(ToastrService);
 
   usuario   = this.auth.currentUser$;
   guardando = signal(false);
@@ -32,17 +32,14 @@ export class Profile implements OnInit {
   });
 
   ngOnInit(): void {
-    // Carga datos reales del backend
-    const user = this.auth.getCurrentUser();
-    if (user) {
-      this.svc.obtenerPorId(user.id).subscribe({
-        next: (u) => this.form.patchValue(u),
-        error: () => {
-          // Fallback a datos del token si el backend no responde
-          this.form.patchValue({ nombre: user.nombre, email: user.email });
-        }
-      });
-    }
+    // ✅ Usa /perfil en vez de /{id} — no requiere ADMIN
+    this.svc.obtenerPerfil().subscribe({
+      next: (u) => this.form.patchValue(u),
+      error: () => {
+        const user = this.auth.getCurrentUser();
+        if (user) this.form.patchValue({ nombreCompleto: user.nombre });
+      }
+    });
   }
 
   get f() { return this.form.controls; }
@@ -52,20 +49,18 @@ export class Profile implements OnInit {
   guardar(): void {
     if (this.form.invalid) { this.form.markAllAsTouched(); return; }
     this.guardando.set(true);
-    const user = this.auth.getCurrentUser();
-    if (user) {
-      this.svc.actualizar(user.id, this.form.value).subscribe({
-        next: () => {
-          this.guardando.set(false);
-          this.editando.set(false);
-          this.toastr.success('Perfil actualizado correctamente', '¡Listo!');
-        },
-        error: () => {
-          this.guardando.set(false);
-          this.toastr.error('No se pudo actualizar el perfil', 'Error');
-        }
-      });
-    }
+    // ✅ Usa actualizarPerfil() en vez de actualizar(id)
+    this.svc.actualizarPerfil(this.form.value).subscribe({
+      next: () => {
+        this.guardando.set(false);
+        this.editando.set(false);
+        this.toastr.success('Perfil actualizado correctamente', '¡Listo!');
+      },
+      error: () => {
+        this.guardando.set(false);
+        this.toastr.error('No se pudo actualizar el perfil', 'Error');
+      }
+    });
   }
 
   cancelar(): void {

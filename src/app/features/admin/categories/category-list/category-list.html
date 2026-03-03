@@ -1,1 +1,98 @@
-<p>category-list works!</p>
+<div class="cats">
+
+  <div class="cats-header">
+    <div>
+      <h1 class="cats-title">Categorías</h1>
+      <p class="cats-sub">Productos agrupados por tipo de vehículo</p>
+    </div>
+    <div class="cats-summary">
+      <span class="sum-chip">{{ grupos().length }} categorías</span>
+      <span class="sum-chip sum-chip--green">{{ productos().length }} productos</span>
+    </div>
+  </div>
+
+  @if (cargando()) {
+    <div class="cats-loading">
+      <div class="spin-ring"></div>
+      <span>Cargando categorías...</span>
+    </div>
+  } @else {
+
+    <div class="cats-grid">
+      @for (g of grupos(); track g.tipo; let i = $index) {
+        <div class="cat-card" [style.animation-delay]="(i * 60) + 'ms'">
+
+          <!-- Card header -->
+          <div class="cat-card-header" (click)="toggle(g.tipo)">
+            <div class="cat-icon">{{ getIcon(g.tipo) }}</div>
+            <div class="cat-info">
+              <span class="cat-name">{{ g.tipo }}</span>
+              <span class="cat-count">{{ g.productos.length }} productos</span>
+            </div>
+            <div class="cat-stats">
+              <div class="stat">
+                <span class="stat-val">{{ g.activos }}</span>
+                <span class="stat-lbl">Activos</span>
+              </div>
+              <div class="stat">
+                <span class="stat-val">{{ g.totalStock }}</span>
+                <span class="stat-lbl">Stock</span>
+              </div>
+            </div>
+            <div class="cat-chevron" [class.cat-chevron--open]="expandido() === g.tipo">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+          </div>
+
+          <!-- Products list (collapsible) -->
+          @if (expandido() === g.tipo) {
+            <div class="cat-products">
+              <table class="cat-table">
+                <thead>
+                  <tr>
+                    <th>Producto</th>
+                    <th>Marca</th>
+                    <th>Medida</th>
+                    <th>Precio</th>
+                    <th>Stock</th>
+                    <th>Estado</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (p of g.productos; track p.id; let j = $index) {
+                    <tr [style.animation-delay]="(j * 25) + 'ms'">
+                      <td>
+                        <span class="p-name">{{ p.nombre }}</span>
+                        @if (p.categoria) { <span class="p-cat">{{ p.categoria }}</span> }
+                      </td>
+                      <td class="p-brand">{{ p.marca }}</td>
+                      <td class="p-medida">{{ p.medida ?? '—' }}</td>
+                      <td class="p-price">S/ {{ p.precio | number:'1.2-2' }}</td>
+                      <td>
+                        <span class="mini-stock"
+                          [class.mini-stock--ok]="p.stock > 5"
+                          [class.mini-stock--low]="p.stock > 0 && p.stock <= 5"
+                          [class.mini-stock--out]="p.stock === 0">{{ p.stock }}</span>
+                      </td>
+                      <td>
+                        <span class="mini-dot" [class.mini-dot--on]="p.disponible" [class.mini-dot--off]="!p.disponible">
+                          {{ p.disponible ? 'Activo' : 'Inactivo' }}
+                        </span>
+                      </td>
+                      <td>
+                        <a [routerLink]="['/admin/productos/editar', p.id]" class="p-edit">Editar</a>
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          }
+
+        </div>
+      }
+    </div>
+
+  }
+</div>

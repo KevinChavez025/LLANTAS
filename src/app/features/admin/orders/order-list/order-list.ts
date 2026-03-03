@@ -42,6 +42,14 @@ export class AdminOrderList implements OnInit {
     });
   }
 
+  pillClass(e: string): string {
+    return ({
+      PENDIENTE: 'spill--amber', CONFIRMADO: 'spill--blue',
+      EN_PREPARACION: 'spill--blue', ENVIADO: 'spill--purple',
+      ENTREGADO: 'spill--green', CANCELADO: 'spill--red'
+    } as any)[e] ?? 'spill--gray';
+  }
+
   badge(e: string): string {
     return ({PENDIENTE:'bg-warning text-dark',CONFIRMADO:'bg-info',EN_PREPARACION:'bg-info',
               ENVIADO:'bg-primary',ENTREGADO:'bg-success',CANCELADO:'bg-danger'} as any)[e] ?? 'bg-secondary';

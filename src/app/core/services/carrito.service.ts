@@ -7,10 +7,6 @@ import { Producto } from '../models/producto.model';
 import { AuthService } from './auth.service';
 import { environment } from '../../../environments/environment';
 
-/**
- * Respuesta del backend para el carrito:
- * { items: CarritoItem[], total: number, cantidadItems: number }
- */
 interface BackendCarritoResponse {
   items: CarritoItem[];
   total: number;
@@ -63,9 +59,8 @@ export class CarritoService {
 
   /**
    * Agrega un producto al carrito.
-   * - Si hay usuario autenticado → llama al backend (POST /api/carrito/agregar/usuario/{id})
-   * - Si es invitado → llama al backend (POST /api/carrito/agregar?sessionId=...)
-   * En ambos casos actualiza el estado local para UI reactiva.
+   * Espera la respuesta del backend para usar el ID real del item,
+   * evitando que eliminar/actualizar fallen con 404.
    */
   agregarProducto(p: Producto, cantidad = 1): void {
     const usuario = this.auth.getCurrentUser();
@@ -73,41 +68,54 @@ export class CarritoService {
 
     if (usuario) {
       this.http.post<CarritoItem>(`${this.base}/agregar/usuario/${usuario.id}`, null, { params })
-        .subscribe({ next: () => this.agregarLocal(p, cantidad) });
+        .subscribe({
+          next: (item) => this.agregarLocal(p, cantidad, item.id),  // ✅ usa id del backend
+          error: (err) => console.error('Error al agregar al carrito:', err)
+        });
     } else {
       const paramsInvitado = params.set('sessionId', this.getSessionId());
       this.http.post<CarritoItem>(`${this.base}/agregar`, null, { params: paramsInvitado })
-        .subscribe({ next: () => this.agregarLocal(p, cantidad) });
+        .subscribe({
+          next: (item) => this.agregarLocal(p, cantidad, item.id),  // ✅ usa id del backend
+          error: (err) => console.error('Error al agregar al carrito:', err)
+        });
     }
   }
 
-  /** Agrega localmente para reflejar en UI sin esperar round-trip */
-  private agregarLocal(p: Producto, cantidad: number): void {
+  /** Agrega localmente con el id real del backend para que eliminar/actualizar funcionen */
+  private agregarLocal(p: Producto, cantidad: number, backendId: number): void {
     const items = [...this.subject.value.items];
     const idx   = items.findIndex(i => i.producto.id === p.id);
     if (idx >= 0) {
-      items[idx] = { ...items[idx], cantidad: Math.min(items[idx].cantidad + cantidad, p.stock) };
+      // Actualizar cantidad y usar siempre el id del backend
+      items[idx] = {
+        ...items[idx],
+        id: backendId,
+        cantidad: Math.min(items[idx].cantidad + cantidad, p.stock),
+        subtotal: items[idx].precioUnitario * Math.min(items[idx].cantidad + cantidad, p.stock)
+      };
     } else {
       const cant = Math.min(cantidad, p.stock);
-      items.push({ id: Date.now(), producto: p, cantidad: cant,
-                   precioUnitario: p.precio, subtotal: p.precio * cant,
-                   fechaAgregado: new Date().toISOString() });
+      items.push({
+        id: backendId,           // ✅ id real del backend, no Date.now()
+        producto: p,
+        cantidad: cant,
+        precioUnitario: p.precio,
+        subtotal: p.precio * cant,
+        fechaAgregado: new Date().toISOString()
+      });
     }
     this.save(this.calc(items));
   }
 
-  /**
-   * Actualiza cantidad de un item.
-   * Si itemId es un id del backend (número grande real) → llama API.
-   * También actualiza el estado local.
-   */
   actualizarCantidad(id: number, cantidad: number): void {
     if (cantidad < 1) { this.eliminarItem(id); return; }
-    // Actualizar en el backend si existe en BD (ids del backend suelen ser < Date.now())
     this.http.put<CarritoItem>(`${this.base}/item/${id}`, null, {
       params: new HttpParams().set('cantidad', cantidad)
-    }).subscribe({ error: () => {} }); // silenciar error si id es local
-    this.save(this.calc(this.subject.value.items.map(i => i.id === id ? { ...i, cantidad } : i)));
+    }).subscribe({ error: () => {} });
+    this.save(this.calc(this.subject.value.items.map(i =>
+      i.id === id ? { ...i, cantidad, subtotal: i.precioUnitario * cantidad } : i
+    )));
   }
 
   eliminarItem(id: number): void {

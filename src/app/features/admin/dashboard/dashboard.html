@@ -1,56 +1,161 @@
-<div class="container-fluid py-4">
-  <h2 class="mb-4">Dashboard</h2>
+<div class="dash">
+
+  <!-- Header -->
+  <div class="dash-header">
+    <div>
+      <h1 class="dash-title">Dashboard</h1>
+      <p class="dash-subtitle">Resumen general de tu tienda</p>
+    </div>
+    <div class="dash-date">{{ hoy | date:'EEEE d \'de\' MMMM, yyyy' : '' : 'es' }}</div>
+  </div>
+
   @if (cargando()) {
-    <div class="text-center py-5"><div class="spinner-border text-success"></div></div>
+    <div class="dash-loading">
+      <div class="loading-ring"></div>
+      <span>Cargando datos...</span>
+    </div>
   } @else {
-    <div class="row g-4 mb-4">
-      <div class="col-sm-4">
-        <div class="card border-0 shadow-sm h-100">
-          <div class="card-body d-flex align-items-center gap-3">
-            <div class="bg-success bg-opacity-10 rounded p-3 fs-2">📦</div>
-            <div><div class="text-muted small">Total pedidos</div><div class="fw-bold fs-3">{{ totalPedidos() }}</div></div>
-          </div>
+
+    <!-- KPI Cards -->
+    <div class="kpi-grid">
+
+      <div class="kpi-card kpi-card--green">
+        <div class="kpi-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10V20a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V10"/><path d="M1 6h22v4H1z"/><path d="M10 16H14"/></svg>
+        </div>
+        <div class="kpi-body">
+          <span class="kpi-label">Total pedidos</span>
+          <span class="kpi-value">{{ totalPedidos() }}</span>
+        </div>
+        <a routerLink="/admin/pedidos" class="kpi-link">Ver →</a>
+      </div>
+
+      <div class="kpi-card kpi-card--amber">
+        <div class="kpi-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        </div>
+        <div class="kpi-body">
+          <span class="kpi-label">Pendientes</span>
+          <span class="kpi-value">{{ pedidosPendientes() }}</span>
+        </div>
+        <a routerLink="/admin/pedidos" class="kpi-link">Gestionar →</a>
+      </div>
+
+      <div class="kpi-card kpi-card--blue">
+        <div class="kpi-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3"/><line x1="12" y1="3" x2="12" y2="9"/><line x1="12" y1="15" x2="12" y2="21"/><line x1="3" y1="12" x2="9" y2="12"/><line x1="15" y1="12" x2="21" y2="12"/></svg>
+        </div>
+        <div class="kpi-body">
+          <span class="kpi-label">Productos</span>
+          <span class="kpi-value">{{ totalProductos() }}</span>
+        </div>
+        <a routerLink="/admin/productos" class="kpi-link">Ver →</a>
+      </div>
+
+      <div class="kpi-card kpi-card--purple">
+        <div class="kpi-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        </div>
+        <div class="kpi-body">
+          <span class="kpi-label">Usuarios</span>
+          <span class="kpi-value">{{ totalUsuarios() }}</span>
+        </div>
+        <a routerLink="/admin/usuarios" class="kpi-link">Ver →</a>
+      </div>
+
+      <div class="kpi-card kpi-card--red">
+        <div class="kpi-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        </div>
+        <div class="kpi-body">
+          <span class="kpi-label">Ingresos totales</span>
+          <span class="kpi-value kpi-value--sm">S/ {{ ingresoTotal() | number:'1.0-0' }}</span>
         </div>
       </div>
-      <div class="col-sm-4">
-        <div class="card border-0 shadow-sm h-100">
-          <div class="card-body d-flex align-items-center gap-3">
-            <div class="bg-warning bg-opacity-10 rounded p-3 fs-2">⏳</div>
-            <div><div class="text-muted small">Pendientes</div><div class="fw-bold fs-3 text-warning">{{ pedidosPendientes() }}</div></div>
-          </div>
+
+      <div class="kpi-card kpi-card--teal">
+        <div class="kpi-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        </div>
+        <div class="kpi-body">
+          <span class="kpi-label">Entregados</span>
+          <span class="kpi-value">{{ pedidosEntregados() }}</span>
         </div>
       </div>
-      <div class="col-sm-4">
-        <div class="card border-0 shadow-sm h-100">
-          <div class="card-body d-flex align-items-center gap-3">
-            <div class="bg-info bg-opacity-10 rounded p-3 fs-2">🔧</div>
-            <div><div class="text-muted small">Productos</div><div class="fw-bold fs-3">{{ totalProductos() }}</div></div>
-          </div>
-        </div>
-      </div>
+
     </div>
 
-    <div class="card">
-      <div class="card-header d-flex justify-content-between align-items-center">
-        <strong>Pedidos recientes</strong>
-        <a routerLink="/admin/pedidos" class="btn btn-sm btn-outline-success">Ver todos</a>
+    <!-- Recent Orders -->
+    <div class="dash-section">
+      <div class="dash-section-header">
+        <h2 class="dash-section-title">Pedidos recientes</h2>
+        <a routerLink="/admin/pedidos" class="dash-section-link">Ver todos →</a>
       </div>
-      <div class="table-responsive">
-        <table class="table mb-0 align-middle">
-          <thead class="table-light"><tr><th>N°</th><th>Cliente</th><th>Total</th><th>Estado</th><th></th></tr></thead>
+
+      <div class="recent-table-wrap">
+        <table class="recent-table">
+          <thead>
+            <tr>
+              <th>N° Pedido</th>
+              <th>Cliente</th>
+              <th>Total</th>
+              <th>Estado</th>
+              <th></th>
+            </tr>
+          </thead>
           <tbody>
-            @for (p of recientes(); track p.id) {
-              <tr>
-                <td>{{ p.numeroPedido }}</td>
-                <td>{{ p.nombreInvitado ?? p.emailInvitado }}</td>
-                <td>S/ {{ p.total | number:'1.2-2' }}</td>
-                <td><span class="badge" [class]="estadoBadge(p.estado)">{{ ESTADO_LABEL[p.estado] }}</span></td>
-                <td><a [routerLink]="['/admin/pedidos', p.id]" class="btn btn-sm btn-outline-secondary">Ver</a></td>
+            @for (p of recientes(); track p.id; let i = $index) {
+              <tr [style.animation-delay]="(i * 60) + 'ms'">
+                <td class="td-num">{{ p.numeroPedido }}</td>
+                <td class="td-client">{{ p.nombreCliente ?? p.nombreInvitado ?? p.emailCliente ?? p.emailInvitado ?? ('Usuario #' + p.usuarioId) }}</td>
+                <td class="td-total">S/ {{ p.total | number:'1.2-2' }}</td>
+                <td><span class="estado-pill" [ngClass]="estadoClass(p.estado)">{{ ESTADO_LABEL[p.estado] }}</span></td>
+                <td><a [routerLink]="['/admin/pedidos', p.id]" class="btn-view">Ver</a></td>
               </tr>
             }
           </tbody>
         </table>
       </div>
     </div>
+
+    <!-- Recent Payments -->
+    <div class="dash-section" style="margin-top: 28px;">
+      <div class="dash-section-header">
+        <h2 class="dash-section-title">Últimos ingresos</h2>
+        <span class="dash-section-badge">S/ {{ ingresoTotal() | number:'1.2-2' }} total</span>
+      </div>
+
+      <div class="payments-grid">
+        @for (p of recientes(); track p.id; let i = $index) {
+          <div class="payment-card" [style.animation-delay]="(i * 50) + 'ms'">
+            <div class="payment-left">
+              <div class="payment-icon" [ngClass]="pagoIconClass(p.metodoPago)">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  @if (p.metodoPago === 'YAPE' || p.metodoPago === 'PLIN') {
+                    <rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/>
+                  } @else if (p.metodoPago === 'TRANSFERENCIA') {
+                    <polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/>
+                  } @else {
+                    <rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/>
+                  }
+                </svg>
+              </div>
+              <div>
+                <div class="payment-num">{{ p.numeroPedido }}</div>
+                <div class="payment-client">{{ p.nombreCliente ?? p.nombreInvitado ?? p.emailCliente ?? ('Usuario #' + p.usuarioId) }}</div>
+              </div>
+            </div>
+            <div class="payment-right">
+              <div class="payment-amount">S/ {{ p.total | number:'1.2-2' }}</div>
+              <div class="payment-meta">
+                <span class="payment-method">{{ METODO_LABEL[p.metodoPago!] ?? p.metodoPago }}</span>
+                <span class="payment-date">{{ p.fechaCreacion | date:'dd/MM' }}</span>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+
   }
 </div>

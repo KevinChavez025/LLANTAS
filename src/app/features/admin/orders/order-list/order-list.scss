@@ -1,0 +1,106 @@
+@use 'sass:color';
+$green: #1DB954; $amber: #f59e0b; $blue: #3b82f6;
+$purple: #8b5cf6; $red: #ef4444;
+$border: #e5e7eb; $text: #111827; $muted: #6b7280;
+
+.aorders { max-width: 1200px; }
+
+.aorders-header {
+  margin-bottom: 24px;
+}
+.aorders-title {
+  font-size: 1.5rem; font-weight: 800; color: $text;
+  margin: 0 0 4px; letter-spacing: -0.5px;
+}
+.aorders-sub { font-size: 0.82rem; color: $muted; margin: 0; }
+
+.aorders-loading {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 14px; padding: 80px 0; color: $muted; font-size: 0.85rem;
+}
+.spin-ring {
+  width: 36px; height: 36px;
+  border: 3px solid #e5e7eb; border-top-color: $green;
+  border-radius: 50%; animation: spin 0.7s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.aorders-table-wrap {
+  background: white; border: 1px solid $border;
+  border-radius: 14px; overflow: hidden; overflow-x: auto;
+  animation: fadeUp 0.35s ease both;
+}
+
+.aorders-table {
+  width: 100%; border-collapse: collapse; font-size: 0.85rem;
+
+  thead tr { background: #f9fafb; border-bottom: 1px solid $border; }
+  th {
+    padding: 12px 16px; font-size: 0.7rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.07em;
+    color: $muted; text-align: left; white-space: nowrap;
+  }
+
+  tbody tr {
+    border-bottom: 1px solid $border;
+    animation: fadeIn 0.3s ease both;
+    transition: background 0.15s;
+    &:last-child { border-bottom: none; }
+    &:hover { background: #fafafa; }
+  }
+  td { padding: 13px 16px; color: $text; vertical-align: middle; }
+}
+
+.order-num {
+  font-family: 'Courier New', monospace; font-weight: 700;
+  font-size: 0.78rem; color: #374151;
+}
+.td-date  { color: $muted; white-space: nowrap; font-size: 0.8rem; }
+.td-client { color: $muted; max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.td-total  { font-weight: 800; white-space: nowrap; }
+
+.estado-select {
+  font-size: 0.78rem; padding: 5px 10px; border: 1px solid $border;
+  border-radius: 8px; background: #f9fafb; color: $text;
+  cursor: pointer; outline: none; transition: border-color 0.15s;
+  &:focus { border-color: $green; background: white; }
+}
+
+.btn-detail {
+  font-size: 0.75rem; font-weight: 700; color: $green;
+  text-decoration: none; padding: 5px 12px;
+  border: 1px solid rgba($green, 0.3); border-radius: 8px;
+  transition: all 0.15s; white-space: nowrap;
+  &:hover { background: $green; color: white; border-color: $green; }
+}
+
+// Pills
+.spill {
+  display: inline-block; font-size: 0.68rem; font-weight: 700;
+  letter-spacing: 0.05em; text-transform: uppercase;
+  padding: 3px 10px; border-radius: 20px; white-space: nowrap;
+  &--green  { background: rgba($green, 0.1);  color: color.adjust($green, $lightness: -8%);  }
+  &--amber  { background: rgba($amber, 0.12); color: color.adjust($amber, $lightness: -12%); }
+  &--blue   { background: rgba($blue, 0.1);   color: color.adjust($blue, $lightness: -8%);   }
+  &--purple { background: rgba($purple, 0.1); color: $purple;             }
+  &--red    { background: rgba($red, 0.1);    color: $red;                }
+  &--gray   { background: #f3f4f6;            color: $muted;              }
+}
+
+// Pagination
+.pagination {
+  display: flex; align-items: center; gap: 6px;
+  margin-top: 20px; justify-content: center;
+}
+.pag-btn {
+  width: 34px; height: 34px; border: 1px solid $border;
+  background: white; border-radius: 8px; font-size: 0.82rem;
+  font-weight: 600; color: $muted; cursor: pointer;
+  transition: all 0.15s; display: flex; align-items: center; justify-content: center;
+  &:hover:not(:disabled) { border-color: $green; color: $green; }
+  &--active { background: $green; color: white; border-color: $green; }
+  &:disabled { opacity: 0.4; cursor: default; }
+}
+
+@keyframes fadeUp { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+@keyframes fadeIn { from { opacity:0; } to { opacity:1; } }

@@ -53,8 +53,11 @@ export interface Pedido {
 
   // Cliente: registrado o invitado (la BD exige uno de los dos)
   usuario?: Pick<Usuario, 'id' | 'username' | 'email' | 'nombreCompleto'>;
-  nombreInvitado?: string;     // alias de nombreCliente en el backend
-  emailInvitado?: string;      // alias de emailCliente en el backend
+  usuarioId?: number;              // campo directo del backend (PedidoResponse)
+  nombreInvitado?: string;         // alias de nombreCliente en el backend
+  emailInvitado?: string;          // alias de emailCliente en el backend
+  nombreCliente?: string;          // campo real del backend
+  emailCliente?: string;           // campo real del backend
   telefonoInvitado?: string;   // alias de telefonoCliente en el backend
 
   // El backend devuelve detalles (no items)

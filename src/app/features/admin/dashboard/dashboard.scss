@@ -1,0 +1,368 @@
+@use 'sass:color';
+// ── Tokens ──────────────────────────────────────────────────────
+$green:  #1DB954;
+$amber:  #f59e0b;
+$blue:   #3b82f6;
+$purple: #8b5cf6;
+$red:    #ef4444;
+$teal:   #14b8a6;
+
+$border: #e5e7eb;
+$text:   #111827;
+$muted:  #6b7280;
+$bg:     #f6f8fa;
+
+// ── Layout ──────────────────────────────────────────────────────
+.dash {
+  max-width: 1200px;
+}
+
+.dash-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 28px;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.dash-title {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: $text;
+  margin: 0 0 4px;
+  letter-spacing: -0.5px;
+}
+
+.dash-subtitle {
+  font-size: 0.85rem;
+  color: $muted;
+  margin: 0;
+}
+
+.dash-date {
+  font-size: 0.8rem;
+  color: $muted;
+  background: white;
+  border: 1px solid $border;
+  padding: 6px 14px;
+  border-radius: 20px;
+  white-space: nowrap;
+  text-transform: capitalize;
+}
+
+// ── Loading ─────────────────────────────────────────────────────
+.dash-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  padding: 80px 0;
+  color: $muted;
+  font-size: 0.85rem;
+}
+
+.loading-ring {
+  width: 38px; height: 38px;
+  border: 3px solid #e5e7eb;
+  border-top-color: $green;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+// ── KPI Grid ────────────────────────────────────────────────────
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.kpi-card {
+  background: white;
+  border: 1px solid $border;
+  border-radius: 14px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+  animation: fadeUp 0.4s ease both;
+
+  &:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+  }
+
+  // Accent bar top
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    border-radius: 14px 14px 0 0;
+  }
+
+  &--green::before  { background: $green; }
+  &--amber::before  { background: $amber; }
+  &--blue::before   { background: $blue; }
+  &--purple::before { background: $purple; }
+  &--red::before    { background: $red; }
+  &--teal::before   { background: $teal; }
+
+  // Stagger animations
+  @for $i from 1 through 6 {
+    &:nth-child(#{$i}) { animation-delay: #{($i - 1) * 60}ms; }
+  }
+}
+
+.kpi-icon {
+  width: 42px; height: 42px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  .kpi-card--green  & { background: rgba($green, 0.1);  color: $green;  }
+  .kpi-card--amber  & { background: rgba($amber, 0.1);  color: $amber;  }
+  .kpi-card--blue   & { background: rgba($blue, 0.1);   color: $blue;   }
+  .kpi-card--purple & { background: rgba($purple, 0.1); color: $purple; }
+  .kpi-card--red    & { background: rgba($red, 0.1);    color: $red;    }
+  .kpi-card--teal   & { background: rgba($teal, 0.1);   color: $teal;   }
+}
+
+.kpi-body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+}
+
+.kpi-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: $muted;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.kpi-value {
+  font-size: 2rem;
+  font-weight: 800;
+  color: $text;
+  letter-spacing: -1px;
+  line-height: 1;
+
+  &--sm { font-size: 1.4rem; letter-spacing: -0.5px; }
+}
+
+.kpi-link {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-decoration: none;
+  color: $muted;
+  transition: color 0.15s;
+
+  .kpi-card--green  &:hover { color: $green;  }
+  .kpi-card--amber  &:hover { color: $amber;  }
+  .kpi-card--blue   &:hover { color: $blue;   }
+  .kpi-card--purple &:hover { color: $purple; }
+}
+
+// ── Section ─────────────────────────────────────────────────────
+.dash-section {
+  animation: fadeUp 0.4s ease 0.35s both;
+}
+
+.dash-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.dash-section-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: $text;
+  margin: 0;
+}
+
+.dash-section-link {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: $green;
+  text-decoration: none;
+  &:hover { text-decoration: underline; }
+}
+
+// ── Recent table ────────────────────────────────────────────────
+.recent-table-wrap {
+  background: white;
+  border: 1px solid $border;
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.recent-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+
+  thead tr {
+    background: #f9fafb;
+    border-bottom: 1px solid $border;
+  }
+
+  th {
+    padding: 11px 16px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: $muted;
+    text-align: left;
+    white-space: nowrap;
+  }
+
+  tbody tr {
+    border-bottom: 1px solid $border;
+    animation: fadeIn 0.3s ease both;
+    transition: background 0.15s;
+
+    &:last-child { border-bottom: none; }
+    &:hover { background: #f9fafb; }
+  }
+
+  td {
+    padding: 13px 16px;
+    color: $text;
+    vertical-align: middle;
+  }
+}
+
+.td-num   { font-weight: 700; font-size: 0.78rem; color: #374151; font-family: monospace; }
+.td-client { color: $muted; max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.td-total  { font-weight: 700; white-space: nowrap; }
+
+.btn-view {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: $green;
+  text-decoration: none;
+  padding: 4px 12px;
+  border: 1px solid rgba($green, 0.35);
+  border-radius: 6px;
+  transition: all 0.15s;
+  white-space: nowrap;
+
+  &:hover {
+    background: $green;
+    color: white;
+    border-color: $green;
+  }
+}
+
+// ── Estado pills ────────────────────────────────────────────────
+.estado-pill {
+  display: inline-block;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 3px 10px;
+  border-radius: 20px;
+  white-space: nowrap;
+
+  &.pill--green  { background: rgba($green, 0.1);  color: color.adjust($green, $lightness: -10%); }
+  &.pill--amber  { background: rgba($amber, 0.12); color: color.adjust($amber, $lightness: -15%); }
+  &.pill--blue   { background: rgba($blue, 0.1);   color: color.adjust($blue, $lightness: -10%);  }
+  &.pill--purple { background: rgba($purple, 0.1); color: $purple;             }
+  &.pill--red    { background: rgba($red, 0.1);    color: $red;                }
+  &.pill--gray   { background: #f3f4f6;            color: $muted;              }
+}
+
+// ── Animations ──────────────────────────────────────────────────
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0);    }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+// ── Payments ─────────────────────────────────────────────────────
+.dash-section-badge {
+  font-size: 0.78rem; font-weight: 700;
+  background: rgba($green, 0.1); color: #15803d;
+  padding: 4px 12px; border-radius: 20px;
+}
+
+.payments-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 12px;
+}
+
+.payment-card {
+  background: white; border: 1px solid $border;
+  border-radius: 12px; padding: 14px 18px;
+  display: flex; align-items: center;
+  justify-content: space-between; gap: 12px;
+  animation: fadeUp 0.35s ease both;
+  transition: box-shadow 0.15s, transform 0.15s;
+
+  &:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.07); transform: translateY(-1px); }
+
+  @for $i from 1 through 10 {
+    &:nth-child(#{$i}) { animation-delay: #{($i - 1) * 50}ms; }
+  }
+}
+
+.payment-left {
+  display: flex; align-items: center; gap: 12px; min-width: 0;
+}
+
+.payment-icon {
+  width: 38px; height: 38px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+
+  &.pago--purple { background: rgba($purple, 0.1); color: $purple; }
+  &.pago--blue   { background: rgba($blue, 0.1);   color: $blue;   }
+  &.pago--teal   { background: rgba($teal, 0.1);   color: $teal;   }
+  &.pago--green  { background: rgba($green, 0.1);  color: #15803d; }
+  &.pago--amber  { background: rgba($amber, 0.1);  color: #b45309; }
+  &.pago--gray   { background: #f3f4f6;            color: $muted;  }
+}
+
+.payment-num {
+  font-size: 0.78rem; font-weight: 700; font-family: monospace;
+  color: #374151; white-space: nowrap;
+}
+.payment-client {
+  font-size: 0.75rem; color: $muted;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 160px;
+}
+
+.payment-right {
+  text-align: right; flex-shrink: 0;
+}
+.payment-amount {
+  font-size: 0.95rem; font-weight: 800; color: $text;
+}
+.payment-meta {
+  display: flex; align-items: center; gap: 8px; justify-content: flex-end;
+  margin-top: 2px;
+}
+.payment-method {
+  font-size: 0.68rem; font-weight: 600; color: $muted;
+}
+.payment-date {
+  font-size: 0.68rem; color: #9ca3af;
+}

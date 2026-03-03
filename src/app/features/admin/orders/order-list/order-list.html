@@ -1,41 +1,63 @@
-<div class="container-fluid py-4">
-  <h2 class="mb-4">Pedidos</h2>
+<div class="aorders">
+
+  <div class="aorders-header">
+    <div>
+      <h1 class="aorders-title">Pedidos</h1>
+      <p class="aorders-sub">{{ pagina()?.totalElements ?? 0 }} pedidos en total</p>
+    </div>
+  </div>
+
   @if (cargando()) {
-    <div class="text-center py-5"><div class="spinner-border text-success"></div></div>
+    <div class="aorders-loading">
+      <div class="spin-ring"></div>
+      <span>Cargando pedidos...</span>
+    </div>
   } @else {
-    <div class="table-responsive">
-      <table class="table table-hover align-middle">
-        <thead class="table-light">
-          <tr><th>N° Pedido</th><th>Fecha</th><th>Cliente</th><th>Total</th><th>Estado</th><th>Cambiar estado</th><th></th></tr>
+    <div class="aorders-table-wrap">
+      <table class="aorders-table">
+        <thead>
+          <tr>
+            <th>N° Pedido</th>
+            <th>Fecha</th>
+            <th>Cliente</th>
+            <th>Total</th>
+            <th>Estado</th>
+            <th>Cambiar estado</th>
+            <th></th>
+          </tr>
         </thead>
         <tbody>
-          @for (p of pagina()!.content; track p.id) {
-            <tr>
-              <td><strong>{{ p.numeroPedido }}</strong></td>
-              <td>{{ p.fechaCreacion | date:'dd/MM/yy HH:mm' }}</td>
-              <td>{{ p.nombreInvitado ?? p.emailInvitado }}</td>
-              <td>S/ {{ p.total | number:'1.2-2' }}</td>
-              <td><span class="badge" [class]="badge(p.estado)">{{ ESTADO_LABEL[p.estado] }}</span></td>
+          @for (p of pagina()!.content; track p.id; let i = $index) {
+            <tr [style.animation-delay]="(i * 40) + 'ms'">
+              <td><span class="order-num">{{ p.numeroPedido }}</span></td>
+              <td class="td-date">{{ p.fechaCreacion | date:'dd/MM/yy HH:mm' }}</td>
+              <td class="td-client">{{ p.nombreInvitado ?? p.emailInvitado ?? 'Usuario #' + p.usuario?.id }}</td>
+              <td class="td-total">S/ {{ p.total | number:'1.2-2' }}</td>
+              <td><span class="spill" [ngClass]="pillClass(p.estado)">{{ ESTADO_LABEL[p.estado] }}</span></td>
               <td>
-                <select class="form-select form-select-sm" style="width:auto"
-                        [value]="p.estado" (change)="cambiarEstado(p, $event)">
-                  @for (e of ESTADOS; track e) { <option [value]="e">{{ ESTADO_LABEL[e] }}</option> }
+                <select class="estado-select" [value]="p.estado" (change)="cambiarEstado(p, $event)">
+                  @for (e of ESTADOS; track e) {
+                    <option [value]="e">{{ ESTADO_LABEL[e] }}</option>
+                  }
                 </select>
               </td>
-              <td><a [routerLink]="['/admin/pedidos', p.id]" class="btn btn-sm btn-outline-secondary">Ver</a></td>
+              <td>
+                <a [routerLink]="['/admin/pedidos', p.id]" class="btn-detail">Ver →</a>
+              </td>
             </tr>
           }
         </tbody>
       </table>
     </div>
+
     @if ((pagina()?.totalPages ?? 0) > 1) {
-      <nav class="mt-3"><ul class="pagination">
-        <li class="page-item" [class.disabled]="pagina()?.first"><button class="page-link" (click)="cargar(paginaActual-1)">‹</button></li>
+      <div class="pagination">
+        <button class="pag-btn" [disabled]="pagina()?.first" (click)="cargar(paginaActual - 1)">‹</button>
         @for (p of paginas; track p) {
-          <li class="page-item" [class.active]="p===paginaActual"><button class="page-link" (click)="cargar(p)">{{p+1}}</button></li>
+          <button class="pag-btn" [class.pag-btn--active]="p === paginaActual" (click)="cargar(p)">{{ p + 1 }}</button>
         }
-        <li class="page-item" [class.disabled]="pagina()?.last"><button class="page-link" (click)="cargar(paginaActual+1)">›</button></li>
-      </ul></nav>
+        <button class="pag-btn" [disabled]="pagina()?.last" (click)="cargar(paginaActual + 1)">›</button>
+      </div>
     }
   }
 </div>

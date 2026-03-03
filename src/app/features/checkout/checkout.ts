@@ -7,6 +7,7 @@ import { CarritoService } from '../../core/services/carrito.service';
 import { PedidoService } from '../../core/services/pedido.service';
 import { AuthService } from '../../core/services/auth.service';
 import { MetodoPago, CrearPedidoRequest } from '../../core/models/pedido.model';
+import { UBICACIONES_PERU, Departamento, Provincia } from '../../core/data/ubicaciones-peru';
 
 @Component({
   selector: 'app-checkout',
@@ -32,8 +33,12 @@ export class Checkout {
   enviando = signal(false);
   paso     = signal<1 | 2>(1);
 
-  // Detectar si el usuario está logueado
   esUsuarioLogueado = !!this.auth.getCurrentUser();
+
+  // ── Ubicaciones Perú ──
+  departamentos: Departamento[] = UBICACIONES_PERU;
+  provincias: Provincia[] = [];
+  distritos: string[] = [];
 
   metodosPago: { valor: MetodoPago; label: string; icono: string }[] = [
     { valor: 'EFECTIVO',        label: 'Efectivo',               icono: '💵' },
@@ -46,13 +51,12 @@ export class Checkout {
 
   form: FormGroup = this.fb.group({
     nombreCompleto: ['', [Validators.required, Validators.minLength(3)]],
-    // Email solo requerido para invitados
     email:          ['', this.esUsuarioLogueado ? [Validators.email] : [Validators.required, Validators.email]],
     telefono:       ['', [Validators.required, Validators.pattern(/^[0-9]{9}$/)]],
     direccion:      ['', [Validators.required, Validators.minLength(5)]],
+    departamento:   ['', Validators.required],
+    ciudad:         ['', Validators.required],
     distrito:       ['', Validators.required],
-    ciudad:         ['Lima', Validators.required],
-    departamento:   ['Lima', Validators.required],
     referencia:     [''],
     metodoPago:     ['', Validators.required],
     notas:          [''],
@@ -60,9 +64,23 @@ export class Checkout {
 
   get f() { return this.form.controls; }
 
+  onDepartamentoChange(event: Event): void {
+    const nombre = (event.target as HTMLSelectElement).value;
+    const dep = this.departamentos.find(d => d.nombre === nombre);
+    this.provincias = dep ? dep.provincias : [];
+    this.distritos  = [];
+    this.form.patchValue({ ciudad: '', distrito: '' });
+  }
+
+  onProvinciaChange(event: Event): void {
+    const nombre = (event.target as HTMLSelectElement).value;
+    const prov = this.provincias.find(p => p.nombre === nombre);
+    this.distritos = prov ? prov.distritos : [];
+    this.form.patchValue({ distrito: '' });
+  }
+
   siguientePaso(): void {
-    // Email solo se valida en paso 1 si es invitado
-    const campos = ['nombreCompleto', 'telefono', 'direccion', 'distrito', 'ciudad'];
+    const campos = ['nombreCompleto', 'telefono', 'direccion', 'departamento', 'ciudad', 'distrito'];
     if (!this.esUsuarioLogueado) campos.push('email');
     campos.forEach(c => this.form.get(c)?.markAsTouched());
     if (campos.every(c => this.form.get(c)?.valid)) this.paso.set(2);
@@ -84,9 +102,7 @@ export class Checkout {
       metodoPago:        v.metodoPago,
       notasAdicionales:  v.notas || undefined,
       idempotencyKey:    crypto.randomUUID(),
-      // Usuario autenticado
       ...(usuario && { usuarioId: usuario.id }),
-      // Invitado
       ...(!usuario && {
         nombreCliente:   v.nombreCompleto,
         emailCliente:    v.email,

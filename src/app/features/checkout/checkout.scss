@@ -358,3 +358,34 @@
     white-space: nowrap;
   }
 }
+// ── SELECT CON FLECHA CUSTOM ─────────────────
+.select-wrapper {
+  position: relative;
+
+  select {
+    width: 100%;
+    appearance: none;
+    -webkit-appearance: none;
+    padding-right: 36px !important;
+    cursor: pointer;
+    background: var(--bg-dark, #f9f9f9) !important;
+
+    &:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+    }
+  }
+
+  .select-arrow {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    color: #666;
+  }
+
+  &--disabled {
+    .select-arrow { opacity: 0.4; }
+  }
+}
