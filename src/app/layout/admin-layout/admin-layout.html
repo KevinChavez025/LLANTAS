@@ -16,14 +16,15 @@
         </svg>
       </div>
       <span class="logo-text">Haida<span class="logo-accent">Admin</span></span>
-      <button class="toggle-btn" (click)="toggleSidebar()">
+      <!-- Botón colapsar — visible solo cuando el sidebar está abierto -->
+      <button class="toggle-btn" (click)="toggleSidebar()" title="Colapsar menú">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <polyline [attr.points]="sidebarCollapsed ? '9 18 15 12 9 6' : '15 18 9 12 15 6'"></polyline>
+          <polyline points="15 18 9 12 15 6"></polyline>
         </svg>
       </button>
     </div>
 
-    <!-- Nav section: Principal -->
+    <!-- Nav -->
     <nav class="sidebar-nav">
       <p class="nav-section-label">Principal</p>
       <a routerLink="/admin/dashboard" routerLinkActive="active" class="nav-item">
@@ -88,9 +89,18 @@
   <div class="admin-main">
 
     <header class="topbar">
+      <!-- Botón REABRIR sidebar — solo aparece cuando está colapsado -->
+      <button class="topbar-expand-btn" (click)="toggleSidebar()" title="Abrir menú">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="9 18 15 12 9 6"></polyline>
+        </svg>
+      </button>
+
+      <!-- Botón hamburguesa móvil -->
       <button class="topbar-menu-btn" (click)="toggleSidebar()">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
       </button>
+
       <div class="topbar-right">
         <div class="topbar-avatar">{{ userInitial }}</div>
       </div>

@@ -1,0 +1,402 @@
+@use '../../../styles/variables' as *;
+@use '../../../styles/mixins' as *;
+@use 'sass:color';
+
+.contact-page { background: $bg-dark; min-height: 100vh; }
+
+.container {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 0 24px;
+  @include mobile { padding: 0 16px; }
+}
+
+// ── HERO ────────────────────────────────────
+.contact-hero {
+  position: relative;
+  background: #0d1117;
+  padding: 80px 0 64px;
+  overflow: hidden;
+
+  &__overlay {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 40% 60%, rgba($primary-color, 0.1) 0%, transparent 65%);
+  }
+
+  &__content {
+    position: relative;
+    z-index: 1;
+    max-width: 600px;
+  }
+
+  &__tag {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: $primary-color;
+    background: rgba($primary-color, 0.1);
+    border: 1px solid rgba($primary-color, 0.25);
+    padding: 4px 12px;
+    border-radius: 100px;
+    margin-bottom: 20px;
+  }
+
+  &__title {
+    font-size: clamp(26px, 4vw, 44px);
+    font-weight: 800;
+    color: #fff;
+    line-height: 1.2;
+    margin-bottom: 16px;
+  }
+
+  &__sub {
+    font-size: 15px;
+    color: rgba(255,255,255,0.6);
+    line-height: 1.7;
+  }
+}
+
+// ── BODY ────────────────────────────────────
+.contact-body {
+  padding: 48px 24px 72px;
+}
+
+// ── TARJETAS ────────────────────────────────
+.contact-cards {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 48px;
+
+  @include tablet { grid-template-columns: repeat(2, 1fr); }
+  @include mobile { grid-template-columns: 1fr; }
+}
+
+.contact-card {
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $radius-lg;
+  padding: 24px 20px;
+  transition: all $transition-normal;
+
+  &:hover {
+    border-color: rgba($primary-color, 0.3);
+    box-shadow: $shadow-md;
+    transform: translateY(-3px);
+  }
+
+  &--whatsapp {
+    border-color: rgba(#25D366, 0.3);
+    &:hover { border-color: #25D366; }
+  }
+
+  &__icon {
+    width: 48px;
+    height: 48px;
+    background: rgba($primary-color, 0.1);
+    border-radius: $radius-md;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: $primary-color;
+    margin-bottom: 14px;
+
+    &--wa {
+      background: rgba(#25D366, 0.1);
+      color: #25D366;
+    }
+  }
+
+  &__title {
+    font-size: 13px;
+    font-weight: 700;
+    color: $text-color;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  &__detail {
+    font-size: 15px;
+    font-weight: 600;
+    color: $text-color;
+    margin-bottom: 4px;
+  }
+
+  &__sub {
+    font-size: 12px;
+    color: $text-muted;
+    margin-bottom: 0;
+  }
+
+  &__btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 12px;
+    background: #25D366;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 8px 14px;
+    border-radius: $radius-sm;
+    text-decoration: none;
+    transition: background $transition-fast;
+
+    &:hover { background: color.adjust(#25D366, $lightness: -6%); }
+  }
+}
+
+// ── GRID FORMULARIO ──────────────────────────
+.contact-grid {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 40px;
+  align-items: start;
+
+  @include tablet { grid-template-columns: 1fr; }
+}
+
+// ── FORMULARIO ───────────────────────────────
+.contact-form-wrap {
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $radius-lg;
+  padding: 36px;
+
+  @include mobile { padding: 24px 16px; }
+}
+
+.contact-form {
+  &__title {
+    font-size: 20px;
+    font-weight: 700;
+    color: $text-color;
+    margin-bottom: 6px;
+  }
+
+  &__sub {
+    font-size: 14px;
+    color: $text-muted;
+    margin-bottom: 28px;
+  }
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 16px;
+
+  @include mobile { grid-template-columns: 1fr; }
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 16px;
+
+  &:last-child { margin-bottom: 0; }
+}
+
+.form-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: $text-color;
+}
+
+.form-input {
+  border: 1px solid $border-color;
+  border-radius: $radius-md;
+  padding: 10px 14px;
+  font-size: 14px;
+  color: $text-color;
+  background: $bg-dark;
+  outline: none;
+  transition: border-color $transition-fast, box-shadow $transition-fast;
+  width: 100%;
+
+  &::placeholder { color: $text-muted; }
+
+  &:focus {
+    border-color: $primary-color;
+    box-shadow: 0 0 0 3px rgba($primary-color, 0.1);
+  }
+}
+
+.form-textarea {
+  resize: vertical;
+  min-height: 120px;
+  font-family: inherit;
+}
+
+.btn-submit {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 13px 24px;
+  background: $primary-color;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  border: none;
+  border-radius: $radius-md;
+  cursor: pointer;
+  margin-top: 8px;
+  transition: all $transition-fast;
+
+  &:hover:not(:disabled) {
+    background: color.adjust($primary-color, $lightness: -6%);
+    transform: translateY(-1px);
+  }
+
+  &:disabled { opacity: 0.7; cursor: not-allowed; }
+
+  &__spinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255,255,255,0.35);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+  }
+}
+
+// ── INFO LATERAL ─────────────────────────────
+.contact-info {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+
+  &__block {
+    background: $bg-card;
+    border: 1px solid $border-color;
+    border-radius: $radius-lg;
+    padding: 24px;
+  }
+
+  &__title {
+    font-size: 14px;
+    font-weight: 700;
+    color: $text-color;
+    margin-bottom: 16px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  &__list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    li {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      color: $text-muted;
+      padding-bottom: 10px;
+      border-bottom: 1px solid $border-color;
+
+      &:last-child { border-bottom: none; padding-bottom: 0; }
+
+      strong { color: $text-color; font-weight: 600; }
+    }
+  }
+
+  &__reasons {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    li {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 13px;
+      color: $text-muted;
+
+      svg { color: $primary-color; flex-shrink: 0; }
+    }
+  }
+
+  &__social {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+}
+
+.social-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  background: $bg-dark;
+  border: 1px solid $border-color;
+  border-radius: $radius-md;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 600;
+  color: $text-color;
+  transition: all $transition-fast;
+
+  &:hover {
+    border-color: $primary-color;
+    color: $primary-color;
+    background: rgba($primary-color, 0.04);
+  }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+// ── ALERTAS Y VALIDACIÓN ─────────────────────
+.form-alert {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  border-radius: $radius-md;
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 20px;
+
+  &--success {
+    background: rgba($primary-color, 0.1);
+    border: 1px solid rgba($primary-color, 0.3);
+    color: color.adjust($primary-color, $lightness: -10%);
+    svg { color: $primary-color; flex-shrink: 0; }
+  }
+
+  &--error {
+    background: rgba($danger-color, 0.08);
+    border: 1px solid rgba($danger-color, 0.25);
+    color: $danger-color;
+    svg { flex-shrink: 0; }
+  }
+}
+
+.form-input--error {
+  border-color: $danger-color !important;
+  &:focus { box-shadow: 0 0 0 3px rgba($danger-color, 0.1) !important; }
+}
+
+.form-error {
+  font-size: 12px;
+  color: $danger-color;
+  font-weight: 500;
+  margin-top: 2px;
+}

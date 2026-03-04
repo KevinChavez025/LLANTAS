@@ -1,23 +1,52 @@
-<div class="container-fluid py-4">
-  <h2 class="mb-4">Usuarios</h2>
+<div class="ulist">
+
+  <!-- Header -->
+  <div class="ulist-header">
+    <div>
+      <h1 class="ulist-title">Usuarios</h1>
+      <p class="ulist-sub">Gestiona los usuarios registrados en la plataforma</p>
+    </div>
+  </div>
+
   @if (cargando()) {
-    <div class="text-center py-5"><div class="spinner-border text-success"></div></div>
+    <div class="ulist-loading">
+      <div class="spin-ring"></div>
+      <span>Cargando usuarios...</span>
+    </div>
   } @else {
-    <div class="table-responsive">
-      <table class="table table-hover align-middle">
-        <thead class="table-light"><tr><th>Nombre</th><th>Email</th><th>Rol</th><th>Activo</th><th></th></tr></thead>
+    <div class="ulist-table-wrap">
+      <table class="ulist-table">
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Email</th>
+            <th>Rol</th>
+            <th>Estado</th>
+            <th></th>
+          </tr>
+        </thead>
         <tbody>
           @for (u of usuarios(); track u.id) {
             <tr>
-              <td>{{ u.nombreCompleto }}</td>
-              <td>{{ u.email }}</td>
-              <td>{{ u.roles[0]?.nombre ?? '—' }}</td>
               <td>
-                <span class="badge" [class]="u.activo ? 'bg-success' : 'bg-secondary'">
+                <div class="u-name-wrap">
+                  <div class="u-avatar">{{ u.nombreCompleto.charAt(0).toUpperCase() }}</div>
+                  <span class="u-name">{{ u.nombreCompleto }}</span>
+                </div>
+              </td>
+              <td class="u-email">{{ u.email }}</td>
+              <td>
+                <span class="u-role">{{ u.roles[0]?.nombre ?? '—' }}</span>
+              </td>
+              <td>
+                <span class="u-status" [class.u-status--on]="u.activo" [class.u-status--off]="!u.activo">
+                  <span class="u-status-dot"></span>
                   {{ u.activo ? 'Activo' : 'Inactivo' }}
                 </span>
               </td>
-              <td><a [routerLink]="['/admin/usuarios', u.id]" class="btn btn-sm btn-outline-secondary">Ver</a></td>
+              <td>
+                <a [routerLink]="['/admin/usuarios', u.id]" class="btn-detail">Ver →</a>
+              </td>
             </tr>
           }
         </tbody>

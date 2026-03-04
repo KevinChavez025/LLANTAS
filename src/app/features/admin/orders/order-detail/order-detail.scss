@@ -1,0 +1,148 @@
+@use 'sass:color';
+$green:#1DB954; $amber:#f59e0b; $blue:#3b82f6; $red:#ef4444;
+$border:#e5e7eb; $text:#111827; $muted:#6b7280;
+
+.odetail {
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+// ── Loading / Not found ──────────────────────────────────────────
+.odetail-loading {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 14px; padding: 80px 0; color: $muted; font-size: 0.85rem;
+}
+.spin-ring {
+  width: 36px; height: 36px; border: 3px solid #e5e7eb;
+  border-top-color: $green; border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+.odetail-notfound {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 14px; padding: 80px 0; color: $muted; text-align: center;
+  svg { opacity: 0.3; }
+  p { font-size: 1rem; font-weight: 500; margin: 0; }
+}
+
+// ── Header ───────────────────────────────────────────────────────
+.odetail-header {
+  display: flex; align-items: center; gap: 16px;
+  margin-bottom: 28px; flex-wrap: wrap;
+}
+
+.btn-back {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 0.82rem; font-weight: 600; color: $muted;
+  text-decoration: none; padding: 7px 14px;
+  border: 1px solid $border; border-radius: 8px; background: white;
+  transition: all 0.15s; white-space: nowrap; flex-shrink: 0;
+  &:hover { border-color: #9ca3af; color: $text; }
+}
+
+.odetail-title-wrap { flex: 1; min-width: 0; }
+.odetail-title {
+  font-size: 1.4rem; font-weight: 800; color: $text;
+  margin: 0 0 2px; letter-spacing: -0.5px;
+  font-family: 'Courier New', monospace;
+}
+.odetail-date { font-size: 0.8rem; color: $muted; }
+
+.odetail-state { display: flex; flex-direction: column; gap: 4px; }
+.state-label { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: $muted; }
+.state-select {
+  font-size: 0.82rem; padding: 7px 12px; border: 1px solid $border;
+  border-radius: 9px; background: white; color: $text;
+  cursor: pointer; outline: none; transition: border-color 0.15s;
+  &:focus { border-color: $green; box-shadow: 0 0 0 3px rgba($green, 0.1); }
+}
+
+// ── Grid ─────────────────────────────────────────────────────────
+.odetail-grid {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 20px;
+  align-items: start;
+  @media (max-width: 900px) { grid-template-columns: 1fr; }
+}
+.odetail-left  { display: flex; flex-direction: column; gap: 20px; }
+.odetail-right { display: flex; flex-direction: column; gap: 20px; }
+
+// ── Card ─────────────────────────────────────────────────────────
+.od-card {
+  background: white; border: 1px solid $border;
+  border-radius: 14px; overflow: hidden;
+  animation: fadeUp 0.35s ease both;
+}
+.od-card-header {
+  display: flex; align-items: center; gap: 8px;
+  padding: 14px 20px; font-size: 0.88rem; font-weight: 700;
+  color: $text; border-bottom: 1px solid $border;
+  background: #fafafa;
+  svg { color: $muted; flex-shrink: 0; }
+}
+
+// ── Table ────────────────────────────────────────────────────────
+.od-table-wrap { overflow-x: auto; }
+.od-table {
+  width: 100%; border-collapse: collapse; font-size: 0.84rem;
+  thead tr { background: #f9fafb; }
+  th {
+    padding: 10px 16px; font-size: 0.68rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.07em;
+    color: $muted; text-align: left; white-space: nowrap;
+  }
+  tbody tr {
+    border-top: 1px solid $border; transition: background 0.12s;
+    &:hover { background: #fafafa; }
+  }
+  td { padding: 13px 16px; color: $text; vertical-align: middle; }
+
+  &--sm {
+    th, td { padding: 10px 16px; font-size: 0.8rem; }
+  }
+}
+
+.od-prod-name  { display: block; font-weight: 700; font-size: 0.84rem; }
+.od-prod-brand { display: block; font-size: 0.72rem; color: $muted; margin-top: 1px; }
+.od-medida     { font-family: 'Courier New', monospace; font-size: 0.78rem; color: #374151; }
+.od-qty        { font-weight: 700; }
+.od-date       { color: $muted; white-space: nowrap; }
+.od-by         { color: $muted; }
+
+// ── Summary ──────────────────────────────────────────────────────
+.od-summary { padding: 16px 20px; }
+.od-summary-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 6px 0; font-size: 0.84rem; color: $muted;
+
+  &--total {
+    font-size: 1rem; font-weight: 800; color: $text;
+    padding: 10px 0 6px;
+  }
+}
+.od-summary-divider { height: 1px; background: $border; margin: 8px 0; }
+.od-total { color: $green; font-size: 1.2rem; }
+
+.od-meta { margin-top: 14px; padding-top: 14px; border-top: 1px solid $border; }
+.od-meta-row {
+  display: flex; justify-content: space-between; align-items: center;
+  font-size: 0.8rem; padding: 4px 0; color: $text;
+}
+.od-meta-label { color: $muted; font-weight: 500; }
+
+// ── Client ───────────────────────────────────────────────────────
+.od-client { padding: 16px 20px; }
+.od-client-row {
+  display: flex; justify-content: space-between; gap: 12px;
+  font-size: 0.83rem; padding: 5px 0; color: $text;
+}
+.od-client-divider { height: 1px; background: $border; margin: 10px 0; }
+.od-tag {
+  font-size: 0.68rem; background: rgba($amber, 0.12); color: #b45309;
+  padding: 1px 6px; border-radius: 4px; font-style: normal; font-weight: 600;
+  margin-left: 4px;
+}
+
+@keyframes spin   { to { transform: rotate(360deg); } }
+@keyframes fadeUp { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }

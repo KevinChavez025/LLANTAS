@@ -31,7 +31,7 @@ export class Dashboard implements OnInit {
 
   readonly ESTADO_LABEL = ESTADO_PEDIDO_LABEL;
   readonly METODO_LABEL: Record<string, string> = {
-    EFECTIVO: 'Efectivo', TARJETA_CREDITO: 'Tarjeta crédito',
+    TARJETA_CREDITO: 'Tarjeta crédito',
     TARJETA_DEBITO: 'Tarjeta débito', TRANSFERENCIA: 'Transferencia',
     YAPE: 'Yape', PLIN: 'Plin'
   };
@@ -70,7 +70,7 @@ export class Dashboard implements OnInit {
   pagoIconClass(metodo?: string): string {
     return ({
       YAPE: 'pago--purple', PLIN: 'pago--blue',
-      TRANSFERENCIA: 'pago--teal', EFECTIVO: 'pago--green',
+      TRANSFERENCIA: 'pago--teal',
       TARJETA_CREDITO: 'pago--amber', TARJETA_DEBITO: 'pago--amber'
     } as any)[metodo ?? ''] ?? 'pago--gray';
   }

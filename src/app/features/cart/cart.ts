@@ -1,8 +1,8 @@
-import { Component, inject, computed } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule, AsyncPipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { CarritoService } from '../../core/services/carrito.service';
-import { CarritoItem } from '../../core/models/carrito.model';
+import { Carrito, CarritoItem } from '../../core/models/carrito.model';
 
 @Component({
   selector: 'app-cart',
@@ -14,11 +14,17 @@ import { CarritoItem } from '../../core/models/carrito.model';
 export class Cart {
   private carritoService = inject(CarritoService);
 
+  // ✅ Un único observable — todo el template se actualiza reactivamente
   carrito$ = this.carritoService.carrito$;
-  vacio    = computed(() => this.carritoService.getCarritoActual().items.length === 0);
 
-  igv      = computed(() => Math.round(this.carritoService.getCarritoActual().subtotal * 0.18 * 100) / 100);
-  total    = computed(() => Math.round((this.carritoService.getCarritoActual().subtotal + this.igv()) * 100) / 100);
+  // ✅ Métodos puros que reciben el carrito del template (sin leer estado interno)
+  igv(carrito: Carrito): number {
+    return Math.round(carrito.subtotal * 0.18 * 100) / 100;
+  }
+
+  total(carrito: Carrito): number {
+    return Math.round((carrito.subtotal + this.igv(carrito)) * 100) / 100;
+  }
 
   actualizar(item: CarritoItem, delta: number): void {
     this.carritoService.actualizarCantidad(item.id, item.cantidad + delta);

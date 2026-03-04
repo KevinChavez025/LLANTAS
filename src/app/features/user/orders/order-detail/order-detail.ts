@@ -49,9 +49,9 @@ export class OrderDetail implements OnInit {
   metodoLabel(metodo: string | undefined): string {
     if (!metodo) return '';
     const map: Record<string, string> = {
-      EFECTIVO: 'Efectivo', YAPE: 'Yape', PLIN: 'Plin',
-      TRANSFERENCIA: 'Transferencia', TARJETA: 'Tarjeta',
-      MERCADO_PAGO: 'Mercado Pago',
+      YAPE: 'Yape', PLIN: 'Plin',
+      TRANSFERENCIA: 'Transferencia',
+      TARJETA_CREDITO: 'Tarjeta de crédito', TARJETA_DEBITO: 'Tarjeta de débito',
     };
     return map[metodo] ?? metodo;
   }

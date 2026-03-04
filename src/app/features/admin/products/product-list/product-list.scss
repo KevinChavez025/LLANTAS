@@ -1,7 +1,10 @@
 $green: #1DB954; $border: #e5e7eb; $text: #111827; $muted: #6b7280;
 $amber: #f59e0b; $red: #ef4444; $blue: #3b82f6;
 
-.plist { max-width: 1200px; }
+.plist { max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+}
 
 // ── Header ──────────────────────────────────────────────────────
 .plist-header {

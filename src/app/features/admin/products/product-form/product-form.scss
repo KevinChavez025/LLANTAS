@@ -1,0 +1,158 @@
+$green:#1DB954; $border:#e5e7eb; $text:#111827; $muted:#6b7280; $red:#ef4444;
+
+.pform {
+  max-width: 900px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+// ── Header ───────────────────────────────────────────────────────
+.pform-header {
+  display: flex; align-items: center; gap: 16px;
+  margin-bottom: 28px; flex-wrap: wrap;
+}
+.btn-back {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 0.82rem; font-weight: 600; color: $muted;
+  text-decoration: none; padding: 7px 14px;
+  border: 1px solid $border; border-radius: 8px; background: white;
+  transition: all 0.15s; flex-shrink: 0;
+  &:hover { border-color: #9ca3af; color: $text; }
+}
+.pform-title {
+  font-size: 1.4rem; font-weight: 800; color: $text;
+  margin: 0 0 3px; letter-spacing: -0.4px;
+}
+.pform-sub { font-size: 0.82rem; color: $muted; margin: 0; }
+
+// ── Loading ──────────────────────────────────────────────────────
+.pform-loading {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 14px; padding: 80px 0; color: $muted; font-size: 0.85rem;
+}
+.spin-ring {
+  width: 36px; height: 36px; border: 3px solid #e5e7eb;
+  border-top-color: $green; border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+// ── Card ─────────────────────────────────────────────────────────
+.pf-card {
+  background: white; border: 1px solid $border;
+  border-radius: 14px; overflow: hidden;
+  margin-bottom: 20px;
+  animation: fadeUp 0.35s ease both;
+}
+.pf-card-header {
+  display: flex; align-items: center; gap: 8px;
+  padding: 14px 20px; font-size: 0.88rem; font-weight: 700;
+  color: $text; border-bottom: 1px solid $border; background: #fafafa;
+  svg { color: $muted; flex-shrink: 0; }
+}
+.pf-card-body { padding: 20px; }
+
+// ── Grid de campos ───────────────────────────────────────────────
+.pf-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  @media (max-width: 640px) { grid-template-columns: 1fr; }
+}
+
+.pf-field {
+  display: flex; flex-direction: column; gap: 5px;
+  &--span2 { grid-column: span 2; @media (max-width: 640px) { grid-column: span 1; } }
+  &--span3 { grid-column: span 3; @media (max-width: 640px) { grid-column: span 1; } }
+}
+
+.pf-label {
+  font-size: 0.82rem; font-weight: 600; color: $text;
+  .req { color: $red; margin-left: 2px; }
+}
+
+.pf-input {
+  padding: 9px 12px; border: 1px solid $border; border-radius: 9px;
+  font-size: 0.84rem; color: $text; background: white; outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s; width: 100%;
+  font-family: inherit;
+  &::placeholder { color: #9ca3af; }
+  &:focus { border-color: $green; box-shadow: 0 0 0 3px rgba($green, 0.1); }
+  &--err { border-color: $red; &:focus { box-shadow: 0 0 0 3px rgba($red, 0.1); } }
+}
+
+.pf-textarea { resize: vertical; min-height: 90px; }
+.pf-error { font-size: 0.75rem; color: $red; font-weight: 500; }
+
+// ── Switches ─────────────────────────────────────────────────────
+.pf-switches {
+  display: flex; flex-direction: column; gap: 16px;
+}
+
+.pf-switch {
+  display: flex; align-items: center; gap: 14px;
+  cursor: pointer; user-select: none;
+
+  input[type="checkbox"] { display: none; }
+
+  &-track {
+    position: relative; flex-shrink: 0;
+    width: 44px; height: 24px;
+    background: #e5e7eb; border-radius: 100px;
+    transition: background 0.2s;
+
+    &::after {
+      content: '';
+      position: absolute;
+      top: 3px; left: 3px;
+      width: 18px; height: 18px;
+      border-radius: 50%; background: white;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+      transition: transform 0.2s;
+    }
+  }
+
+  input:checked ~ .pf-switch-track {
+    background: $green;
+    &::after { transform: translateX(20px); }
+  }
+
+  &-label {
+    display: flex; flex-direction: column; gap: 1px;
+    strong { font-size: 0.88rem; color: $text; font-weight: 600; }
+    em { font-size: 0.75rem; color: $muted; font-style: normal; }
+  }
+}
+
+// ── Actions ──────────────────────────────────────────────────────
+.pf-actions {
+  display: flex; align-items: center; gap: 12px;
+  padding-top: 4px; flex-wrap: wrap;
+}
+
+.btn-save {
+  display: inline-flex; align-items: center; gap: 7px;
+  background: $green; color: white;
+  font-size: 0.85rem; font-weight: 700;
+  padding: 11px 24px; border: none; border-radius: 10px;
+  cursor: pointer; transition: all 0.15s;
+  box-shadow: 0 2px 8px rgba($green, 0.3);
+  &:hover:not(:disabled) { filter: brightness(1.07); transform: translateY(-1px); }
+  &:disabled { opacity: 0.65; cursor: default; transform: none; }
+}
+
+.btn-cancel {
+  font-size: 0.84rem; font-weight: 600; color: $muted;
+  text-decoration: none; padding: 11px 20px;
+  border: 1px solid $border; border-radius: 10px; background: white;
+  transition: all 0.15s;
+  &:hover { border-color: #9ca3af; color: $text; }
+}
+
+.mini-spin {
+  width: 14px; height: 14px; border: 2px solid rgba(255,255,255,0.4);
+  border-top-color: white; border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin   { to { transform: rotate(360deg); } }
+@keyframes fadeUp { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }

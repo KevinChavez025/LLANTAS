@@ -41,7 +41,6 @@ export class Checkout {
   distritos: string[] = [];
 
   metodosPago: { valor: MetodoPago; label: string; icono: string }[] = [
-    { valor: 'EFECTIVO',        label: 'Efectivo',               icono: '💵' },
     { valor: 'YAPE',            label: 'Yape',                   icono: '📱' },
     { valor: 'PLIN',            label: 'Plin',                   icono: '📱' },
     { valor: 'TRANSFERENCIA',   label: 'Transferencia bancaria', icono: '🏦' },

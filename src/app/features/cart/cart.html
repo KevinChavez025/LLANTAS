@@ -77,10 +77,13 @@
                   S/ {{ item.precioUnitario * item.cantidad }}
                 </div>
 
-                <!-- Eliminar -->
-                <button class="cart-item__remove" (click)="eliminar(item.id)" title="Eliminar">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M18 6L6 18M6 6l12 12"/>
+                <!-- Eliminar — ícono papelera -->
+                <button class="cart-item__remove" (click)="eliminar(item.id)" title="Eliminar producto">
+                  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="3 6 5 6 21 6"/>
+                    <path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/>
+                    <path d="M10 11v6M14 11v6"/>
+                    <path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2"/>
                   </svg>
                 </button>
 
@@ -109,7 +112,8 @@
               </div>
               <div class="cart-summary__line">
                 <span>IGV (18%)</span>
-                <span>S/ {{ igv() }}</span>
+                <!-- ✅ Pasa carrito como argumento — se recalcula con cada emisión del observable -->
+                <span>S/ {{ igv(carrito) }}</span>
               </div>
               <div class="cart-summary__line">
                 <span>Envío</span>
@@ -119,7 +123,8 @@
 
             <div class="cart-summary__total">
               <span>Total estimado</span>
-              <span>S/ {{ total() }}</span>
+              <!-- ✅ Ídem -->
+              <span>S/ {{ total(carrito) }}</span>
             </div>
 
             <a routerLink="/checkout" class="btn btn-primary btn-block btn-lg">
@@ -134,7 +139,6 @@
               <div class="cart-summary__methods">
                 <span class="pay-chip">Yape</span>
                 <span class="pay-chip">Plin</span>
-                <span class="pay-chip">Efectivo</span>
                 <span class="pay-chip">Tarjeta</span>
                 <span class="pay-chip">Transferencia</span>
               </div>

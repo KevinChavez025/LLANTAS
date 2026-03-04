@@ -1,0 +1,123 @@
+$green:#1DB954; $border:#e5e7eb; $text:#111827; $muted:#6b7280; $red:#ef4444;
+
+.udetail {
+  max-width: 680px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.udetail-header {
+  display: flex; align-items: center; gap: 16px;
+  margin-bottom: 28px;
+}
+.btn-back {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 0.82rem; font-weight: 600; color: $muted;
+  text-decoration: none; padding: 7px 14px;
+  border: 1px solid $border; border-radius: 8px; background: white;
+  transition: all 0.15s; flex-shrink: 0;
+  &:hover { border-color: #9ca3af; color: $text; }
+}
+.udetail-title {
+  font-size: 1.4rem; font-weight: 800; color: $text;
+  margin: 0; letter-spacing: -0.4px;
+}
+
+.udetail-loading {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 14px; padding: 80px 0; color: $muted; font-size: 0.85rem;
+}
+.spin-ring {
+  width: 36px; height: 36px; border: 3px solid #e5e7eb;
+  border-top-color: $green; border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+.udetail-grid { display: flex; flex-direction: column; gap: 20px; }
+
+// ── Card ─────────────────────────────────────────────────────────
+.ud-card {
+  background: white; border: 1px solid $border;
+  border-radius: 14px; overflow: hidden;
+  animation: fadeUp 0.35s ease both;
+}
+.ud-card-header {
+  display: flex; align-items: center; gap: 8px;
+  padding: 14px 20px; font-size: 0.88rem; font-weight: 700;
+  color: $text; border-bottom: 1px solid $border; background: #fafafa;
+  svg { color: $muted; flex-shrink: 0; }
+}
+
+// Profile section
+.ud-profile {
+  display: flex; align-items: center; gap: 16px;
+  padding: 20px 20px 16px; border-bottom: 1px solid $border;
+}
+.ud-avatar {
+  width: 52px; height: 52px; border-radius: 50%; flex-shrink: 0;
+  background: linear-gradient(135deg, $green, #16a34a);
+  color: white; font-size: 1.2rem; font-weight: 800;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 0 0 3px rgba($green, 0.2);
+}
+.ud-profile-info { flex: 1; min-width: 0; }
+.ud-full-name {
+  font-size: 1.1rem; font-weight: 700; color: $text;
+  margin: 0 0 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.ud-role {
+  font-size: 0.72rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.05em; background: #f3f4f6;
+  color: #374151; padding: 3px 8px; border-radius: 6px;
+  display: inline-block;
+}
+.ud-status {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 0.78rem; font-weight: 600; flex-shrink: 0;
+  .dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+  &--on  { color: #15803d; .dot { background: $green; box-shadow: 0 0 0 3px rgba($green,0.2); } }
+  &--off { color: $muted;  .dot { background: #d1d5db; } }
+}
+
+// Fields
+.ud-fields {
+  display: flex; flex-direction: column;
+  padding: 4px 0;
+}
+.ud-field {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 12px 20px; border-bottom: 1px solid #f3f4f6;
+  gap: 16px;
+  &:last-child { border-bottom: none; }
+}
+.ud-field-label {
+  font-size: 0.8rem; font-weight: 600; color: $muted;
+  flex-shrink: 0; min-width: 120px;
+}
+.ud-field-value {
+  font-size: 0.84rem; color: $text; text-align: right;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+
+// Actions
+.ud-actions {
+  padding: 16px 20px; border-top: 1px solid $border;
+  background: #fafafa;
+}
+.btn-toggle {
+  display: inline-flex; align-items: center; gap: 7px;
+  font-size: 0.83rem; font-weight: 600; padding: 9px 18px;
+  border-radius: 9px; cursor: pointer; transition: all 0.15s; border: 1px solid;
+
+  &--danger {
+    color: $red; border-color: rgba($red, 0.3); background: white;
+    &:hover { background: rgba($red, 0.06); border-color: $red; }
+  }
+  &--success {
+    color: #15803d; border-color: rgba($green, 0.3); background: white;
+    &:hover { background: rgba($green, 0.06); border-color: $green; }
+  }
+}
+
+@keyframes spin   { to { transform: rotate(360deg); } }
+@keyframes fadeUp { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }

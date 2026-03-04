@@ -148,7 +148,7 @@
             <div class="payment-right">
               <div class="payment-amount">S/ {{ p.total | number:'1.2-2' }}</div>
               <div class="payment-meta">
-                <span class="payment-method">{{ METODO_LABEL[p.metodoPago!] ?? p.metodoPago }}</span>
+                <span class="payment-method">{{ METODO_LABEL[p.metodoPago || ''] || p.metodoPago }}</span>
                 <span class="payment-date">{{ p.fechaCreacion | date:'dd/MM' }}</span>
               </div>
             </div>

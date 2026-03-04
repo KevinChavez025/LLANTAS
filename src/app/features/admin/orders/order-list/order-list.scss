@@ -3,7 +3,10 @@ $green: #1DB954; $amber: #f59e0b; $blue: #3b82f6;
 $purple: #8b5cf6; $red: #ef4444;
 $border: #e5e7eb; $text: #111827; $muted: #6b7280;
 
-.aorders { max-width: 1200px; }
+.aorders { max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+}
 
 .aorders-header {
   margin-bottom: 24px;

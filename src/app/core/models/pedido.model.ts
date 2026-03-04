@@ -22,7 +22,6 @@ export type EstadoPago =
   | 'REEMBOLSADO';
 
 export type MetodoPago =
-  | 'EFECTIVO'
   | 'TARJETA_CREDITO'
   | 'TARJETA_DEBITO'
   | 'TRANSFERENCIA'
@@ -153,7 +152,6 @@ export const ESTADO_PAGO_LABEL: Record<EstadoPago, string> = {
 };
 
 export const METODO_PAGO_LABEL: Record<MetodoPago, string> = {
-  EFECTIVO:        'Efectivo',
   TARJETA_CREDITO: 'Tarjeta de crédito',
   TARJETA_DEBITO:  'Tarjeta de débito',
   TRANSFERENCIA:   'Transferencia bancaria',
