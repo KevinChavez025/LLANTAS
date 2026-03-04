@@ -44,76 +44,298 @@
         </nav>
       </aside>
 
-      <!-- Card principal -->
-      <div class="profile-card">
-        <div class="profile-card__header">
-          <h2 class="profile-card__title">Datos personales</h2>
-          @if (!editando()) {
-            <button class="btn btn-outline" (click)="toggleEditar()">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
-                <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
+      <!-- Contenido principal -->
+      <div class="profile-content">
+
+        <!-- Card datos personales -->
+        <div class="profile-card">
+          <div class="profile-card__header">
+            <h2 class="profile-card__title">Datos personales</h2>
+            @if (!editando()) {
+              <button class="btn btn-outline" (click)="toggleEditar()">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
+                  <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                </svg>
+                Editar
+              </button>
+            }
+          </div>
+
+          <form [formGroup]="form" (ngSubmit)="guardar()" novalidate>
+            <div class="form-grid">
+
+              <div class="form-group form-group--full">
+                <label>Nombre completo *</label>
+                <input type="text" formControlName="nombreCompleto" [readonly]="!editando()"
+                       placeholder="Ej: Juan Pérez Quispe"/>
+                @if (f['nombreCompleto'].touched && f['nombreCompleto'].errors?.['required']) {
+                  <span class="form-error">Campo obligatorio</span>
+                }
+                @if (f['nombreCompleto'].touched && f['nombreCompleto'].errors?.['minlength']) {
+                  <span class="form-error">Mínimo 3 caracteres</span>
+                }
+              </div>
+
+              <div class="form-group">
+                <label>Teléfono</label>
+                <input type="tel" formControlName="telefono" [readonly]="!editando()"
+                       placeholder="Ej: 987654321"/>
+                @if (f['telefono'].touched && f['telefono'].errors?.['pattern']) {
+                  <span class="form-error">Ingresa 9 dígitos</span>
+                }
+              </div>
+
+              <div class="form-group">
+                <label>Ciudad</label>
+                <input type="text" formControlName="ciudad" [readonly]="!editando()"
+                       placeholder="Ej: Lima"/>
+              </div>
+
+              <div class="form-group">
+                <label>Distrito</label>
+                <input type="text" formControlName="distrito" [readonly]="!editando()"
+                       placeholder="Ej: Miraflores"/>
+              </div>
+
+              <div class="form-group form-group--full">
+                <label>Dirección</label>
+                <input type="text" formControlName="direccion" [readonly]="!editando()"
+                       placeholder="Ej: Av. Javier Prado 1234"/>
+              </div>
+
+            </div>
+
+            @if (editando()) {
+              <div class="profile-card__actions">
+                <button type="button" class="btn btn-outline" (click)="cancelar()">Cancelar</button>
+                <button type="submit" class="btn btn-primary" [disabled]="guardando()">
+                  @if (guardando()) { Guardando... } @else { Guardar cambios }
+                </button>
+              </div>
+            }
+          </form>
+        </div>
+
+        <!-- MÉTODOS DE PAGO GUARDADOS -->
+        <div class="profile-card metodos-pago-card">
+          <div class="profile-card__header">
+            <div>
+              <h2 class="profile-card__title">Métodos de pago</h2>
+              <p class="profile-card__subtitle">Guarda tus métodos favoritos para pagar más rápido</p>
+            </div>
+            <button class="btn btn-primary btn-sm" (click)="abrirModalAgregar()">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <path d="M12 5v14M5 12h14"/>
               </svg>
-              Editar
+              Agregar
             </button>
+          </div>
+
+          @if (cargandoMetodos()) {
+            <div class="metodos-empty">
+              <div class="metodos-spinner"></div>
+              <p>Cargando métodos...</p>
+            </div>
+          } @else if (metodosGuardados().length === 0) {
+            <div class="metodos-empty">
+              <div class="metodos-empty__icon">
+                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
+                  <line x1="1" y1="10" x2="23" y2="10"/>
+                </svg>
+              </div>
+              <p class="metodos-empty__title">Sin métodos guardados</p>
+              <p class="metodos-empty__text">Agrega un método para agilizar tus próximos pagos</p>
+            </div>
+          } @else {
+            <div class="metodos-lista">
+              @for (metodo of metodosGuardados(); track metodo.id) {
+                <div class="metodo-item" [class.metodo-item--principal]="metodo.esPrincipal">
+                  <div class="metodo-item__icon metodo-icon--{{ metodo.tipo | lowercase }}">
+                    {{ getIconoMetodo(metodo.tipo) }}
+                  </div>
+                  <div class="metodo-item__info">
+                    <div class="metodo-item__top">
+                      <span class="metodo-item__alias">{{ metodo.alias }}</span>
+                      @if (metodo.esPrincipal) {
+                        <span class="badge badge--principal">Principal</span>
+                      }
+                    </div>
+                    <span class="metodo-item__detalle">{{ metodo.detalle }}</span>
+                  </div>
+                  <div class="metodo-item__acciones">
+                    @if (!metodo.esPrincipal) {
+                      <button class="btn-icon btn-icon--ghost" title="Establecer como principal"
+                              (click)="marcarPrincipal(metodo.id!)">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                        </svg>
+                      </button>
+                    }
+                    <button class="btn-icon btn-icon--danger" title="Eliminar" (click)="eliminarMetodo(metodo.id!)">
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/>
+                        <path d="M10 11v6M14 11v6M9 6V4h6v2"/>
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+              }
+            </div>
           }
         </div>
 
-        <form [formGroup]="form" (ngSubmit)="guardar()" novalidate>
-          <div class="form-grid">
-
-            <div class="form-group form-group--full">
-              <label>Nombre completo *</label>
-              <input type="text" formControlName="nombreCompleto" [readonly]="!editando()"
-                     placeholder="Ej: Juan Pérez Quispe"/>
-              @if (f['nombreCompleto'].touched && f['nombreCompleto'].errors?.['required']) {
-                <span class="form-error">Campo obligatorio</span>
-              }
-              @if (f['nombreCompleto'].touched && f['nombreCompleto'].errors?.['minlength']) {
-                <span class="form-error">Mínimo 3 caracteres</span>
-              }
+        <!-- FAVORITOS -->
+        <div class="profile-card favoritos-card">
+          <div class="profile-card__header">
+            <div>
+              <h2 class="profile-card__title">Mis llantas favoritas</h2>
+              <p class="profile-card__subtitle">Accede rápido a las llantas que te interesan</p>
             </div>
-
-            <div class="form-group">
-              <label>Teléfono</label>
-              <input type="tel" formControlName="telefono" [readonly]="!editando()"
-                     placeholder="Ej: 987654321"/>
-              @if (f['telefono'].touched && f['telefono'].errors?.['pattern']) {
-                <span class="form-error">Ingresa 9 dígitos</span>
-              }
-            </div>
-
-            <div class="form-group">
-              <label>Ciudad</label>
-              <input type="text" formControlName="ciudad" [readonly]="!editando()"
-                     placeholder="Ej: Lima"/>
-            </div>
-
-            <div class="form-group">
-              <label>Distrito</label>
-              <input type="text" formControlName="distrito" [readonly]="!editando()"
-                     placeholder="Ej: Miraflores"/>
-            </div>
-
-            <div class="form-group form-group--full">
-              <label>Dirección</label>
-              <input type="text" formControlName="direccion" [readonly]="!editando()"
-                     placeholder="Ej: Av. Javier Prado 1234"/>
-            </div>
-
+            @if (favoritos().length > 0) {
+              <button class="btn btn-outline btn-sm" (click)="limpiarFavoritos()">
+                Limpiar todo
+              </button>
+            }
           </div>
 
-          @if (editando()) {
-            <div class="profile-card__actions">
-              <button type="button" class="btn btn-outline" (click)="cancelar()">Cancelar</button>
-              <button type="submit" class="btn btn-primary" [disabled]="guardando()">
-                @if (guardando()) { Guardando... } @else { Guardar cambios }
-              </button>
+          @if (favoritos().length === 0) {
+            <div class="metodos-empty">
+              <div class="metodos-empty__icon">
+                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                </svg>
+              </div>
+              <p class="metodos-empty__title">Sin favoritos aún</p>
+              <p class="metodos-empty__text">Toca el ❤ en cualquier llanta del catálogo para guardarla aquí</p>
+              <a routerLink="/catalogo" class="btn btn-primary" style="margin-top:12px; display:inline-flex">
+                Ir al catálogo
+              </a>
+            </div>
+          } @else {
+            <div class="favoritos-grid">
+              @for (p of favoritos(); track p.id) {
+                <a [routerLink]="['/producto', p.id]" class="fav-item">
+                  <div class="fav-item__img">
+                    <img [src]="p.urlImagen" [alt]="p.nombre" loading="lazy"/>
+                  </div>
+                  <div class="fav-item__info">
+                    <p class="fav-item__marca">{{ p.marca }}</p>
+                    <p class="fav-item__nombre">{{ p.nombre }}</p>
+                    <p class="fav-item__medida">{{ p.medida }}</p>
+                    <p class="fav-item__precio">S/ {{ p.precio }}</p>
+                  </div>
+                  <button class="btn-icon btn-icon--danger fav-item__del"
+                          (click)="quitarFavorito($event, p.id)" title="Quitar de favoritos">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M18 6L6 18M6 6l12 12"/>
+                    </svg>
+                  </button>
+                </a>
+              }
             </div>
           }
-        </form>
-      </div>
+        </div>
 
+
+      </div>
     </div>
   </div>
 </div>
+
+<!-- MODAL AGREGAR MÉTODO -->
+@if (modalAbierto()) {
+  <div class="modal-backdrop" (click)="cerrarModal()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <div class="modal__header">
+        <h3 class="modal__title">Agregar método de pago</h3>
+        <button class="btn-icon btn-icon--ghost" (click)="cerrarModal()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 6L6 18M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+
+      <form [formGroup]="formMetodo" novalidate class="modal__body">
+
+        <div class="form-group">
+          <label>Tipo de método *</label>
+          <div class="tipo-grid">
+            @for (tipo of tiposDisponibles; track tipo.valor) {
+              <label class="tipo-option" [class.tipo-option--active]="fm['tipo'].value === tipo.valor">
+                <input type="radio" formControlName="tipo" [value]="tipo.valor" (change)="onTipoChange()"/>
+                <span class="tipo-option__icon">{{ tipo.icono }}</span>
+                <span class="tipo-option__label">{{ tipo.label }}</span>
+              </label>
+            }
+          </div>
+          @if (fm['tipo'].touched && fm['tipo'].errors?.['required']) {
+            <span class="form-error">Selecciona un tipo</span>
+          }
+        </div>
+
+        <div class="form-group">
+          <label>Alias *</label>
+          <input type="text" formControlName="alias" placeholder="Ej: Mi Yape personal"/>
+          @if (fm['alias'].touched && fm['alias'].errors?.['required']) {
+            <span class="form-error">Campo obligatorio</span>
+          }
+        </div>
+
+        @if (fm['tipo'].value === 'YAPE' || fm['tipo'].value === 'PLIN') {
+          <div class="form-group">
+            <label>Número de celular *</label>
+            <input type="tel" formControlName="detalle" placeholder="Ej: 987654321"/>
+            @if (fm['detalle'].touched && fm['detalle'].errors?.['required']) {
+              <span class="form-error">Campo obligatorio</span>
+            }
+            @if (fm['detalle'].touched && fm['detalle'].errors?.['pattern']) {
+              <span class="form-error">Ingresa 9 dígitos</span>
+            }
+          </div>
+        }
+
+        @if (fm['tipo'].value === 'TARJETA_CREDITO' || fm['tipo'].value === 'TARJETA_DEBITO') {
+          <div class="form-group">
+            <label>Últimos 4 dígitos *</label>
+            <div class="input-with-prefix">
+              <span class="input-prefix">•••• •••• ••••</span>
+              <input type="text" formControlName="detalle" placeholder="4242" maxlength="4"/>
+            </div>
+            @if (fm['detalle'].touched && fm['detalle'].errors?.['required']) {
+              <span class="form-error">Campo obligatorio</span>
+            }
+            @if (fm['detalle'].touched && fm['detalle'].errors?.['pattern']) {
+              <span class="form-error">Ingresa exactamente 4 dígitos</span>
+            }
+          </div>
+        }
+
+        @if (fm['tipo'].value === 'TRANSFERENCIA') {
+          <div class="form-group">
+            <label>Banco / CCI *</label>
+            <input type="text" formControlName="detalle" placeholder="Ej: BCP — CCI 00219..."/>
+            @if (fm['detalle'].touched && fm['detalle'].errors?.['required']) {
+              <span class="form-error">Campo obligatorio</span>
+            }
+          </div>
+        }
+
+        <label class="checkbox-label">
+          <input type="checkbox" formControlName="esPrincipal"/>
+          <span class="checkbox-custom"></span>
+          Establecer como método principal
+        </label>
+
+      </form>
+
+      <div class="modal__footer">
+        <button class="btn btn-outline" (click)="cerrarModal()">Cancelar</button>
+        <button class="btn btn-primary" (click)="guardarMetodo()" [disabled]="guardandoMetodo()">
+          @if (guardandoMetodo()) { Guardando... } @else { Guardar método }
+        </button>
+      </div>
+    </div>
+  </div>
+}

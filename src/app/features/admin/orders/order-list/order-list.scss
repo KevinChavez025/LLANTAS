@@ -107,3 +107,106 @@ $border: #e5e7eb; $text: #111827; $muted: #6b7280;
 
 @keyframes fadeUp { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
 @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+// ── FILTROS BAR ──────────────────────────────────────────────
+.filtros-bar {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  flex-wrap: wrap;
+  background: white;
+  border: 1px solid $border;
+  border-radius: 14px;
+  padding: 16px 20px;
+  margin-bottom: 20px;
+}
+
+.filtros-grupo {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 140px;
+}
+
+.filtro-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: $muted;
+}
+
+.filtro-input {
+  padding: 8px 12px;
+  border: 1px solid $border;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  color: $text;
+  background: #f9fafb;
+  outline: none;
+  transition: border-color 0.15s;
+  width: 100%;
+  &:focus { border-color: $green; background: white; }
+}
+
+.select-wrapper {
+  position: relative;
+  select { appearance: none; padding-right: 28px !important; cursor: pointer; width: 100%; }
+  &::after {
+    content: '▾';
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    color: $muted;
+    font-size: 0.75rem;
+  }
+}
+
+.filtros-acciones {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-bottom: 1px;
+}
+
+.btn-filtrar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  background: $green;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.15s;
+  white-space: nowrap;
+  &:hover { opacity: 0.88; }
+}
+
+.btn-limpiar {
+  padding: 8px 12px;
+  background: #f3f4f6;
+  color: $muted;
+  border: 1px solid $border;
+  border-radius: 8px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+  &:hover { background: #fee2e2; color: $red; border-color: $red; }
+}
+
+.aorders-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 60px 0;
+  color: #9ca3af;
+  font-size: 0.85rem;
+}

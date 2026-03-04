@@ -1,4 +1,5 @@
-import { Component, OnInit, signal, inject } from '@angular/core';
+import { Component, OnInit, AfterViewInit, signal, inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { CommonModule } from '@angular/common';
 import { RouterLink, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -13,10 +14,11 @@ import { Producto } from '../../core/models/producto.model';
   templateUrl: './home.html',
   styleUrl: './home.scss'
 })
-export class Home implements OnInit {
+export class Home implements OnInit, AfterViewInit {
   private productoService = inject(ProductoService);
   private router          = inject(Router);
   private sanitizer       = inject(DomSanitizer);
+  private platformId      = inject(PLATFORM_ID);
 
   productoDestacados = signal<Producto[]>([]);
   productoNuevos     = signal<Producto[]>([]);
@@ -72,6 +74,31 @@ export class Home implements OnInit {
     if (this.aroSeleccionado)          queryParams['aro']    = this.aroSeleccionado;
     if (this.tipoVehiculoSeleccionado) queryParams['tipo']   = this.tipoVehiculoSeleccionado;
     this.router.navigate(['/catalogo'], { queryParams });
+  }
+
+
+  scrollCarousel(id: 'nuevos' | 'destacados', dir: 1 | -1): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+    const el = document.getElementById(`carousel-${id}`);
+    if (el) el.scrollBy({ left: dir * 320, behavior: 'smooth' });
+  }
+
+  ngAfterViewInit(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.1, rootMargin: '0px 0px -40px 0px' }
+    );
+    setTimeout(() => {
+      document.querySelectorAll('.reveal, .reveal-item').forEach(el => observer.observe(el));
+    }, 100);
   }
 
   ngOnInit(): void {

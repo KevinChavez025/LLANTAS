@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit, inject, PLATFORM_ID } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import emailjs from '@emailjs/browser';
+import { initRevealObserver } from '../../core/util/reveal.util';
 
 // ──────────────────────────────────────────────────────────
 // 🔧 REEMPLAZA ESTOS 3 VALORES con los de tu cuenta EmailJS
@@ -18,7 +19,8 @@ const EMAILJS_PUBLIC_KEY  = 'mNCmvNFAIBqmIMIml';   // ej: 'aBcDeFgHiJkLmNoP'
   templateUrl: './contact.html',
   styleUrl: './contact.scss',
 })
-export class Contact implements OnInit {
+export class Contact implements OnInit, AfterViewInit {
+  private platformId = inject(PLATFORM_ID);
   private fb = new FormBuilder();
 
   enviando = false;
@@ -32,6 +34,8 @@ export class Contact implements OnInit {
     asunto:   ['', Validators.required],
     mensaje:  ['', [Validators.required, Validators.minLength(10)]],
   });
+
+  ngAfterViewInit(): void { initRevealObserver(this.platformId); }
 
   ngOnInit(): void {
     emailjs.init(EMAILJS_PUBLIC_KEY);

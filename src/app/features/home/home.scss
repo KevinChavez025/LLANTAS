@@ -634,3 +634,213 @@
   from { opacity: 0; transform: translateY(16px); }
   to   { opacity: 1; transform: translateY(0); }
 }
+// ══════════════════════════════════════════
+// CAROUSEL
+// ══════════════════════════════════════════
+.carousel {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0;
+
+  &__track {
+    display: flex;
+    gap: 16px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding: 8px 4px 16px;
+    flex: 1;
+
+    &::-webkit-scrollbar { display: none; }
+  }
+
+  &__item {
+    flex: 0 0 260px;
+    scroll-snap-align: start;
+
+    @media (max-width: 768px) { flex: 0 0 200px; }
+  }
+
+  &__arrow {
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 1.5px solid #e5e7eb;
+    background: white;
+    color: #374151;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.18s;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    z-index: 2;
+
+    &:hover {
+      border-color: #1DB954;
+      color: #1DB954;
+      box-shadow: 0 4px 14px rgba(29,185,84,0.2);
+      transform: scale(1.08);
+    }
+
+    &--prev { margin-right: 8px; }
+    &--next { margin-left: 8px; }
+
+    @media (max-width: 480px) {
+      width: 32px;
+      height: 32px;
+    }
+  }
+}
+
+// ══════════════════════════════════════════
+// MARCAS STRIP
+// ══════════════════════════════════════════
+.marcas-strip {
+  background: white;
+  border-top: 1px solid #f0f0f0;
+  border-bottom: 1px solid #f0f0f0;
+  padding: 28px 0;
+
+  &__label {
+    text-align: center;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: #9ca3af;
+    margin: 0 0 20px;
+  }
+
+  &__track {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0;
+  }
+}
+
+.marca-item {
+  padding: 8px 20px;
+  opacity: 0.45;
+  transition: opacity 0.2s;
+  display: flex;
+  align-items: center;
+
+  &:hover { opacity: 1; }
+}
+
+.marca-svg {
+  height: 32px;
+  width: auto;
+}
+
+.marca-sep {
+  width: 1px;
+  height: 28px;
+  background: #e5e7eb;
+}
+
+// ══════════════════════════════════════════
+// CAROUSEL DOTS
+// ══════════════════════════════════════════
+.carousel-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.carousel-dots {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  padding: 4px 0 8px;
+}
+
+.carousel-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #d1d5db;
+  transition: all 0.2s;
+  cursor: pointer;
+
+  &.active {
+    background: #1DB954;
+    width: 20px;
+    border-radius: 3px;
+  }
+}
+
+// ══════════════════════════════════════════
+// POR QUÉ ELEGIRNOS
+// ══════════════════════════════════════════
+.porque-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+
+  @media (max-width: 900px) { grid-template-columns: repeat(2, 1fr); }
+  @media (max-width: 480px) { grid-template-columns: 1fr; }
+}
+
+.porque-card {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  padding: 28px 24px;
+  transition: all 0.2s;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: #1DB954;
+    transform: scaleX(0);
+    transition: transform 0.25s;
+    transform-origin: left;
+  }
+
+  &:hover {
+    border-color: rgba(29,185,84,0.3);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.07);
+    transform: translateY(-3px);
+
+    &::before { transform: scaleX(1); }
+    .porque-card__icon { background: #1DB954; color: white; }
+  }
+
+  &__icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 12px;
+    background: rgba(29,185,84,0.08);
+    color: #1DB954;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 16px;
+    transition: all 0.2s;
+  }
+
+  h3 {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #111827;
+    margin: 0 0 8px;
+  }
+
+  p {
+    font-size: 0.82rem;
+    color: #6b7280;
+    line-height: 1.6;
+    margin: 0;
+  }
+}

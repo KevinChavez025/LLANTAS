@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable, map } from 'rxjs';
+import { Observable, map, shareReplay } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { Producto, CrearProductoDTO } from '../models/producto.model';
 
@@ -19,15 +19,28 @@ export class ProductoService {
   private http = inject(HttpClient);
   private base = `${environment.apiUrl}/api/productos`;
 
+  // ── Cache en memoria ─────────────────────────────────────
+  private cacheTodos$:      Observable<Producto[]> | null = null;
+  private cacheDestacados$: Observable<Producto[]> | null = null;
+  private cacheNuevos$:     Observable<Producto[]> | null = null;
+
   // ── Públicos ──────────────────────────────────────────────
   obtenerPaginado(page = 0, size = 20): Observable<Page<Producto>> {
     const params = new HttpParams().set('page', page).set('size', size).set('sort', 'nombre,asc');
     return this.http.get<Page<Producto>>(this.base, { params });
   }
 
-  /** Shortcut: primer página completa → array (home/catálogo) */
   obtenerTodos(): Observable<Producto[]> {
-    return this.obtenerPaginado(0, 100).pipe(map(p => p.content));
+    if (!this.cacheTodos$) {
+      this.cacheTodos$ = this.obtenerPaginado(0, 100).pipe(map(p => p.content), shareReplay(1));
+    }
+    return this.cacheTodos$;
+  }
+
+  invalidarCache(): void {
+    this.cacheTodos$ = null;
+    this.cacheDestacados$ = null;
+    this.cacheNuevos$ = null;
   }
 
   obtenerPorId(id: number): Observable<Producto> {
@@ -35,11 +48,17 @@ export class ProductoService {
   }
 
   obtenerDestacados(): Observable<Producto[]> {
-    return this.http.get<Producto[]>(`${this.base}/destacados`);
+    if (!this.cacheDestacados$) {
+      this.cacheDestacados$ = this.http.get<Producto[]>(`${this.base}/destacados`).pipe(shareReplay(1));
+    }
+    return this.cacheDestacados$;
   }
 
   obtenerNuevos(): Observable<Producto[]> {
-    return this.http.get<Producto[]>(`${this.base}/nuevos`);
+    if (!this.cacheNuevos$) {
+      this.cacheNuevos$ = this.http.get<Producto[]>(`${this.base}/nuevos`).pipe(shareReplay(1));
+    }
+    return this.cacheNuevos$;
   }
 
   obtenerDisponibles(): Observable<Producto[]> {

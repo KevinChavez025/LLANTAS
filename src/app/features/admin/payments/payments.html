@@ -1,0 +1,153 @@
+<div class="apayments">
+
+  <div class="apayments-header">
+    <div>
+      <h1 class="apayments-title">Pagos</h1>
+      <p class="apayments-sub">{{ pagina()?.totalElements ?? 0 }} registros en total</p>
+    </div>
+  </div>
+
+  <!-- ── TARJETAS RESUMEN ── -->
+  @if (!cargando()) {
+    <div class="resumen-grid">
+      <div class="resumen-card resumen-card--green">
+        <div class="resumen-card__icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <div>
+          <p class="resumen-card__label">Total cobrado</p>
+          <p class="resumen-card__value">S/ {{ totalPagado() | number:'1.2-2' }}</p>
+        </div>
+      </div>
+      <div class="resumen-card resumen-card--amber">
+        <div class="resumen-card__icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        </div>
+        <div>
+          <p class="resumen-card__label">Por cobrar</p>
+          <p class="resumen-card__value">S/ {{ totalPendiente() | number:'1.2-2' }}</p>
+        </div>
+      </div>
+      <div class="resumen-card resumen-card--blue">
+        <div class="resumen-card__icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+        </div>
+        <div>
+          <p class="resumen-card__label">Pagos confirmados</p>
+          <p class="resumen-card__value">{{ cantidadPagados() }}</p>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- ── FILTROS ── -->
+  <div class="filtros-bar">
+    <div class="filtros-grupo">
+      <label class="filtro-label">Desde</label>
+      <input type="date" class="filtro-input" [(ngModel)]="fechaDesde"/>
+    </div>
+    <div class="filtros-grupo">
+      <label class="filtro-label">Hasta</label>
+      <input type="date" class="filtro-input" [(ngModel)]="fechaHasta"/>
+    </div>
+    <div class="filtros-grupo">
+      <label class="filtro-label">Método de pago</label>
+      <div class="select-wrap">
+        <select class="filtro-input" [(ngModel)]="metodoPago">
+          <option value="">Todos</option>
+          <option value="YAPE">Yape</option>
+          <option value="PLIN">Plin</option>
+          <option value="EFECTIVO">Efectivo</option>
+          <option value="TRANSFERENCIA">Transferencia</option>
+          <option value="TARJETA_CREDITO">Tarjeta crédito</option>
+          <option value="TARJETA_DEBITO">Tarjeta débito</option>
+        </select>
+      </div>
+    </div>
+    <div class="filtros-grupo">
+      <label class="filtro-label">Estado pago</label>
+      <div class="select-wrap">
+        <select class="filtro-input" [(ngModel)]="estadoPago">
+          <option value="">Todos</option>
+          @for (e of ESTADOS_PAGO; track e) {
+            <option [value]="e">{{ ESTADO_PAGO_LABEL[e] }}</option>
+          }
+        </select>
+      </div>
+    </div>
+    <div class="filtros-acciones">
+      <button class="btn-filtrar" (click)="aplicarFiltros()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        Buscar
+      </button>
+      @if (hayFiltrosActivos) {
+        <button class="btn-limpiar" (click)="limpiarFiltros()">✕ Limpiar</button>
+      }
+    </div>
+  </div>
+
+  @if (cargando()) {
+    <div class="apayments-loading">
+      <div class="spin-ring"></div>
+      <span>Cargando pagos...</span>
+    </div>
+  } @else if (!pedidosFiltrados.length) {
+    <div class="apayments-empty">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#d1d5db" stroke-width="1.5"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+      <p>No hay pagos con los filtros seleccionados</p>
+    </div>
+  } @else {
+    <div class="apayments-table-wrap">
+      <table class="apayments-table">
+        <thead>
+          <tr>
+            <th>N° Pedido</th>
+            <th>Fecha</th>
+            <th>Cliente</th>
+            <th>Método</th>
+            <th>Total</th>
+            <th>Estado pago</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (p of pedidosFiltrados; track p.id; let i = $index) {
+            <tr [style.animation-delay]="(i * 35) + 'ms'">
+              <td><span class="order-num">{{ p.numeroPedido }}</span></td>
+              <td class="td-date">{{ p.fechaCreacion | date:'dd/MM/yy HH:mm' }}</td>
+              <td class="td-client">{{ p.nombreInvitado ?? p.emailInvitado ?? 'Usuario #' + p.usuario?.id }}</td>
+              <td>
+                @if (p.metodoPago) {
+                  <span class="pill" [ngClass]="pillMetodo(p.metodoPago)">
+                    {{ METODO_PAGO_LABEL[p.metodoPago!] }}
+                  </span>
+                } @else {
+                  <span class="td-muted">—</span>
+                }
+              </td>
+              <td class="td-total">S/ {{ p.total | number:'1.2-2' }}</td>
+              <td>
+                <span class="pill" [ngClass]="pillPago(p.estadoPago)">
+                  {{ ESTADO_PAGO_LABEL[p.estadoPago] }}
+                </span>
+              </td>
+              <td>
+                <a [routerLink]="['/admin/pedidos', p.id]" class="btn-detail">Ver →</a>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    @if ((pagina()?.totalPages ?? 0) > 1) {
+      <div class="pagination">
+        <button class="pag-btn" [disabled]="pagina()?.first" (click)="cargar(paginaActual - 1)">‹</button>
+        @for (p of paginas; track p) {
+          <button class="pag-btn" [class.pag-btn--active]="p === paginaActual" (click)="cargar(p)">{{ p + 1 }}</button>
+        }
+        <button class="pag-btn" [disabled]="pagina()?.last" (click)="cargar(paginaActual + 1)">›</button>
+      </div>
+    }
+  }
+</div>

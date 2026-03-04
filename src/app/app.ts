@@ -1,6 +1,7 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, inject, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { LoadingSpinner } from './shared/components/loading-spinner/loading-spinner';
+import { KeepaliveService } from './core/services/keepalive.service';
 
 @Component({
   selector: 'app-root',
@@ -8,6 +9,11 @@ import { LoadingSpinner } from './shared/components/loading-spinner/loading-spin
   templateUrl: './app.html',
   styleUrl: './app.scss'
 })
-export class App {
+export class App implements OnInit {
   protected readonly title = signal('LLANTA');
+  private keepalive = inject(KeepaliveService);
+
+  ngOnInit(): void {
+    this.keepalive.init();
+  }
 }

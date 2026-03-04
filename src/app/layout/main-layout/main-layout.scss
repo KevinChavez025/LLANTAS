@@ -9,4 +9,7 @@
 .main-content {
   flex: 1;
   width: 100%;
+  // Necesario para que el animation no cause scrollbar flash
+  overflow-x: hidden;
+  position: relative;
 }

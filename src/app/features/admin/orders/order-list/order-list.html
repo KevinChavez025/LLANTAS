@@ -7,10 +7,47 @@
     </div>
   </div>
 
+  <!-- ── FILTROS ── -->
+  <div class="filtros-bar">
+    <div class="filtros-grupo">
+      <label class="filtro-label">Desde</label>
+      <input type="date" class="filtro-input" [(ngModel)]="fechaDesde"/>
+    </div>
+    <div class="filtros-grupo">
+      <label class="filtro-label">Hasta</label>
+      <input type="date" class="filtro-input" [(ngModel)]="fechaHasta"/>
+    </div>
+    <div class="filtros-grupo">
+      <label class="filtro-label">Estado</label>
+      <div class="select-wrapper">
+        <select class="filtro-input" [(ngModel)]="estadoFiltro">
+          <option value="">Todos</option>
+          @for (e of ESTADOS; track e) {
+            <option [value]="e">{{ ESTADO_LABEL[e] }}</option>
+          }
+        </select>
+      </div>
+    </div>
+    <div class="filtros-acciones">
+      <button class="btn-filtrar" (click)="aplicarFiltros()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        Buscar
+      </button>
+      @if (hayFiltrosActivos) {
+        <button class="btn-limpiar" (click)="limpiarFiltros()">✕ Limpiar</button>
+      }
+    </div>
+  </div>
+
   @if (cargando()) {
     <div class="aorders-loading">
       <div class="spin-ring"></div>
       <span>Cargando pedidos...</span>
+    </div>
+  } @else if (!pagina()?.content?.length) {
+    <div class="aorders-empty">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#d1d5db" stroke-width="1.5"><path d="M21 10V20a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V10"/><path d="M1 6h22v4H1z"/><path d="M10 16H14"/></svg>
+      <p>No hay pedidos con los filtros seleccionados</p>
     </div>
   } @else {
     <div class="aorders-table-wrap">
@@ -31,7 +68,7 @@
             <tr [style.animation-delay]="(i * 40) + 'ms'">
               <td><span class="order-num">{{ p.numeroPedido }}</span></td>
               <td class="td-date">{{ p.fechaCreacion | date:'dd/MM/yy HH:mm' }}</td>
-              <td class="td-client">{{ p.nombreInvitado ?? p.emailInvitado ?? 'Usuario #' + p.usuario?.id }}</td>
+              <td class="td-client">{{ p.nombreCliente ?? p.emailCliente ?? '—' }}</td>
               <td class="td-total">S/ {{ p.total | number:'1.2-2' }}</td>
               <td><span class="spill" [ngClass]="pillClass(p.estado)">{{ ESTADO_LABEL[p.estado] }}</span></td>
               <td>

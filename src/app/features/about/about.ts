@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, AfterViewInit, inject, PLATFORM_ID } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { initRevealObserver } from '../../core/util/reveal.util';
 
 @Component({
   selector: 'app-about',
@@ -8,4 +9,10 @@ import { RouterLink } from '@angular/router';
   templateUrl: './about.html',
   styleUrl: './about.scss',
 })
-export class About {}
+export class About implements AfterViewInit {
+  private platformId = inject(PLATFORM_ID);
+
+  ngAfterViewInit(): void {
+    initRevealObserver(this.platformId);
+  }
+}

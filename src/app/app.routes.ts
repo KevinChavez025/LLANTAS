@@ -129,6 +129,10 @@ export const routes: Routes = [
       {
         path: 'categorias',
         loadComponent: () => import('./features/admin/categories/category-list/category-list').then(m => m.CategoryList)
+      },
+      {
+        path: 'pagos',
+        loadComponent: () => import('./features/admin/payments/payments').then(m => m.AdminPayments)
       }
     ]
   },

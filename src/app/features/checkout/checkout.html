@@ -11,7 +11,7 @@
       </a>
     </div>
 
-    <!-- ── STEPS ── -->
+    <!-- STEPS -->
     <div class="checkout-steps">
       <div class="step" [class.step--active]="paso() === 1" [class.step--done]="paso() > 1">
         <div class="step__num">
@@ -40,7 +40,6 @@
 
             <div class="form-grid">
 
-              <!-- Nombre completo -->
               <div class="form-group form-group--full">
                 <label>Nombre completo *</label>
                 <input type="text" formControlName="nombreCompleto" placeholder="Ej: Juan Pérez Quispe"/>
@@ -49,7 +48,6 @@
                 }
               </div>
 
-              <!-- Teléfono -->
               <div class="form-group">
                 <label>Teléfono *</label>
                 <input type="tel" formControlName="telefono" placeholder="Ej: 987654321"/>
@@ -58,7 +56,16 @@
                 }
               </div>
 
-              <!-- Departamento -->
+              @if (!esUsuarioLogueado) {
+                <div class="form-group">
+                  <label>Email *</label>
+                  <input type="email" formControlName="email" placeholder="correo@ejemplo.com"/>
+                  @if (f['email'].touched && f['email'].errors?.['required']) {
+                    <span class="form-error">Campo obligatorio</span>
+                  }
+                </div>
+              }
+
               <div class="form-group">
                 <label>Departamento *</label>
                 <div class="select-wrapper">
@@ -77,7 +84,6 @@
                 }
               </div>
 
-              <!-- Provincia / Ciudad -->
               <div class="form-group">
                 <label>Provincia / Ciudad *</label>
                 <div class="select-wrapper" [class.select-wrapper--disabled]="provincias.length === 0">
@@ -98,7 +104,6 @@
                 }
               </div>
 
-              <!-- Distrito -->
               <div class="form-group">
                 <label>Distrito *</label>
                 <div class="select-wrapper" [class.select-wrapper--disabled]="distritos.length === 0">
@@ -119,13 +124,11 @@
                 }
               </div>
 
-              <!-- Referencia -->
               <div class="form-group">
                 <label>Referencia</label>
                 <input type="text" formControlName="referencia" placeholder="Ej: Frente al parque"/>
               </div>
 
-              <!-- Dirección (fila completa, al final) -->
               <div class="form-group form-group--full">
                 <label>Dirección *</label>
                 <input type="text" formControlName="direccion" placeholder="Ej: Av. Javier Prado 1234"/>
@@ -154,18 +157,116 @@
           <div class="checkout-card">
             <h2 class="checkout-card__title">Método de pago</h2>
 
-            <div class="metodos-grid">
-              @for (m of metodosPago; track m.valor) {
-                <label class="metodo-card" [class.metodo-card--active]="f['metodoPago'].value === m.valor">
-                  <input type="radio" formControlName="metodoPago" [value]="m.valor"/>
-                  <span class="metodo-card__icono">{{ m.icono }}</span>
-                  <span class="metodo-card__label">{{ m.label }}</span>
-                </label>
+            <!-- Métodos guardados del usuario -->
+            @if (esUsuarioLogueado && metodosGuardados().length > 0) {
+              <div class="pago-seccion">
+                <p class="pago-seccion__label">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+                  </svg>
+                  Tus métodos guardados
+                </p>
+                <div class="pago-lista">
+                  @for (m of metodosGuardados(); track m.id) {
+                    <label class="pago-item" [class.pago-item--active]="metodoSeleccionado() === 'guardado-' + m.id">
+                      <input type="radio" name="metodoPago" [value]="'guardado-' + m.id"
+                             (change)="seleccionarMetodo('guardado-' + m.id)"/>
+                      <div class="pago-item__radio"></div>
+                      <span class="pago-item__icon">{{ getIconoTipo(m.tipo) }}</span>
+                      <div class="pago-item__info">
+                        <span class="pago-item__nombre">{{ m.alias }}</span>
+                        <span class="pago-item__detalle">{{ m.detalle }}</span>
+                      </div>
+                      @if (m.esPrincipal) {
+                        <span class="pago-badge">Principal</span>
+                      }
+                    </label>
+                  }
+                </div>
+              </div>
+
+              <div class="pago-divider">
+                <span>o usa otro método</span>
+              </div>
+            }
+
+            <!-- Métodos manuales (Yape, Plin, Transferencia) -->
+            <div class="pago-seccion">
+              @if (!esUsuarioLogueado || metodosGuardados().length === 0) {
+                <p class="pago-seccion__label">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
+                    <line x1="1" y1="10" x2="23" y2="10"/>
+                  </svg>
+                  Selecciona un método
+                </p>
               }
+              <div class="pago-lista">
+                @for (m of metodosManualPago; track m.valor) {
+                  <label class="pago-item" [class.pago-item--active]="metodoSeleccionado() === m.valor">
+                    <input type="radio" name="metodoPago" [value]="m.valor"
+                           (change)="seleccionarMetodo(m.valor)"/>
+                    <div class="pago-item__radio"></div>
+                    <span class="pago-item__icon">{{ m.icono }}</span>
+                    <div class="pago-item__info">
+                      <span class="pago-item__nombre">{{ m.label }}</span>
+                      <span class="pago-item__detalle">{{ m.descripcion }}</span>
+                    </div>
+                  </label>
+                }
+
+                <!-- Tarjeta crédito (Culqi) -->
+                <label class="pago-item" [class.pago-item--active]="metodoSeleccionado() === 'TARJETA_CREDITO'">
+                  <input type="radio" name="metodoPago" value="TARJETA_CREDITO"
+                         (change)="seleccionarMetodo('TARJETA_CREDITO')"/>
+                  <div class="pago-item__radio"></div>
+                  <span class="pago-item__icon">💳</span>
+                  <div class="pago-item__info">
+                    <span class="pago-item__nombre">Tarjeta de crédito / débito</span>
+                    <span class="pago-item__detalle">Visa, Mastercard, Amex — procesado por Culqi</span>
+                  </div>
+                  <div class="pago-item__badges">
+                    <span class="card-badge">VISA</span>
+                    <span class="card-badge">MC</span>
+                  </div>
+                </label>
+              </div>
             </div>
 
+            <!-- Formulario Culqi (aparece al seleccionar tarjeta) -->
+            @if (mostrarFormCulqi()) {
+              <div class="culqi-container">
+                <div class="culqi-header">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                    <path d="M7 11V7a5 5 0 0110 0v4"/>
+                  </svg>
+                  Pago seguro con Culqi
+                </div>
+                <!-- El SDK de Culqi inyecta aquí su iframe -->
+                <!-- Al integrar: llama Culqi.open() aquí con tu public key -->
+                <div id="culqi-form-container" class="culqi-form-placeholder">
+                  <p>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <circle cx="12" cy="12" r="10"/>
+                      <path d="M12 8v4M12 16h.01"/>
+                    </svg>
+                    Integra aquí el SDK de Culqi:
+                  </p>
+                  <code>
+                    Culqi.publicKey = 'pk_test_XXXXX';<br/>
+                    Culqi.settings(&#123; title: 'HaidaInversiones', currency: 'PEN', amount: {{ total() * 100 }} &#125;);<br/>
+                    Culqi.open();
+                  </code>
+                  <a href="https://docs.culqi.com" target="_blank" class="culqi-link">
+                    Ver documentación Culqi →
+                  </a>
+                </div>
+              </div>
+            }
+
             @if (f['metodoPago'].touched && f['metodoPago'].errors?.['required']) {
-              <span class="form-error">Selecciona un método de pago</span>
+              <span class="form-error" style="margin-top: 8px; display: block;">Selecciona un método de pago</span>
             }
 
             <div class="form-group" style="margin-top: 24px">
@@ -186,6 +287,9 @@
                       [class.loading]="enviando()"
                       [disabled]="enviando()">
                 @if (!enviando()) {
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M20 6L9 17l-5-5"/>
+                  </svg>
                   Confirmar pedido
                 } @else {
                   Procesando...
@@ -196,7 +300,7 @@
         </div>
       }
 
-      <!-- ── RESUMEN LATERAL ── -->
+      <!-- RESUMEN LATERAL -->
       @if (carrito$ | async; as carrito) {
         <aside class="checkout-summary">
           <h2 class="checkout-summary__title">Tu pedido</h2>
@@ -232,6 +336,15 @@
           <div class="checkout-summary__total">
             <span>Total</span>
             <span>S/ {{ total() }}</span>
+          </div>
+
+          <!-- Sello de seguridad -->
+          <div class="checkout-security">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+              <path d="M7 11V7a5 5 0 0110 0v4"/>
+            </svg>
+            Pago 100% seguro y encriptado
           </div>
         </aside>
       }

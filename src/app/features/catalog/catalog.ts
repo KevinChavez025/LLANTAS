@@ -1,9 +1,11 @@
-import { Component, OnInit, signal, computed, inject } from '@angular/core';
+import { Component, OnInit, AfterViewInit, signal, computed, inject, PLATFORM_ID } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { ProductoService } from '../../core/services/producto.service';
+import { initRevealObserver } from '../../core/util/reveal.util';
 import { Producto } from '../../core/models/producto.model';
+import { FavoritosService } from '../../core/services/favoritos.service';
 
 @Component({
   selector: 'app-catalog',
@@ -12,16 +14,17 @@ import { Producto } from '../../core/models/producto.model';
   templateUrl: './catalog.html',
   styleUrl: './catalog.scss'
 })
-export class Catalog implements OnInit {
+export class Catalog implements OnInit, AfterViewInit {
+  private platformId    = inject(PLATFORM_ID);
   private productoService = inject(ProductoService);
-  private route           = inject(ActivatedRoute);
+  private favSvc        = inject(FavoritosService);
+  private route         = inject(ActivatedRoute);
 
   todos    = signal<Producto[]>([]);
   cargando = signal(true);
   orden    = signal('nombre');
   busqueda = signal('');
 
-  // ── Filtros activos ───────────────────────────────────────
   filtroMarcas       = signal<Set<string>>(new Set());
   filtroModelos      = signal<Set<string>>(new Set());
   filtroTipos        = signal<Set<string>>(new Set());
@@ -36,7 +39,6 @@ export class Catalog implements OnInit {
   filtroRunFlat      = signal<Set<string>>(new Set());
   filtroPrecioMax    = signal(0);
 
-  // ── Opciones dinámicas extraídas de los productos ─────────
   opcMarcas       = computed(() => uniq(this.todos().map(p => p.marca)));
   opcModelos      = computed(() => uniq(this.todos().map(p => p.modelo)));
   opcTipos        = computed(() => uniq(this.todos().map(p => p.tipoVehiculo)));
@@ -51,7 +53,6 @@ export class Catalog implements OnInit {
   opcRunFlat      = computed(() => uniq(this.todos().map(p => p.runFlat?.toString())));
   precioMaximo    = computed(() => Math.max(...this.todos().map(p => p.precio ?? 0), 0));
 
-  // ── Lista de filtros activos para mostrar los chips ───────
   filtrosActivos = computed(() => {
     const chips: { label: string; signal: any; valor: string }[] = [];
     const add = (sig: ReturnType<typeof signal<Set<string>>>) =>
@@ -71,17 +72,14 @@ export class Catalog implements OnInit {
     return chips;
   });
 
-  // ── Productos filtrados ───────────────────────────────────
   productos = computed(() => {
     let lista = this.todos();
-
     const q = this.busqueda().toLowerCase();
     if (q) lista = lista.filter(p =>
       p.nombre.toLowerCase().includes(q) ||
       p.marca.toLowerCase().includes(q) ||
       p.medida?.toLowerCase().includes(q)
     );
-
     if (this.filtroMarcas().size)       lista = lista.filter(p => this.filtroMarcas().has(p.marca));
     if (this.filtroModelos().size)      lista = lista.filter(p => p.modelo && this.filtroModelos().has(p.modelo));
     if (this.filtroTipos().size)        lista = lista.filter(p => p.tipoVehiculo && this.filtroTipos().has(p.tipoVehiculo));
@@ -95,7 +93,6 @@ export class Catalog implements OnInit {
     if (this.filtroServicio().size)     lista = lista.filter(p => p.servicio && this.filtroServicio().has(p.servicio));
     if (this.filtroRunFlat().size)      lista = lista.filter(p => p.runFlat != null && this.filtroRunFlat().has(p.runFlat.toString()));
     if (this.filtroPrecioMax() > 0)     lista = lista.filter(p => (p.precio ?? 0) <= this.filtroPrecioMax());
-
     switch (this.orden()) {
       case 'precio-asc':  return [...lista].sort((a, b) => a.precio - b.precio);
       case 'precio-desc': return [...lista].sort((a, b) => b.precio - a.precio);
@@ -110,8 +107,9 @@ export class Catalog implements OnInit {
     (this.filtroPrecioMax() > 0 && this.filtroPrecioMax() < this.precioMaximo())
   );
 
+  ngAfterViewInit(): void {}
+
   ngOnInit(): void {
-    // Recibe parámetros del buscador del Home
     this.route.queryParams.subscribe(p => {
       if (p['tipo'])   this.filtroTipos.set(new Set([p['tipo']]));
       if (p['ancho'])  this.filtroAnchos.set(new Set([p['ancho']]));
@@ -128,12 +126,12 @@ export class Catalog implements OnInit {
         this.todos.set(d);
         this.filtroPrecioMax.set(this.precioMaximo());
         this.cargando.set(false);
+        setTimeout(() => initRevealObserver(this.platformId), 150);
       },
       error: () => this.cargando.set(false)
     });
   }
 
-  // ── Toggle de checkbox ────────────────────────────────────
   toggle(sig: ReturnType<typeof signal<Set<string>>>, valor: string): void {
     const s = new Set(sig());
     s.has(valor) ? s.delete(valor) : s.add(valor);
@@ -144,14 +142,12 @@ export class Catalog implements OnInit {
     return sig().has(valor);
   }
 
-  // ── Quitar un chip individual ─────────────────────────────
   quitarFiltro(chip: { signal: any; valor: string }): void {
     const s = new Set(chip.signal());
     s.delete(chip.valor);
     chip.signal.set(s);
   }
 
-  // ── Limpiar todos ─────────────────────────────────────────
   limpiarFiltros(): void {
     [
       this.filtroMarcas, this.filtroModelos, this.filtroTipos,
@@ -177,9 +173,19 @@ export class Catalog implements OnInit {
   onPrecioMax(e: Event): void {
     this.filtroPrecioMax.set(+(e.target as HTMLInputElement).value);
   }
+
+  // ── Favoritos ─────────────────────────────────────────────
+  esFav(id: number): boolean {
+    return this.favSvc.esFavorito(id);
+  }
+
+  toggleFav(event: Event, producto: Producto): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.favSvc.toggleFavorito(producto);
+  }
 }
 
-// ── Helper ────────────────────────────────────────────────
 function uniq(arr: (string | undefined | null)[]): string[] {
   return [...new Set(arr.filter((v): v is string => !!v))].sort();
 }

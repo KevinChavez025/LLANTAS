@@ -13,6 +13,12 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
         return throwError(() => err);
       }
 
+      // Si el 401 viene de TOKEN_INVALID en una ruta pública (ej. crear pedido),
+      // no mostrar toast de "No autorizado" — el backend debería haberlo permitido
+      if (err.status === 401 && err.error?.error === 'TOKEN_INVALID') {
+        return throwError(() => err);
+      }
+
       const msg: Record<number, string> = {
         400: err.error?.message || 'Solicitud incorrecta',
         401: 'No autorizado. Inicia sesión nuevamente',

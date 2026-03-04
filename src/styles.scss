@@ -1,4 +1,4 @@
-  // ========================================
+// ========================================
   // 1. MÓDULOS DEL SISTEMA (Sass y Material)
   // ========================================
   @use 'sass:color'; // Necesario para color.adjust
@@ -206,3 +206,72 @@
       background: $accent-color;
     }
   }
+// ========================================
+// FADE-IN SCROLL ANIMATIONS (GLOBAL)
+// ========================================
+
+// Sections: slide-up al entrar en viewport
+.reveal {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1),
+              transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+
+  &.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Items dentro de secciones: stagger delay
+.reveal-item {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+
+  @for $i from 1 through 10 {
+    &:nth-child(#{$i}) {
+      transition-delay: #{($i - 1) * 0.08}s;
+    }
+  }
+}
+
+.reveal.visible .reveal-item,
+.reveal-item.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+// ========================================
+// MEJORAS GLOBALES DE DISEÑO
+// ========================================
+
+// Scrollbar más delgada y elegante
+::-webkit-scrollbar       { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: #f1f1f1; }
+::-webkit-scrollbar-thumb { background: #c4c4c4; border-radius: 10px;
+  &:hover { background: #1DB954; }
+}
+
+// Focus visible mejorado
+*:focus-visible {
+  outline: 2px solid #1DB954;
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+// Selección de texto verde
+::selection {
+  background: rgba(29, 185, 84, 0.2);
+  color: #111;
+}
+
+// Smooth scroll global
+html {
+  scroll-behavior: smooth;
+}
+
+// Imágenes más nítidas
+img {
+  image-rendering: -webkit-optimize-contrast;
+}
