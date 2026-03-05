@@ -61,6 +61,18 @@ export class OrderDetail implements OnInit {
     return order.indexOf(estadoActual) > order.indexOf(step);
   }
 
+  // Centra la moto (52px ancho) sobre cada punto del timeline
+  motoPosition(estado: string): string {
+    const positions: Record<string, string> = {
+      'PENDIENTE':      'calc(10% - 26px)',
+      'CONFIRMADO':     'calc(27.5% - 26px)',
+      'EN_PREPARACION': 'calc(50% - 26px)',
+      'ENVIADO':        'calc(72.5% - 26px)',
+      'ENTREGADO':      'calc(90% - 26px)',
+    };
+    return positions[estado] ?? '0px';
+  }
+
   igv(): number {
     return Math.round((this.pedido()?.total ?? 0) / 1.18 * 0.18 * 100) / 100;
   }
