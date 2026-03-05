@@ -57,7 +57,6 @@
           <option value="">Todos</option>
           <option value="YAPE">Yape</option>
           <option value="PLIN">Plin</option>
-          <option value="EFECTIVO">Efectivo</option>
           <option value="TRANSFERENCIA">Transferencia</option>
           <option value="TARJETA_CREDITO">Tarjeta crédito</option>
           <option value="TARJETA_DEBITO">Tarjeta débito</option>
@@ -115,7 +114,7 @@
             <tr [style.animation-delay]="(i * 35) + 'ms'">
               <td><span class="order-num">{{ p.numeroPedido }}</span></td>
               <td class="td-date">{{ p.fechaCreacion | date:'dd/MM/yy HH:mm' }}</td>
-              <td class="td-client">{{ p.nombreInvitado ?? p.emailInvitado ?? 'Usuario #' + p.usuario?.id }}</td>
+              <td class="td-client">{{ p.nombreCliente ?? p.nombreInvitado ?? p.emailCliente ?? '—' }}</td>
               <td>
                 @if (p.metodoPago) {
                   <span class="pill" [ngClass]="pillMetodo(p.metodoPago)">
