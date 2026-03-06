@@ -1,0 +1,313 @@
+@use 'sass:color';
+@use '../../../../styles/variables' as *;
+@use '../../../../styles/mixins' as *;
+
+// ── Page shell ────────────────────────────────────────────────
+.favoritos-page {
+  background: $bg-dark;
+  min-height: 100vh;
+  padding: 36px 0 80px;
+}
+
+.container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+
+.page-header {
+  margin-bottom: 30px;
+  &__title { font-size: 1.4rem; font-weight: 800; color: $text-color; margin: 0 0 6px; }
+  &__breadcrumb {
+    font-size: 12px; color: $text-muted;
+    a { color: $text-muted; text-decoration: none; &:hover { color: $primary-color; } }
+  }
+}
+
+// ── Layout ────────────────────────────────────────────────────
+.profile-layout {
+  display: grid;
+  grid-template-columns: 210px 1fr;
+  gap: 24px;
+  align-items: start;
+  @include tablet { grid-template-columns: 1fr; }
+}
+
+// ── Sidebar (igual al de pedidos) ─────────────────────────────
+.user-sidebar {
+  background: $bg-card; border: 1px solid $border-color;
+  border-radius: 14px; overflow: hidden;
+  position: sticky; top: 80px;
+  @include tablet { position: static; }
+  &__nav { padding: 8px 0; }
+}
+
+.user-nav-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 11px 18px; font-size: 13px; font-weight: 500;
+  color: $text-muted; text-decoration: none;
+  transition: all 0.15s;
+  border-left: 3px solid transparent;
+
+  &:hover { background: $bg-dark; color: $text-color; }
+  &.active {
+    background: rgba($primary-color, 0.07);
+    color: $primary-color; font-weight: 700;
+    border-left-color: $primary-color;
+  }
+  svg { flex-shrink: 0; }
+}
+
+// ── Main content ──────────────────────────────────────────────
+.favoritos-main {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+// ── Header con contador y botón limpiar ───────────────────────
+.favoritos-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2px;
+}
+
+.favoritos-count {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: $text-muted;
+
+  strong { color: $text-color; }
+}
+
+.btn-limpiar {
+  display: flex; align-items: center; gap: 6px;
+  background: none; border: 1px solid $border-color;
+  border-radius: 8px; padding: 6px 12px;
+  font-size: 0.75rem; font-weight: 600;
+  color: $text-muted; cursor: pointer;
+  transition: all 0.15s;
+
+  &:hover {
+    border-color: $danger-color;
+    color: $danger-color;
+    background: rgba($danger-color, 0.04);
+  }
+}
+
+// ── Grid de cards ─────────────────────────────────────────────
+.favoritos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 16px;
+
+  @include tablet {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @include mobile {
+    grid-template-columns: 1fr;
+  }
+}
+
+// ── Card ──────────────────────────────────────────────────────
+.fav-card {
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: 14px;
+  overflow: hidden;
+  transition: box-shadow 0.2s, transform 0.2s;
+  animation: fadeUp 0.4s ease both;
+
+  &:hover {
+    box-shadow: $shadow-md;
+    transform: translateY(-2px);
+
+    .fav-card__img { transform: scale(1.04); }
+    .btn-unfav { opacity: 1; }
+  }
+}
+
+// ── Imagen ────────────────────────────────────────────────────
+.fav-card__img-wrap {
+  display: block;
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 4 / 3;
+  background: #f4f4f5;
+  text-decoration: none;
+}
+
+.fav-card__img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.fav-card__img-placeholder {
+  width: 100%; height: 100%;
+  display: flex; align-items: center; justify-content: center;
+  color: #d1d5db;
+}
+
+// ── Badges sobre imagen ───────────────────────────────────────
+.fav-card__badges {
+  position: absolute; top: 10px; left: 10px;
+  display: flex; flex-direction: column; gap: 4px;
+}
+
+.badge-new {
+  background: $primary-color; color: white;
+  font-size: 0.62rem; font-weight: 800;
+  letter-spacing: 0.05em; text-transform: uppercase;
+  padding: 3px 8px; border-radius: 20px;
+}
+
+.badge-out {
+  background: rgba($danger-color, 0.9); color: white;
+  font-size: 0.62rem; font-weight: 800;
+  letter-spacing: 0.05em; text-transform: uppercase;
+  padding: 3px 8px; border-radius: 20px;
+}
+
+// ── Botón quitar favorito ─────────────────────────────────────
+.btn-unfav {
+  position: absolute; top: 10px; right: 10px;
+  width: 32px; height: 32px;
+  background: white; border: none;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  color: #ef4444;
+  cursor: pointer;
+  opacity: 0;
+  box-shadow: $shadow-sm;
+  transition: all 0.2s;
+
+  &:hover {
+    background: #fef2f2;
+    transform: scale(1.1);
+  }
+}
+
+// ── Body ──────────────────────────────────────────────────────
+.fav-card__body {
+  padding: 14px 16px;
+  display: flex; flex-direction: column; gap: 6px;
+}
+
+.fav-card__meta {
+  display: flex; align-items: center; gap: 6px;
+  flex-wrap: wrap;
+}
+
+.fav-card__marca {
+  font-size: 0.7rem; font-weight: 800;
+  text-transform: uppercase; letter-spacing: 0.06em;
+  color: $primary-color;
+}
+
+.fav-card__tipo {
+  font-size: 0.67rem; color: $text-muted;
+  background: $bg-dark; padding: 2px 7px;
+  border-radius: 20px; border: 1px solid $border-color;
+}
+
+.fav-card__nombre {
+  font-size: 0.83rem; font-weight: 700;
+  color: $text-color; text-decoration: none;
+  line-height: 1.35;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+
+  &:hover { color: $primary-color; }
+}
+
+.fav-card__medida {
+  font-size: 0.72rem; color: $text-muted; margin: 0;
+}
+
+// ── Footer precio + acciones ──────────────────────────────────
+.fav-card__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 4px;
+  padding-top: 10px;
+  border-top: 1px solid $border-color;
+}
+
+.fav-card__precio {
+  font-size: 1rem; font-weight: 800; color: $text-color;
+}
+
+.fav-card__actions {
+  display: flex; gap: 6px;
+}
+
+.btn-detail {
+  display: flex; align-items: center; justify-content: center;
+  width: 32px; height: 32px;
+  border: 1px solid $border-color; border-radius: 8px;
+  color: $text-muted; text-decoration: none;
+  transition: all 0.15s;
+
+  &:hover {
+    border-color: $primary-color;
+    color: $primary-color;
+    background: rgba($primary-color, 0.05);
+  }
+}
+
+.btn-cart {
+  display: flex; align-items: center; gap: 5px;
+  padding: 0 12px; height: 32px;
+  background: $primary-color; color: white;
+  border: none; border-radius: 8px;
+  font-size: 0.73rem; font-weight: 700;
+  cursor: pointer; transition: all 0.2s;
+  white-space: nowrap;
+
+  &:hover:not(:disabled) {
+    background: color.adjust($primary-color, $lightness: -8%);
+    transform: scale(1.03);
+  }
+
+  &:disabled {
+    background: $border-color;
+    color: $text-muted;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  &--added {
+    background: color.adjust($primary-color, $lightness: -5%);
+  }
+}
+
+// ── Estado vacío ──────────────────────────────────────────────
+.state-box {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 14px; padding: 70px 20px; text-align: center;
+  background: $bg-card; border: 1px solid $border-color;
+  border-radius: 14px; color: $text-muted;
+
+  &__icon {
+    width: 80px; height: 80px;
+    background: rgba($primary-color, 0.07);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    color: $primary-color;
+    svg { opacity: 0.6; }
+  }
+
+  h3 { font-size: 1.1rem; font-weight: 700; color: $text-color; margin: 0; }
+  p  { font-size: 0.85rem; margin: 0; max-width: 300px; }
+}
+
+.btn { padding: 9px 22px; border-radius: 8px; font-size: 0.85rem; font-weight: 700; text-decoration: none; display: inline-block; }
+.btn-primary { background: $primary-color; color: white; transition: background 0.15s; &:hover { background: color.adjust($primary-color, $lightness: -8%); } }
+
+// ── Animaciones ───────────────────────────────────────────────
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}

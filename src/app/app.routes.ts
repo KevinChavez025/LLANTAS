@@ -77,6 +77,10 @@ export const routes: Routes = [
         loadComponent: () => import('./features/user/orders/order-detail/order-detail').then(m => m.OrderDetail)
       },
       {
+        path: 'favoritos',
+        loadComponent: () => import('./features/user/favoritos/favoritos').then(m => m.Favoritos)
+      },
+      {
         path: 'configuracion',
         loadComponent: () => import('./features/user/settings/settings').then(m => m.Settings)
       }

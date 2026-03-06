@@ -4,6 +4,7 @@ import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { AuthService } from '../../../core/services/auth.service';
 import { CarritoService } from '../../../core/services/carrito.service';
+import { FavoritosService } from '../../../core/services/favoritos.service';
 
 interface Categoria {
   nombre: string;
@@ -30,7 +31,8 @@ export class Navbar implements OnInit {
 
   constructor(
     public authService: AuthService,
-    private carritoService: CarritoService
+    private carritoService: CarritoService,
+    private favoritosService: FavoritosService
   ) {}
 
   ngOnInit(): void {
@@ -55,6 +57,7 @@ export class Navbar implements OnInit {
   }
 
   logout(): void {
+    this.favoritosService.limpiarAlLogout();
     this.authService.logout();
     this.isMenuOpen = false;
   }

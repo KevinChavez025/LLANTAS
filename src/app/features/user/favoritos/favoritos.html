@@ -1,0 +1,167 @@
+<div class="favoritos-page">
+  <div class="container">
+
+    <div class="page-header">
+      <h1 class="page-header__title">Mis favoritas</h1>
+      <nav class="page-header__breadcrumb">
+        <a routerLink="/home">Inicio</a> / <span>Mis favoritas</span>
+      </nav>
+    </div>
+
+    <div class="profile-layout">
+
+      <!-- Sidebar -->
+      <aside class="user-sidebar">
+        <nav class="user-sidebar__nav">
+          <a routerLink="/usuario/perfil" routerLinkActive="active" class="user-nav-item">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+            </svg>
+            Mi perfil
+          </a>
+          <a routerLink="/usuario/pedidos" routerLinkActive="active" class="user-nav-item">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4zM3 6h18M16 10a4 4 0 01-8 0"/>
+            </svg>
+            Mis pedidos
+          </a>
+          <a routerLink="/usuario/favoritos" routerLinkActive="active" class="user-nav-item">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+            </svg>
+            Mis favoritas
+          </a>
+          <a routerLink="/usuario/configuracion" routerLinkActive="active" class="user-nav-item">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="3"/>
+              <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/>
+            </svg>
+            Configuración
+          </a>
+        </nav>
+      </aside>
+
+      <!-- Contenido -->
+      <div class="favoritos-main">
+
+        <!-- Estado vacío -->
+        @if (total() === 0) {
+          <div class="state-box">
+            <div class="state-box__icon">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+              </svg>
+            </div>
+            <h3>Aún no tienes favoritas</h3>
+            <p>Guarda las llantas que te interesen para encontrarlas fácilmente.</p>
+            <a routerLink="/catalogo" class="btn btn-primary">Explorar catálogo</a>
+          </div>
+        }
+
+        <!-- Lista de favoritos -->
+        @if (total() > 0) {
+          <div class="favoritos-header">
+            <span class="favoritos-count">{{ total() }} {{ total() === 1 ? 'llanta guardada' : 'llantas guardadas' }}</span>
+            <button class="btn-limpiar" (click)="limpiarTodo()">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/>
+                <path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/>
+              </svg>
+              Limpiar todo
+            </button>
+          </div>
+
+          <div class="favoritos-grid">
+            @for (producto of favoritos(); track producto.id; let i = $index) {
+              <div class="fav-card" [style.animation-delay]="(i * 60) + 'ms'">
+
+                <!-- Imagen -->
+                <a [routerLink]="['/producto', producto.id]" class="fav-card__img-wrap">
+                  @if (producto.urlImagen) {
+                    <img [src]="producto.urlImagen" [alt]="producto.nombre" class="fav-card__img" loading="lazy">
+                  } @else {
+                    <div class="fav-card__img-placeholder">
+                      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+                        <circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/>
+                        <line x1="12" y1="2" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="22"/>
+                        <line x1="2" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="22" y2="12"/>
+                      </svg>
+                    </div>
+                  }
+
+                  <!-- Badges -->
+                  <div class="fav-card__badges">
+                    @if (producto.esNuevo) {
+                      <span class="badge-new">Nuevo</span>
+                    }
+                    @if (!producto.disponible) {
+                      <span class="badge-out">Agotado</span>
+                    }
+                  </div>
+
+                  <!-- Botón eliminar favorito -->
+                  <button class="btn-unfav" (click)="$event.preventDefault(); eliminarFavorito(producto)" title="Quitar de favoritos">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2">
+                      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                    </svg>
+                  </button>
+                </a>
+
+                <!-- Info -->
+                <div class="fav-card__body">
+                  <div class="fav-card__meta">
+                    <span class="fav-card__marca">{{ producto.marca }}</span>
+                    @if (producto.tipoVehiculo) {
+                      <span class="fav-card__tipo">{{ producto.tipoVehiculo }}</span>
+                    }
+                  </div>
+
+                  <a [routerLink]="['/producto', producto.id]" class="fav-card__nombre">
+                    {{ producto.nombre }}
+                  </a>
+
+                  @if (producto.medida) {
+                    <p class="fav-card__medida">{{ producto.medida }}</p>
+                  }
+
+                  <div class="fav-card__footer">
+                    <span class="fav-card__precio">S/ {{ producto.precio | number:'1.2-2' }}</span>
+
+                    <div class="fav-card__actions">
+                      <a [routerLink]="['/producto', producto.id]" class="btn-detail" title="Ver detalle">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+                        </svg>
+                      </a>
+
+                      <button
+                        class="btn-cart"
+                        [class.btn-cart--added]="enCarrito().has(producto.id)"
+                        [disabled]="!producto.disponible || producto.stock === 0"
+                        (click)="agregarAlCarrito(producto)"
+                        [title]="producto.disponible ? 'Agregar al carrito' : 'Sin stock'">
+                        @if (enCarrito().has(producto.id)) {
+                          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                            <polyline points="20 6 9 17 4 12"/>
+                          </svg>
+                        } @else {
+                          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
+                            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+                          </svg>
+                        }
+                        {{ enCarrito().has(producto.id) ? '¡Añadido!' : (producto.disponible ? 'Al carrito' : 'Sin stock') }}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            }
+          </div>
+        }
+
+      </div>
+    </div>
+  </div>
+</div>
