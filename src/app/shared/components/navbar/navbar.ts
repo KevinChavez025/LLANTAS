@@ -1,6 +1,6 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink, RouterLinkActive } from '@angular/router';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { AuthService } from '../../../core/services/auth.service';
 import { CarritoService } from '../../../core/services/carrito.service';
@@ -20,6 +20,7 @@ interface Categoria {
 })
 export class Navbar implements OnInit {
   private sanitizer = inject(DomSanitizer);
+  private router = inject(Router);
 
   isMenuOpen = false;
   cartCount = 0;
@@ -42,6 +43,11 @@ export class Navbar implements OnInit {
     this.carritoService.carrito$.subscribe(carrito => {
       this.cartCount = carrito?.cantidadItems || 0;
     });
+  }
+
+  showCatBar(): boolean {
+    const url = this.router.url.split('?')[0];
+    return ['/', '/home', '/nosotros', '/contacto'].includes(url) || url.startsWith('/catalogo');
   }
 
   toggleMenu(): void {

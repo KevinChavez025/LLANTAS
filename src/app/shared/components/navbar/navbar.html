@@ -92,7 +92,7 @@
 </nav>
 
 <!-- ═══════════════ BARRA DE CATEGORÍAS ══════════════════ -->
-<div class="cat-bar">
+<div class="cat-bar" *ngIf="showCatBar()">
   <div class="cat-bar__container">
     @for (cat of categorias; track cat.query) {
       <a [routerLink]="['/catalogo']" [queryParams]="{tipo: cat.query}"

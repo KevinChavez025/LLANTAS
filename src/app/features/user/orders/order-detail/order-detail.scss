@@ -18,7 +18,6 @@
   @include flex-between;
   flex-wrap: wrap; gap: 12px;
   margin-bottom: 28px;
-
   &__title { font-size: 22px; font-weight: 800; color: $text-color; margin-bottom: 6px; }
   &__breadcrumb {
     font-size: 13px; color: $text-muted;
@@ -27,7 +26,6 @@
   }
 }
 
-// ── LAYOUT ───────────────────────────────────
 .detail-layout {
   display: grid;
   grid-template-columns: 1fr 300px;
@@ -38,13 +36,11 @@
 
 .detail-main { @include flex-column; gap: 16px; }
 
-// ── CARDS ─────────────────────────────────────
 .detail-card {
   background: $bg-card;
   border: 1px solid $border-color;
   border-radius: $radius-lg;
   padding: 24px;
-  overflow: visible;
   @include mobile { padding: 18px; }
 
   &__header {
@@ -61,34 +57,12 @@
 }
 
 // ── TIMELINE ─────────────────────────────────
-.timeline-wrap {
-  position: relative;
-  padding-top: 64px;
-  overflow: visible;
-}
-
-.timeline-moto {
-  position: absolute;
-  top: 8px;
-  transition: left 0.7s cubic-bezier(0.4, 0, 0.2, 1);
-  z-index: 10;
-  filter: drop-shadow(0 3px 6px rgba(0,0,0,0.2));
-  animation: moto-bounce 1.4s ease-in-out infinite;
-  pointer-events: none;
-  svg { display: block; width: 52px; height: 52px; }
-}
-
-@keyframes moto-bounce {
-  0%, 100% { transform: translateY(0px); }
-  50%       { transform: translateY(-3px); }
-}
-
 .timeline {
   display: flex;
   align-items: flex-start;
-  overflow-x: auto;
-  padding-bottom: 4px;
   gap: 0;
+  overflow-x: auto;
+  padding-bottom: 8px;
 }
 
 .timeline__step {
@@ -101,86 +75,74 @@
   position: relative;
   color: $text-muted;
 
-  // Línea conectora
+  // La línea va desde el borde derecho del círculo (50% + 26px) hasta el borde izquierdo del siguiente (100% - 26px)
   &:not(:last-child)::after {
     content: '';
     position: absolute;
-    top: 18px; left: 50%;
-    width: 100%; height: 2px;
+    top: 26px;
+    left: calc(50% + 26px);
+    width: calc(100% - 52px);
+    height: 2px;
     background: $border-color;
     z-index: 0;
-    transition: background 0.2s;
+    transition: background 0.3s;
   }
 
   &.done:not(:last-child)::after {
     background: $primary-color;
   }
 
-  &__icon {
-    width: 36px; height: 36px;
-    border-radius: 50%;
-    background: $border-color;
-    border: 3px solid $bg-card;
-    position: relative; z-index: 1;
-    display: flex; align-items: center; justify-content: center;
-    flex-shrink: 0;
-    transition: background 0.2s, box-shadow 0.2s;
-    color: #aaa;
-
-    svg {
-      width: 20px; height: 20px;
-      display: block;
-    }
-  }
-
   &__label {
     font-size: 11px; text-align: center; line-height: 1.3;
   }
 
-  &.done {
+  &.done .timeline__icon {
+    background: rgba($primary-color, 0.12);
+    border-color: rgba($primary-color, 0.2);
     color: $primary-color;
-    &::after { background: $primary-color; }
-    .timeline__icon {
-      background: rgba($primary-color, 0.12);
-      border-color: rgba($primary-color, 0.2);
-      color: $primary-color;
-    }
   }
 
   &.active {
     color: $text-color; font-weight: 700;
-    .timeline__icon {
-      background: $primary-color;
-      border-color: $primary-color;
-      color: white;
-      box-shadow: 0 0 0 4px rgba($primary-color, 0.2);
-    }
   }
+
+  &.active .timeline__icon {
+    background: $primary-color;
+    border-color: $primary-color;
+    color: white;
+    box-shadow: 0 0 0 4px rgba($primary-color, 0.2);
+  }
+}
+
+.timeline__icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: #e5e7eb;
+  border: 3px solid white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 2;
+  color: #9ca3af;
+  flex-shrink: 0;
+  transition: background 0.3s, box-shadow 0.3s, border-color 0.3s;
+}
+
+.timeline__icon svg {
+  width: 28px;
+  height: 28px;
+  display: block;
+  flex-shrink: 0;
 }
 
 // ── TABLA PRODUCTOS ───────────────────────────
 .products-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 13px;
-
-  thead tr {
-    border-bottom: 1px solid $border-color;
-    background: $bg-dark;
-  }
-
-  th {
-    padding: 10px 14px;
-    font-size: 11px; font-weight: 700;
-    text-transform: uppercase; letter-spacing: 0.7px;
-    color: $text-muted; text-align: left;
-  }
-
-  tbody tr {
-    border-bottom: 1px solid $border-color;
-    &:last-child { border-bottom: none; }
-  }
-
+  width: 100%; border-collapse: collapse; font-size: 13px;
+  thead tr { border-bottom: 1px solid $border-color; background: $bg-dark; }
+  th { padding: 10px 14px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.7px; color: $text-muted; text-align: left; }
+  tbody tr { border-bottom: 1px solid $border-color; &:last-child { border-bottom: none; } }
   td { padding: 14px; color: $text-color; vertical-align: middle; }
 }
 
@@ -190,12 +152,7 @@
 .td-right    { text-align: right; }
 .td-bold     { font-weight: 800; }
 
-// ── DIRECCIÓN ────────────────────────────────
-.address-grid {
-  display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
-  @include mobile { grid-template-columns: 1fr; }
-}
-
+.address-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; @include mobile { grid-template-columns: 1fr; } }
 .address-field {
   @include flex-column; gap: 3px;
   &--full { grid-column: 1 / -1; }
@@ -203,31 +160,18 @@
   span:last-child { font-size: 14px; color: $text-color; }
 }
 
-// ── RESUMEN LATERAL ──────────────────────────
 .detail-aside { position: sticky; top: 80px; @include tablet { position: static; } }
 
 .summary-lines { @include flex-column; gap: 10px; margin-bottom: 12px; }
-.summary-line {
-  @include flex-between; font-size: 13px; color: $text-muted;
-  .text-muted { font-style: italic; }
-}
-.summary-total {
-  @include flex-between;
-  font-size: 18px; font-weight: 800; color: $text-color;
-  padding: 14px 0; border-top: 2px solid $border-color; margin-top: 4px;
-}
-.summary-meta {
-  margin-top: 16px; padding-top: 16px;
-  border-top: 1px solid $border-color;
-  @include flex-column; gap: 12px;
-}
+.summary-line { @include flex-between; font-size: 13px; color: $text-muted; .text-muted { font-style: italic; } }
+.summary-total { @include flex-between; font-size: 18px; font-weight: 800; color: $text-color; padding: 14px 0; border-top: 2px solid $border-color; margin-top: 4px; }
+.summary-meta { margin-top: 16px; padding-top: 16px; border-top: 1px solid $border-color; @include flex-column; gap: 12px; }
 .meta-item {
   @include flex-column; gap: 2px;
   &__label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: $text-muted; }
   span:last-child { font-size: 13px; color: $text-color; font-weight: 600; }
 }
 
-// ── BADGES ───────────────────────────────────
 .badge {
   font-size: 10px; font-weight: 700; letter-spacing: 0.5px;
   text-transform: uppercase; padding: 4px 10px; border-radius: 100px;
@@ -239,7 +183,6 @@
   &--secondary { background: rgba($text-muted, 0.12); color: $text-muted; }
 }
 
-// ── ESTADOS ──────────────────────────────────
 .state-box {
   @include flex-center; flex-direction: column; gap: 14px;
   padding: 60px 20px; text-align: center;
