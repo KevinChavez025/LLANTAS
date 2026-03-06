@@ -34,6 +34,12 @@
             </svg>
             Mis pedidos
           </a>
+          <a routerLink="/usuario/favoritos" routerLinkActive="active" class="user-nav-item">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+            </svg>
+            Mis favoritas
+          </a>
           <a routerLink="/usuario/configuracion" routerLinkActive="active" class="user-nav-item">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <circle cx="12" cy="12" r="3"/>
@@ -233,6 +239,57 @@
                     </svg>
                   </button>
                 </a>
+              }
+            </div>
+          }
+        </div>
+
+
+        <!-- ÚLTIMAS COMPRAS -->
+        <div class="profile-card ultimas-compras-card">
+          <div class="profile-card__header">
+            <div>
+              <h2 class="profile-card__title">Mis últimas compras</h2>
+              <p class="profile-card__subtitle">Historial reciente de tus pedidos</p>
+            </div>
+            <a routerLink="/usuario/pedidos" class="btn btn-outline btn-sm">Ver todos</a>
+          </div>
+
+          @if (ultimaCompras().length === 0) {
+            <div class="metodos-empty">
+              <div class="metodos-empty__icon">
+                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4zM3 6h18M16 10a4 4 0 01-8 0"/>
+                </svg>
+              </div>
+              <p class="metodos-empty__title">Sin compras aún</p>
+              <p class="metodos-empty__text">Cuando realices una compra aparecerá aquí</p>
+              <a routerLink="/catalogo" class="btn btn-primary" style="margin-top:12px; display:inline-flex">
+                Ir al catálogo
+              </a>
+            </div>
+          } @else {
+            <div class="ultimas-lista">
+              @for (pedido of ultimaCompras(); track pedido.id) {
+                <div class="ultima-row">
+                  <div class="ultima-row__info">
+                    <span class="ultima-row__num">#{{ pedido.id }}</span>
+                    <span class="ultima-row__fecha">{{ pedido.fechaCreacion | date:'dd/MM/yyyy' }}</span>
+                    <span class="badge" [ngClass]="estadoBadge(pedido.estado)">{{ estadoLabel(pedido.estado) }}</span>
+                  </div>
+                  <div class="ultima-row__productos">
+                    @for (item of getItems(pedido).slice(0,2); track item.id) {
+                      <span class="item-chip">{{ item.nombreProducto | slice:0:30 }}</span>
+                    }
+                    @if (getItems(pedido).length > 2) {
+                      <span class="item-more">+{{ getItems(pedido).length - 2 }} más</span>
+                    }
+                  </div>
+                  <div class="ultima-row__actions">
+                    <span class="ultima-row__total">S/ {{ pedido.total | number:'1.2-2' }}</span>
+                    <a [routerLink]="['/usuario/pedidos', pedido.id]" class="btn btn-outline btn-sm">Ver detalle</a>
+                  </div>
+                </div>
               }
             </div>
           }

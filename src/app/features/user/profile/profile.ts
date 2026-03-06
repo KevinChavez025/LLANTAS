@@ -1,5 +1,5 @@
 import { Component, OnInit, signal, inject } from '@angular/core';
-import { CommonModule, AsyncPipe, LowerCasePipe } from '@angular/common';
+import { CommonModule, AsyncPipe, LowerCasePipe, DecimalPipe, DatePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
@@ -8,11 +8,13 @@ import { UsuarioService } from '../../../core/services/usuario.service';
 import { MetodoPagoGuardadoService } from '../../../core/services/metodo-pago-guardado.service';
 import { MetodoPagoGuardado, TipoMetodoPago } from '../../../core/models/metodo-pago-guardado.model';
 import { FavoritosService } from '../../../core/services/favoritos.service';
+import { PedidoService } from '../../../core/services/pedido.service';
+import { Pedido } from '../../../core/models/pedido.model';
 
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [CommonModule, RouterLink, ReactiveFormsModule, AsyncPipe, LowerCasePipe],
+  imports: [CommonModule, RouterLink, ReactiveFormsModule, AsyncPipe, LowerCasePipe, DecimalPipe, DatePipe],
   templateUrl: './profile.html',
   styleUrl: './profile.scss'
 })
@@ -21,6 +23,7 @@ export class Profile implements OnInit {
   private svc       = inject(UsuarioService);
   private metodoSvc    = inject(MetodoPagoGuardadoService);
   private favSvc       = inject(FavoritosService);
+  private pedidoSvc    = inject(PedidoService);
   private fb        = inject(FormBuilder);
   private toastr    = inject(ToastrService);
 
@@ -30,6 +33,7 @@ export class Profile implements OnInit {
 
   metodosGuardados = signal<MetodoPagoGuardado[]>([]);
   cargandoMetodos  = signal(false);
+  ultimaCompras    = signal<Pedido[]>([]);
   modalAbierto     = signal(false);
   guardandoMetodo  = signal(false);
 
@@ -57,6 +61,7 @@ export class Profile implements OnInit {
   });
 
   ngOnInit(): void {
+    this._cargarUltimasCompras();
     this.svc.obtenerPerfil().subscribe({
       next: (u) => this.form.patchValue(u),
       error: () => {
@@ -176,4 +181,37 @@ export class Profile implements OnInit {
       this.favSvc.limpiar();
     }
   }
+  private _cargarUltimasCompras(): void {
+    this.auth.currentUser$.subscribe(user => {
+      if (user?.id) {
+        this.pedidoSvc.obtenerMisPedidos(user.id).subscribe({
+          next: pedidos => this.ultimaCompras.set(pedidos.slice(0, 5)),
+          error: () => {}
+        });
+      }
+    });
+  }
+
+  estadoLabel(estado: string): string {
+    const map: Record<string, string> = {
+      PENDIENTE: 'Pendiente', CONFIRMADO: 'Confirmado',
+      EN_PREPARACION: 'En preparación', ENVIADO: 'Enviado',
+      ENTREGADO: 'Entregado', CANCELADO: 'Cancelado',
+    };
+    return map[estado] ?? estado;
+  }
+
+  estadoBadge(estado: string): string {
+    const map: Record<string, string> = {
+      PENDIENTE: 'badge--warning', CONFIRMADO: 'badge--info',
+      EN_PREPARACION: 'badge--info', ENVIADO: 'badge--primary',
+      ENTREGADO: 'badge--success', CANCELADO: 'badge--danger',
+    };
+    return map[estado] ?? 'badge--secondary';
+  }
+
+  getItems(pedido: Pedido) {
+    return pedido.detalles || (pedido as any).items || [];
+  }
+
 }

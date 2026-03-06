@@ -25,7 +25,7 @@ export class Home implements OnInit, AfterViewInit {
   cargando           = signal(true);
 
   // ── WhatsApp ──────────────────────────────────────────────
-  readonly whatsappNumero  = '51999999999'; // ← cambia por el número real
+  readonly whatsappNumero  = '51923402825'; // ← cambia por el número real
   readonly whatsappMensaje = encodeURIComponent('Hola, quisiera consultar sobre llantas.');
   readonly whatsappUrl     = `https://wa.me/${this.whatsappNumero}?text=${this.whatsappMensaje}`;
 

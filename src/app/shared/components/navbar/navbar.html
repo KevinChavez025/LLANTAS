@@ -61,6 +61,7 @@
         <div class="dropdown" [class.show]="isMenuOpen">
           <a routerLink="/usuario/perfil" (click)="toggleMenu()">Mi Perfil</a>
           <a routerLink="/usuario/pedidos" (click)="toggleMenu()">Mis Pedidos</a>
+          <a routerLink="/usuario/favoritos" (click)="toggleMenu()">Mis Favoritas</a>
           <a *ngIf="isAdmin" routerLink="/admin/dashboard" (click)="toggleMenu()">Panel Admin</a>
           <hr>
           <button (click)="logout()" class="logout-btn">Cerrar Sesión</button>
@@ -85,6 +86,7 @@
     <hr>
     <a *ngIf="isAuthenticated" routerLink="/usuario/perfil" (click)="toggleMenu()">Mi Perfil</a>
     <a *ngIf="isAuthenticated" routerLink="/usuario/pedidos" (click)="toggleMenu()">Mis Pedidos</a>
+    <a *ngIf="isAuthenticated" routerLink="/usuario/favoritos" (click)="toggleMenu()">Mis Favoritas</a>
     <a *ngIf="isAdmin" routerLink="/admin/dashboard" (click)="toggleMenu()">Panel Admin</a>
     <button *ngIf="isAuthenticated" (click)="logout()" class="btn btn-danger">Cerrar Sesión</button>
     <a *ngIf="!isAuthenticated" routerLink="/login" (click)="toggleMenu()" class="btn btn-primary">Iniciar Sesión</a>

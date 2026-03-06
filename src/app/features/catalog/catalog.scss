@@ -306,48 +306,58 @@ $filter-active-check: #fff;           // Checkmark blanco sobre fondo verde sobr
   &:hover { background: rgba($primary-color, 0.2); }
 }
 
-// ── PRODUCT GRID ────────────────────────────
-.products-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
-
-  @include tablet { grid-template-columns: repeat(2, 1fr); }
-  @include mobile { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+// ── PRODUCT LIST (vista horizontal) ────────
+.products-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
-.product-card {
+.product-row {
   background: $bg-card;
   border: 1px solid $border-color;
   border-radius: $radius-md;
+  display: grid;
+  grid-template-columns: 180px 1fr 280px 210px;
+  align-items: stretch;
   overflow: hidden;
-  text-decoration: none;
-  display: flex;
-  flex-direction: column;
+  min-height: 140px;
   transition: all $transition-normal;
 
   &:hover {
-    border-color: rgba($primary-color, 0.35);
-    box-shadow: 0 6px 20px rgba(0,0,0,0.08);
-    transform: translateY(-3px);
+    border-color: rgba($primary-color, 0.3);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
   }
 
-  &__img {
+  @include tablet {
+    grid-template-columns: 140px 1fr 220px 180px;
+  }
+
+  @include mobile {
+    grid-template-columns: 100px 1fr;
+    grid-template-rows: auto auto;
+  }
+
+  &__img-wrap {
     position: relative;
     aspect-ratio: 1;
     background: #f8f8f8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     overflow: hidden;
+    border-right: 1px solid $border-color;
+    height: 100%;
 
     img {
-      width: 100%;
-      height: 100%;
+      width: 85%;
+      height: 85%;
       object-fit: contain;
-      padding: 12px;
       transition: transform $transition-normal;
     }
-  }
 
-  &:hover &__img img { transform: scale(1.04); }
+    &:hover img { transform: scale(1.05); }
+  }
 
   &__badge {
     position: absolute;
@@ -360,68 +370,166 @@ $filter-active-check: #fff;           // Checkmark blanco sobre fondo verde sobr
     border-radius: 2px;
     text-transform: uppercase;
 
-    &--new  { background: $primary-color; color: #fff; }
-    &--out  { background: #e5e5e5;        color: #666; }
+    &--new { background: $primary-color; color: #fff; }
+    &--out { background: #e5e5e5; color: #666; }
   }
 
-  &__body {
-    padding: 12px 14px 14px;
+  &__info {
+    padding: 20px 24px;
     display: flex;
     flex-direction: column;
-    flex: 1;
-    gap: 4px;
+    justify-content: center;
+    gap: 8px;
+    border-right: 1px solid $border-color;
+
+    @include mobile { padding: 14px 16px; border-right: none; }
   }
 
-  &__brand {
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: 1.5px;
+  &__brand-text {
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 2px;
     text-transform: uppercase;
     color: $primary-color;
-    margin: 0;
   }
 
   &__name {
-    font-size: 13px;
+    font-size: 15px;
     font-weight: 700;
     color: $text-color;
+    text-decoration: none;
     line-height: 1.35;
-    margin: 0;
-    @include line-clamp(2);
-  }
 
-  &__medida {
-    font-size: 11px;
-    color: $text-muted;
-    margin: 0;
-  }
-
-  &__footer {
-    @include flex-between;
-    align-items: center;
-    margin-top: auto;
-    padding-top: 10px;
-    border-top: 1px solid $border-color;
+    &:hover { color: $primary-color; }
   }
 
   &__price {
-    font-size: 18px;
-    font-weight: 800;
+    font-size: 22px;
+    font-weight: 900;
     color: $text-color;
+    margin: 4px 0 0;
 
     &--consult {
-      font-size: 12px;
+      font-size: 14px;
       font-weight: 600;
       color: $text-muted;
     }
   }
 
-  &__cta {
-    font-size: 11px;
-    font-weight: 700;
-    color: $primary-color;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+  &__specs {
+    padding: 16px 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 7px;
+    border-right: 1px solid $border-color;
+
+    @include mobile {
+      grid-column: 1 / -1;
+      border-right: none;
+      border-top: 1px solid $border-color;
+      flex-direction: row;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding: 12px 16px;
+    }
+  }
+
+  &__actions {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: stretch;
+    gap: 8px;
+
+    @include mobile {
+      grid-column: 1 / -1;
+      flex-direction: column;
+      border-top: 1px solid $border-color;
+      padding: 12px 16px;
+    }
+  }
+}
+
+.spec-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: $text-muted;
+
+  strong { color: $text-color; font-weight: 600; }
+
+  &__icon {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    color: #b0b0b0;
+
+    &--green  { color: $primary-color; }
+    &--yellow { color: $secondary-color; }
+    &--blue   { color: $info-color; }
+  }
+}
+
+.btn-add-cart {
+  display: block;
+  width: 100%;
+  padding: 12px 16px;
+  background: $primary-color;
+  color: #fff;
+  text-align: center;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  text-decoration: none;
+  border-radius: $radius-sm;
+  border: none;
+  cursor: pointer;
+  transition: background $transition-fast;
+
+  &:hover { background: color.adjust($primary-color, $lightness: -8%); }
+}
+
+.fav-btn--row {
+  position: static !important;
+  top: auto !important;
+  right: auto !important;
+  z-index: auto !important;
+  width: 100% !important;
+  height: auto !important;
+  padding: 9px 16px;
+  border: 1px solid $border-color !important;
+  border-radius: $radius-sm !important;
+  background: $bg-card !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  color: $text-muted !important;
+  cursor: pointer;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  transition: all $transition-fast;
+  transform: none !important;
+
+  &:hover {
+    color: #e22134 !important;
+    border-color: #e22134 !important;
+    background: #fff5f5 !important;
+    transform: none !important;
+  }
+
+  &.fav-btn--active {
+    color: #e22134 !important;
+    background: #fff0f0 !important;
+    border-color: #e22134 !important;
   }
 }
 
