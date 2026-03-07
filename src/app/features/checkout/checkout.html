@@ -32,121 +32,185 @@
 
     <div class="checkout-body" [formGroup]="form">
 
-      <!-- ════════ PASO 1: DIRECCIÓN ════════ -->
+      <!-- ════════ PASO 1 ════════ -->
       @if (paso() === 1) {
         <div class="checkout-main">
           <div class="checkout-card">
-            <h2 class="checkout-card__title">Datos de entrega</h2>
 
-            <div class="form-grid">
+            <!-- SELECTOR DE MODO — LO PRIMERO QUE VE EL CLIENTE -->
+            <h2 class="checkout-card__title">¿Cómo quieres recibir tu pedido?</h2>
 
-              <div class="form-group form-group--full">
-                <label>Nombre completo *</label>
-                <input type="text" formControlName="nombreCompleto" placeholder="Ej: Juan Pérez Quispe"/>
-                @if (f['nombreCompleto'].touched && f['nombreCompleto'].errors?.['required']) {
-                  <span class="form-error">Campo obligatorio</span>
+            <div class="entrega-opciones">
+              <button
+                type="button"
+                class="entrega-btn"
+                [class.entrega-btn--active]="modoEntrega() === 'recojo'"
+                (click)="elegirModoEntrega('recojo')">
+                <span class="entrega-btn__icon">🏪</span>
+                <div class="entrega-btn__texto">
+                  <strong>Recojo en tienda</strong>
+                  <span>Gratis · Coordina por teléfono</span>
+                </div>
+                @if (modoEntrega() === 'recojo') {
+                  <svg class="entrega-btn__check" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                    <path d="M20 6L9 17l-5-5"/>
+                  </svg>
                 }
-              </div>
+              </button>
 
-              <div class="form-group">
-                <label>Teléfono *</label>
-                <input type="tel" formControlName="telefono" placeholder="Ej: 987654321"/>
-                @if (f['telefono'].touched && f['telefono'].errors?.['pattern']) {
-                  <span class="form-error">Ingresa un número de 9 dígitos</span>
+              <button
+                type="button"
+                class="entrega-btn"
+                [class.entrega-btn--active]="modoEntrega() === 'envio'"
+                (click)="elegirModoEntrega('envio')">
+                <span class="entrega-btn__icon">🚚</span>
+                <div class="entrega-btn__texto">
+                  <strong>Envío a domicilio</strong>
+                  <span>S/ {{ costoEnvio() }}.00 · 24-48 horas</span>
+                </div>
+                @if (modoEntrega() === 'envio') {
+                  <svg class="entrega-btn__check" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                    <path d="M20 6L9 17l-5-5"/>
+                  </svg>
                 }
-              </div>
+              </button>
+            </div>
 
-              @if (!esUsuarioLogueado) {
-                <div class="form-group">
-                  <label>Email *</label>
-                  <input type="email" formControlName="email" placeholder="correo@ejemplo.com"/>
-                  @if (f['email'].touched && f['email'].errors?.['required']) {
-                    <span class="form-error">Campo obligatorio</span>
+            <!-- INFO TIENDA si eligió recojo -->
+            @if (modoEntrega() === 'recojo') {
+              <div class="tienda-info">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                  <circle cx="12" cy="10" r="3"/>
+                </svg>
+                <div>
+                  <strong>Haida Inversiones Llantas</strong>
+                  <span>Te avisamos por WhatsApp cuando tu pedido esté listo</span>
+                </div>
+              </div>
+            }
+
+            <!-- DATOS PERSONALES — siempre visibles una vez elegido modo -->
+            @if (modoEntrega()) {
+              <div class="seccion-datos">
+                <p class="seccion-datos__titulo">Tus datos de contacto</p>
+                <div class="form-grid">
+
+                  <div class="form-group form-group--full">
+                    <label>Nombre completo *</label>
+                    <input type="text" formControlName="nombreCompleto" placeholder="Ej: Juan Pérez"/>
+                    @if (f['nombreCompleto'].touched && f['nombreCompleto'].errors?.['required']) {
+                      <span class="form-error">Ingresa tu nombre</span>
+                    }
+                  </div>
+
+                  <div class="form-group">
+                    <label>Teléfono *</label>
+                    <input type="tel" formControlName="telefono" placeholder="987 654 321"/>
+                    @if (f['telefono'].touched && f['telefono'].errors?.['pattern']) {
+                      <span class="form-error">Número de 9 dígitos</span>
+                    }
+                  </div>
+
+                  @if (!esUsuarioLogueado) {
+                    <div class="form-group">
+                      <label>Email *</label>
+                      <input type="email" formControlName="email" placeholder="correo@ejemplo.com"/>
+                      @if (f['email'].touched && f['email'].errors?.['required']) {
+                        <span class="form-error">Ingresa tu email</span>
+                      }
+                    </div>
                   }
+                </div>
+              </div>
+
+              <!-- DIRECCIÓN — solo si eligió envío -->
+              @if (modoEntrega() === 'envio') {
+                <div class="seccion-datos">
+                  <p class="seccion-datos__titulo">Dirección de entrega</p>
+                  <div class="form-grid">
+
+                    <div class="form-group form-group--full">
+                      <label>Dirección *</label>
+                      <input type="text" formControlName="direccion" placeholder="Av. Javier Prado 1234, Miraflores"/>
+                      @if (f['direccion'].touched && f['direccion'].errors?.['required']) {
+                        <span class="form-error">Ingresa tu dirección</span>
+                      }
+                    </div>
+
+                    <div class="form-group">
+                      <label>Departamento *</label>
+                      <div class="select-wrapper">
+                        <select formControlName="departamento" (change)="onDepartamentoChange($event)">
+                          <option value="" disabled>Selecciona</option>
+                          @for (dep of departamentos; track dep.nombre) {
+                            <option [value]="dep.nombre">{{ dep.nombre }}</option>
+                          }
+                        </select>
+                        <svg class="select-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                          <path d="M6 9l6 6 6-6"/>
+                        </svg>
+                      </div>
+                      @if (f['departamento'].touched && f['departamento'].errors?.['required']) {
+                        <span class="form-error">Selecciona un departamento</span>
+                      }
+                    </div>
+
+                    <div class="form-group">
+                      <label>Provincia *</label>
+                      <div class="select-wrapper" [class.select-wrapper--disabled]="provincias.length === 0">
+                        <select formControlName="ciudad" (change)="onProvinciaChange($event)" [attr.disabled]="provincias.length === 0 ? true : null">
+                          <option value="" disabled>{{ provincias.length === 0 ? 'Elige departamento primero' : 'Selecciona' }}</option>
+                          @for (prov of provincias; track prov.nombre) {
+                            <option [value]="prov.nombre">{{ prov.nombre }}</option>
+                          }
+                        </select>
+                        <svg class="select-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                          <path d="M6 9l6 6 6-6"/>
+                        </svg>
+                      </div>
+                      @if (f['ciudad'].touched && f['ciudad'].errors?.['required']) {
+                        <span class="form-error">Selecciona una provincia</span>
+                      }
+                    </div>
+
+                    <div class="form-group">
+                      <label>Distrito *</label>
+                      <div class="select-wrapper" [class.select-wrapper--disabled]="distritos.length === 0">
+                        <select formControlName="distrito" [attr.disabled]="distritos.length === 0 ? true : null">
+                          <option value="" disabled>{{ distritos.length === 0 ? 'Elige provincia primero' : 'Selecciona' }}</option>
+                          @for (dist of distritos; track dist) {
+                            <option [value]="dist">{{ dist }}</option>
+                          }
+                        </select>
+                        <svg class="select-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                          <path d="M6 9l6 6 6-6"/>
+                        </svg>
+                      </div>
+                      @if (f['distrito'].touched && f['distrito'].errors?.['required']) {
+                        <span class="form-error">Selecciona un distrito</span>
+                      }
+                    </div>
+
+                    <div class="form-group form-group--full">
+                      <label>Referencia <span class="label-opcional">(opcional)</span></label>
+                      <input type="text" formControlName="referencia" placeholder="Ej: Frente al parque, casa azul"/>
+                    </div>
+
+                  </div>
                 </div>
               }
 
-              <div class="form-group">
-                <label>Departamento *</label>
-                <div class="select-wrapper">
-                  <select formControlName="departamento" (change)="onDepartamentoChange($event)">
-                    <option value="" disabled>Selecciona un departamento</option>
-                    @for (dep of departamentos; track dep.nombre) {
-                      <option [value]="dep.nombre">{{ dep.nombre }}</option>
-                    }
-                  </select>
-                  <svg class="select-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                    <path d="M6 9l6 6 6-6"/>
+              <div class="checkout-card__actions">
+                <button class="btn btn-primary btn-lg" (click)="siguientePaso()">
+                  Continuar al pago
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M5 12h14M12 5l7 7-7 7"/>
                   </svg>
-                </div>
-                @if (f['departamento'].touched && f['departamento'].errors?.['required']) {
-                  <span class="form-error">Selecciona un departamento</span>
-                }
+                </button>
               </div>
+            }
 
-              <div class="form-group">
-                <label>Provincia / Ciudad *</label>
-                <div class="select-wrapper" [class.select-wrapper--disabled]="provincias.length === 0">
-                  <select formControlName="ciudad" (change)="onProvinciaChange($event)" [attr.disabled]="provincias.length === 0 ? true : null">
-                    <option value="" disabled>
-                      {{ provincias.length === 0 ? 'Primero elige un departamento' : 'Selecciona una provincia' }}
-                    </option>
-                    @for (prov of provincias; track prov.nombre) {
-                      <option [value]="prov.nombre">{{ prov.nombre }}</option>
-                    }
-                  </select>
-                  <svg class="select-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                    <path d="M6 9l6 6 6-6"/>
-                  </svg>
-                </div>
-                @if (f['ciudad'].touched && f['ciudad'].errors?.['required']) {
-                  <span class="form-error">Selecciona una provincia</span>
-                }
-              </div>
-
-              <div class="form-group">
-                <label>Distrito *</label>
-                <div class="select-wrapper" [class.select-wrapper--disabled]="distritos.length === 0">
-                  <select formControlName="distrito" [attr.disabled]="distritos.length === 0 ? true : null">
-                    <option value="" disabled>
-                      {{ distritos.length === 0 ? 'Primero elige una provincia' : 'Selecciona un distrito' }}
-                    </option>
-                    @for (dist of distritos; track dist) {
-                      <option [value]="dist">{{ dist }}</option>
-                    }
-                  </select>
-                  <svg class="select-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                    <path d="M6 9l6 6 6-6"/>
-                  </svg>
-                </div>
-                @if (f['distrito'].touched && f['distrito'].errors?.['required']) {
-                  <span class="form-error">Selecciona un distrito</span>
-                }
-              </div>
-
-              <div class="form-group">
-                <label>Referencia</label>
-                <input type="text" formControlName="referencia" placeholder="Ej: Frente al parque"/>
-              </div>
-
-              <div class="form-group form-group--full">
-                <label>Dirección *</label>
-                <input type="text" formControlName="direccion" placeholder="Ej: Av. Javier Prado 1234"/>
-                @if (f['direccion'].touched && f['direccion'].errors?.['required']) {
-                  <span class="form-error">Campo obligatorio</span>
-                }
-              </div>
-
-            </div>
-
-            <div class="checkout-card__actions">
-              <button class="btn btn-primary btn-lg" (click)="siguientePaso()">
-                Continuar al pago
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                  <path d="M5 12h14M12 5l7 7-7 7"/>
-                </svg>
-              </button>
-            </div>
           </div>
         </div>
       }
@@ -155,17 +219,11 @@
       @if (paso() === 2) {
         <div class="checkout-main">
           <div class="checkout-card">
-            <h2 class="checkout-card__title">Método de pago</h2>
+            <h2 class="checkout-card__title">¿Cómo vas a pagar?</h2>
 
-            <!-- Métodos guardados del usuario -->
             @if (esUsuarioLogueado && metodosGuardados().length > 0) {
               <div class="pago-seccion">
-                <p class="pago-seccion__label">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
-                  </svg>
-                  Tus métodos guardados
-                </p>
+                <p class="pago-seccion__label">Tus métodos guardados</p>
                 <div class="pago-lista">
                   @for (m of metodosGuardados(); track m.id) {
                     <label class="pago-item" [class.pago-item--active]="metodoSeleccionado() === 'guardado-' + m.id">
@@ -177,63 +235,47 @@
                         <span class="pago-item__nombre">{{ m.alias }}</span>
                         <span class="pago-item__detalle">{{ m.detalle }}</span>
                       </div>
-                      @if (m.esPrincipal) {
-                        <span class="pago-badge">Principal</span>
-                      }
+                      @if (m.esPrincipal) { <span class="pago-badge">Principal</span> }
                     </label>
                   }
                 </div>
               </div>
-
-              <div class="pago-divider">
-                <span>o usa otro método</span>
-              </div>
+              <div class="pago-divider"><span>o usa otro método</span></div>
             }
 
-            <!-- Métodos manuales (Yape, Plin, Transferencia) -->
-            <div class="pago-seccion">
-              @if (!esUsuarioLogueado || metodosGuardados().length === 0) {
-                <p class="pago-seccion__label">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
-                    <line x1="1" y1="10" x2="23" y2="10"/>
-                  </svg>
-                  Selecciona un método
-                </p>
-              }
-              <div class="pago-lista">
-                @for (m of metodosManualPago; track m.valor) {
-                  <label class="pago-item" [class.pago-item--active]="metodoSeleccionado() === m.valor">
-                    <input type="radio" name="metodoPago" [value]="m.valor"
-                           (change)="seleccionarMetodo(m.valor)"/>
-                    <div class="pago-item__radio"></div>
-                    <span class="pago-item__icon">{{ m.icono }}</span>
-                    <div class="pago-item__info">
-                      <span class="pago-item__nombre">{{ m.label }}</span>
-                      <span class="pago-item__detalle">{{ m.descripcion }}</span>
-                    </div>
-                  </label>
-                }
+            <div class="pago-lista">
 
-                <!-- Tarjeta crédito (Culqi) -->
-                <label class="pago-item" [class.pago-item--active]="metodoSeleccionado() === 'TARJETA_CREDITO'">
-                  <input type="radio" name="metodoPago" value="TARJETA_CREDITO"
-                         (change)="seleccionarMetodo('TARJETA_CREDITO')"/>
+              <!-- Transferencia bancaria -->
+              @for (m of metodosManualPago; track m.valor) {
+                <label class="pago-item" [class.pago-item--active]="metodoSeleccionado() === m.valor">
+                  <input type="radio" name="metodoPago" [value]="m.valor" (change)="seleccionarMetodo(m.valor)"/>
                   <div class="pago-item__radio"></div>
-                  <span class="pago-item__icon">💳</span>
+                  <span class="pago-item__icon">{{ m.icono }}</span>
                   <div class="pago-item__info">
-                    <span class="pago-item__nombre">Tarjeta de crédito / débito</span>
-                    <span class="pago-item__detalle">Visa, Mastercard, Amex — procesado por Culqi</span>
-                  </div>
-                  <div class="pago-item__badges">
-                    <span class="card-badge">VISA</span>
-                    <span class="card-badge">MC</span>
+                    <span class="pago-item__nombre">{{ m.label }}</span>
+                    <span class="pago-item__detalle">{{ m.descripcion }}</span>
                   </div>
                 </label>
-              </div>
+              }
+
+              <!-- Tarjeta (Culqi) -->
+              <label class="pago-item" [class.pago-item--active]="metodoSeleccionado() === 'TARJETA_CREDITO'">
+                <input type="radio" name="metodoPago" value="TARJETA_CREDITO"
+                       (change)="seleccionarMetodo('TARJETA_CREDITO')"/>
+                <div class="pago-item__radio"></div>
+                <span class="pago-item__icon">💳</span>
+                <div class="pago-item__info">
+                  <span class="pago-item__nombre">Tarjeta de crédito / débito</span>
+                  <span class="pago-item__detalle">Visa · Mastercard · Amex</span>
+                </div>
+                <div class="pago-item__badges">
+                  <span class="card-badge">VISA</span>
+                  <span class="card-badge">MC</span>
+                </div>
+              </label>
+
             </div>
 
-            <!-- Formulario Culqi (aparece al seleccionar tarjeta) -->
             @if (mostrarFormCulqi()) {
               <div class="culqi-container">
                 <div class="culqi-header">
@@ -243,36 +285,20 @@
                   </svg>
                   Pago seguro con Culqi
                 </div>
-                <!-- El SDK de Culqi inyecta aquí su iframe -->
-                <!-- Al integrar: llama Culqi.open() aquí con tu public key -->
                 <div id="culqi-form-container" class="culqi-form-placeholder">
-                  <p>
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                      <circle cx="12" cy="12" r="10"/>
-                      <path d="M12 8v4M12 16h.01"/>
-                    </svg>
-                    Integra aquí el SDK de Culqi:
-                  </p>
-                  <code>
-                    Culqi.publicKey = 'pk_test_XXXXX';<br/>
-                    Culqi.settings(&#123; title: 'HaidaInversiones', currency: 'PEN', amount: {{ total() * 100 }} &#125;);<br/>
-                    Culqi.open();
-                  </code>
-                  <a href="https://docs.culqi.com" target="_blank" class="culqi-link">
-                    Ver documentación Culqi →
-                  </a>
+                  <p>Integra el SDK de Culqi aquí</p>
+                  <a href="https://docs.culqi.com" target="_blank" class="culqi-link">Ver documentación →</a>
                 </div>
               </div>
             }
 
             @if (f['metodoPago'].touched && f['metodoPago'].errors?.['required']) {
-              <span class="form-error" style="margin-top: 8px; display: block;">Selecciona un método de pago</span>
+              <span class="form-error" style="margin-top: 8px; display: block;">Elige un método de pago</span>
             }
 
             <div class="form-group" style="margin-top: 24px">
-              <label>Notas adicionales (opcional)</label>
-              <textarea formControlName="notas" rows="3"
-                        placeholder="Instrucciones especiales para la entrega..."></textarea>
+              <label>¿Alguna indicación adicional? <span class="label-opcional">(opcional)</span></label>
+              <textarea formControlName="notas" rows="2" placeholder="Ej: Entregar en la tarde, preguntar por Juan..."></textarea>
             </div>
 
             <div class="checkout-card__actions checkout-card__actions--between">
@@ -292,7 +318,7 @@
                   </svg>
                   Confirmar pedido
                 } @else {
-                  Procesando...
+                  Enviando...
                 }
               </button>
             </div>
@@ -329,7 +355,12 @@
               <span>IGV (18%)</span><span>S/ {{ igv() }}</span>
             </div>
             <div class="checkout-summary__line">
-              <span>Envío</span><span class="text-muted">A calcular</span>
+              <span>Envío</span>
+              <span>
+                @if (modoEntrega() === 'recojo') { <strong style="color: #27ae60">Gratis</strong> }
+                @else if (modoEntrega() === 'envio') { S/ {{ costoEnvio() }}.00 }
+                @else { <em style="color: #888">Por definir</em> }
+              </span>
             </div>
           </div>
 
@@ -338,7 +369,6 @@
             <span>S/ {{ total() }}</span>
           </div>
 
-          <!-- Sello de seguridad -->
           <div class="checkout-security">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>

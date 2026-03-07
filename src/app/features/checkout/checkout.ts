@@ -1,4 +1,4 @@
-import { Component, inject, computed, signal, OnInit, OnDestroy } from '@angular/core';
+import { Component, inject, computed, signal, OnInit } from '@angular/core';
 import { CommonModule, AsyncPipe } from '@angular/common';
 import { RouterLink, Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
@@ -29,17 +29,19 @@ export class Checkout implements OnInit {
 
   carrito$   = this.carrito.carrito$;
   igv        = computed(() => Math.round(this.carrito.getCarritoActual().subtotal * 0.18 * 100) / 100);
-  costoEnvio = 15;
+  costoEnvio = signal(15);
   total      = computed(() =>
-    Math.round((this.carrito.getCarritoActual().subtotal + this.igv() + this.costoEnvio) * 100) / 100);
+    Math.round((this.carrito.getCarritoActual().subtotal + this.igv() +
+      (this.modoEntrega() === 'envio' ? this.costoEnvio() : 0)) * 100) / 100);
 
   enviando = signal(false);
   paso     = signal<1 | 2>(1);
 
-  // Métodos guardados del usuario
+  // NUEVO: modo de entrega — clave de la simplificación
+  modoEntrega = signal<'recojo' | 'envio' | null>(null);
+
   metodosGuardados   = signal<MetodoPagoGuardado[]>([]);
-  metodoSeleccionado = signal<string>('');  // 'guardado-{id}' o 'nuevo-{tipo}'
-  usarMetodoGuardado = signal(false);
+  metodoSeleccionado = signal<string>('');
 
   esUsuarioLogueado = !!this.auth.getCurrentUser();
 
@@ -47,14 +49,10 @@ export class Checkout implements OnInit {
   provincias: Provincia[] = [];
   distritos: string[] = [];
 
-  // Métodos de pago NO tarjeta (manuales)
   metodosManualPago: { valor: MetodoPago; label: string; icono: string; descripcion: string }[] = [
-    { valor: 'YAPE',          label: 'Yape',                   icono: '💜', descripcion: 'Paga con tu app Yape' },
-    { valor: 'PLIN',          label: 'Plin',                   icono: '💙', descripcion: 'Paga con tu app Plin' },
     { valor: 'TRANSFERENCIA', label: 'Transferencia bancaria', icono: '🏦', descripcion: 'BCP / Interbank / BBVA' },
   ];
 
-  // Método tarjeta (Culqi)
   mostrarFormCulqi = signal(false);
   culqiCargado     = signal(false);
 
@@ -62,26 +60,21 @@ export class Checkout implements OnInit {
     nombreCompleto: ['', [Validators.required, Validators.minLength(3)]],
     email:          ['', this.esUsuarioLogueado ? [Validators.email] : [Validators.required, Validators.email]],
     telefono:       ['', [Validators.required, Validators.pattern(/^[0-9]{9}$/)]],
-    direccion:      ['', [Validators.required, Validators.minLength(5)]],
-    departamento:   ['', Validators.required],
-    ciudad:         ['', Validators.required],
-    distrito:       ['', Validators.required],
+    direccion:      [''],
+    departamento:   [''],
+    ciudad:         [''],
+    distrito:       [''],
     referencia:     [''],
     metodoPago:     ['', Validators.required],
     notas:          [''],
   });
 
   ngOnInit(): void {
-    // Prellenar datos del usuario logueado
     if (this.esUsuarioLogueado) {
       const user = this.auth.getCurrentUser();
       if (user) {
-        this.form.patchValue({
-          nombreCompleto: user.nombre || '',
-          email: user.email || '',
-        });
+        this.form.patchValue({ nombreCompleto: user.nombre || '', email: user.email || '' });
       }
-      // Cargar métodos guardados
       this.metodoSvc.obtenerTodos().subscribe({
         next: (lista: MetodoPagoGuardado[]) => this.metodosGuardados.set(lista),
         error: () => {}
@@ -90,6 +83,24 @@ export class Checkout implements OnInit {
   }
 
   get f() { return this.form.controls; }
+
+  elegirModoEntrega(modo: 'recojo' | 'envio'): void {
+    this.modoEntrega.set(modo);
+    if (modo === 'envio') {
+      this.form.get('direccion')?.setValidators([Validators.required, Validators.minLength(5)]);
+      this.form.get('departamento')?.setValidators([Validators.required]);
+      this.form.get('ciudad')?.setValidators([Validators.required]);
+      this.form.get('distrito')?.setValidators([Validators.required]);
+    } else {
+      ['direccion', 'departamento', 'ciudad', 'distrito'].forEach(campo => {
+        this.form.get(campo)?.clearValidators();
+        this.form.get(campo)?.setValue('');
+      });
+    }
+    ['direccion', 'departamento', 'ciudad', 'distrito'].forEach(c =>
+      this.form.get(c)?.updateValueAndValidity()
+    );
+  }
 
   onDepartamentoChange(event: Event): void {
     const nombre = (event.target as HTMLSelectElement).value;
@@ -107,10 +118,17 @@ export class Checkout implements OnInit {
   }
 
   siguientePaso(): void {
-    const campos = ['nombreCompleto', 'telefono', 'direccion', 'departamento', 'ciudad', 'distrito'];
-    if (!this.esUsuarioLogueado) campos.push('email');
-    campos.forEach(c => this.form.get(c)?.markAsTouched());
-    if (campos.every(c => this.form.get(c)?.valid)) this.paso.set(2);
+    if (!this.modoEntrega()) {
+      this.toastr.warning('Elige cómo quieres recibir tu pedido primero', '');
+      return;
+    }
+    const camposBase = ['nombreCompleto', 'telefono'];
+    if (!this.esUsuarioLogueado) camposBase.push('email');
+    const camposEnvio = this.modoEntrega() === 'envio'
+      ? ['direccion', 'departamento', 'ciudad', 'distrito'] : [];
+    [...camposBase, ...camposEnvio].forEach(c => this.form.get(c)?.markAsTouched());
+    const validos = [...camposBase, ...camposEnvio].every(c => this.form.get(c)?.valid);
+    if (validos) this.paso.set(2);
   }
 
   volverPaso1(): void { this.paso.set(1); }
@@ -118,7 +136,6 @@ export class Checkout implements OnInit {
   seleccionarMetodo(valor: string): void {
     this.metodoSeleccionado.set(valor);
     this.mostrarFormCulqi.set(false);
-
     if (valor === 'TARJETA_CREDITO' || valor === 'TARJETA_DEBITO') {
       this.form.patchValue({ metodoPago: valor });
       this.mostrarFormCulqi.set(true);
@@ -133,14 +150,7 @@ export class Checkout implements OnInit {
   }
 
   iniciarCulqi(tipo: MetodoPago): void {
-    // Aquí integras el SDK de Culqi
-    // https://docs.culqi.com/es/documentacion/checkout/v4/javascript/
-    // Por ahora marcamos como listo para mostrar el formulario
     this.culqiCargado.set(true);
-    // Ejemplo de configuración Culqi:
-    // Culqi.publicKey = 'pk_test_xxxx';
-    // Culqi.settings({ title: 'HaidaInversiones Llantas', currency: 'PEN', amount: this.total() * 100 });
-    // Culqi.open();
   }
 
   confirmarPedido(): void {
@@ -150,12 +160,15 @@ export class Checkout implements OnInit {
     }
     const usuario = this.auth.getCurrentUser();
     const v = this.form.value;
+    const esEnvio = this.modoEntrega() === 'envio';
 
     const request: CrearPedidoRequest = {
-      direccionEnvio:   v.direccion + (v.referencia ? ` (Ref: ${v.referencia})` : ''),
-      ciudad:           v.ciudad,
-      distrito:         v.distrito,
-      departamento:     v.departamento,
+      direccionEnvio:   esEnvio
+        ? (v.direccion + (v.referencia ? ` (Ref: ${v.referencia})` : ''))
+        : 'RECOJO EN TIENDA',
+      ciudad:           esEnvio ? v.ciudad : 'Lima',
+      distrito:         esEnvio ? v.distrito : 'Lima',
+      departamento:     esEnvio ? v.departamento : 'Lima',
       telefonoContacto: v.telefono,
       metodoPago:       v.metodoPago,
       notasAdicionales: v.notas || undefined,

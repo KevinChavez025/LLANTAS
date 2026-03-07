@@ -216,3 +216,38 @@
 
   &:hover { background: #17a347; }
 }
+// ── RECOJO EN TIENDA (usuario) ────────────────────────────
+.recojo-banner {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 20px;
+  background: rgba(39, 174, 96, 0.07);
+  border: 1px solid rgba(39, 174, 96, 0.25);
+  border-radius: 12px;
+  margin-bottom: 20px;
+
+  &__icon {
+    font-size: 32px;
+    line-height: 1;
+    flex-shrink: 0;
+  }
+
+  &__texto {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+
+    strong {
+      font-size: 15px;
+      font-weight: 700;
+      color: #1a6b3a;
+    }
+
+    span {
+      font-size: 13px;
+      color: #2d7a4a;
+      opacity: 0.85;
+    }
+  }
+}

@@ -368,3 +368,202 @@ $bg:     #f6f8fa;
 .payment-date {
   font-size: 0.68rem; color: #9ca3af;
 }
+// ── BANNER HOY ───────────────────────────────────────────
+.hoy-banner {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  background: #fff;
+  border: 1px solid $border;
+  border-radius: 14px;
+  padding: 16px 24px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+
+  &__titulo {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: $muted;
+    white-space: nowrap;
+  }
+}
+
+.hoy-stats {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.hoy-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+
+  &__num {
+    font-size: 22px;
+    font-weight: 800;
+    color: $text;
+    line-height: 1;
+
+    &--recojo { color: #ea580c; }
+  }
+
+  &__label {
+    font-size: 11px;
+    color: $muted;
+  }
+}
+
+.hoy-divider {
+  width: 1px;
+  height: 32px;
+  background: $border;
+}
+
+// ── ALERTA RECOJOS ───────────────────────────────────────
+.recojo-alerta {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+  border-left: 4px solid #ea580c;
+  border-radius: 10px;
+  padding: 14px 18px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+
+  &__icono { font-size: 24px; flex-shrink: 0; }
+
+  &__texto {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+
+    strong { font-size: 14px; color: #9a3412; font-weight: 700; }
+    span   { font-size: 12px; color: #c2410c; }
+  }
+
+  &__btn {
+    padding: 8px 16px;
+    background: #ea580c;
+    color: #fff;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: background 0.15s;
+
+    &:hover { background: #c2410c; }
+  }
+}
+
+// ── KPI CARD NARANJA (recojos) ───────────────────────────
+.kpi-card--orange {
+  border-left-color: #ea580c;
+
+  .kpi-icon {
+    background: rgba(234, 88, 12, 0.1);
+    color: #ea580c;
+  }
+}
+
+// ── TIPO BADGE ───────────────────────────────────────────
+.tipo-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 20px;
+  white-space: nowrap;
+
+  &--recojo {
+    background: #fff7ed;
+    color: #9a3412;
+    border: 1px solid #fed7aa;
+  }
+
+  &--envio {
+    background: #eff6ff;
+    color: #1e40af;
+    border: 1px solid #bfdbfe;
+  }
+}
+
+// ── LISTA RECOJOS POR COORDINAR ──────────────────────────
+.recojo-list {
+  background: #fff;
+  border: 1px solid $border;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.recojo-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  gap: 16px;
+  border-bottom: 1px solid $border;
+  flex-wrap: wrap;
+
+  &:last-child { border-bottom: none; }
+
+  &:hover { background: #fafafa; }
+
+  &__info {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+    flex: 1;
+  }
+
+  &__num {
+    font-size: 13px;
+    font-weight: 700;
+    color: $text;
+    font-family: monospace;
+  }
+
+  &__cliente {
+    font-size: 13px;
+    color: $text;
+  }
+
+  &__telefono { font-size: 13px; }
+
+  &__right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+}
+
+.tel-link {
+  color: #16a34a;
+  font-weight: 600;
+  text-decoration: none;
+
+  &:hover { text-decoration: underline; }
+}
+
+.dash-section-badge--warn {
+  background: #fff7ed;
+  color: #ea580c;
+  border: 1px solid #fed7aa;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 20px;
+}

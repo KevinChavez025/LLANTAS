@@ -6,7 +6,7 @@
       <h1 class="dash-title">Dashboard</h1>
       <p class="dash-subtitle">Resumen general de tu tienda</p>
     </div>
-    <div class="dash-date">{{ hoy | date:'EEEE d \'de\' MMMM, yyyy' : '' : 'es' }}</div>
+    <div class="dash-date">{{ hoy | date:"EEEE d 'de' MMMM, yyyy" : '' : 'es' }}</div>
   </div>
 
   @if (cargando()) {
@@ -16,7 +16,45 @@
     </div>
   } @else {
 
-    <!-- KPI Cards -->
+    <!-- ── RESUMEN DE HOY ──────────────────────────────── -->
+    <div class="hoy-banner">
+      <div class="hoy-banner__titulo">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+        </svg>
+        Hoy
+      </div>
+      <div class="hoy-stats">
+        <div class="hoy-stat">
+          <span class="hoy-stat__num">{{ pedidosHoy().length }}</span>
+          <span class="hoy-stat__label">pedidos nuevos</span>
+        </div>
+        <div class="hoy-divider"></div>
+        <div class="hoy-stat">
+          <span class="hoy-stat__num">S/ {{ ingresosHoy() | number:'1.0-0' }}</span>
+          <span class="hoy-stat__label">ingresos del día</span>
+        </div>
+        <div class="hoy-divider"></div>
+        <div class="hoy-stat">
+          <span class="hoy-stat__num hoy-stat__num--recojo">{{ recojosPendientes().length }}</span>
+          <span class="hoy-stat__label">recojos por coordinar</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── ALERTA RECOJOS ─────────────────────────────── -->
+    @if (recojosPendientes().length > 0) {
+      <div class="recojo-alerta">
+        <div class="recojo-alerta__icono">🏪</div>
+        <div class="recojo-alerta__texto">
+          <strong>{{ recojosPendientes().length }} {{ recojosPendientes().length === 1 ? 'pedido de recojo' : 'pedidos de recojo' }} por coordinar</strong>
+          <span>Llama a {{ recojosPendientes().length === 1 ? 'este cliente' : 'estos clientes' }} para coordinar la fecha de retiro.</span>
+        </div>
+        <a routerLink="/admin/pedidos" [queryParams]="{recojo: '1'}" class="recojo-alerta__btn">Ver pedidos →</a>
+      </div>
+    }
+
+    <!-- ── KPI CARDS ──────────────────────────────────── -->
     <div class="kpi-grid">
 
       <div class="kpi-card kpi-card--green">
@@ -39,6 +77,19 @@
           <span class="kpi-value">{{ pedidosPendientes() }}</span>
         </div>
         <a routerLink="/admin/pedidos" class="kpi-link">Gestionar →</a>
+      </div>
+
+      <div class="kpi-card kpi-card--orange">
+        <div class="kpi-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>
+          </svg>
+        </div>
+        <div class="kpi-body">
+          <span class="kpi-label">Recojos pendientes</span>
+          <span class="kpi-value">{{ recojosPendientes().length }}</span>
+        </div>
+        <a routerLink="/admin/pedidos" [queryParams]="{recojo: '1'}" class="kpi-link">Coordinar →</a>
       </div>
 
       <div class="kpi-card kpi-card--blue">
@@ -73,19 +124,9 @@
         </div>
       </div>
 
-      <div class="kpi-card kpi-card--teal">
-        <div class="kpi-icon">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-        </div>
-        <div class="kpi-body">
-          <span class="kpi-label">Entregados</span>
-          <span class="kpi-value">{{ pedidosEntregados() }}</span>
-        </div>
-      </div>
-
     </div>
 
-    <!-- Recent Orders -->
+    <!-- ── PEDIDOS RECIENTES ───────────────────────────── -->
     <div class="dash-section">
       <div class="dash-section-header">
         <h2 class="dash-section-title">Pedidos recientes</h2>
@@ -99,6 +140,7 @@
               <th>N° Pedido</th>
               <th>Cliente</th>
               <th>Total</th>
+              <th>Tipo</th>
               <th>Estado</th>
               <th></th>
             </tr>
@@ -109,6 +151,17 @@
                 <td class="td-num">{{ p.numeroPedido }}</td>
                 <td class="td-client">{{ p.nombreCliente ?? p.nombreInvitado ?? p.emailCliente ?? p.emailInvitado ?? ('Usuario #' + p.usuarioId) }}</td>
                 <td class="td-total">S/ {{ p.total | number:'1.2-2' }}</td>
+                <td>
+                  @if (esRecojo(p)) {
+                    <span class="tipo-badge tipo-badge--recojo" title="Recojo en tienda">
+                      🏪 Recojo
+                    </span>
+                  } @else {
+                    <span class="tipo-badge tipo-badge--envio" title="Envío a domicilio">
+                      🚚 Envío
+                    </span>
+                  }
+                </td>
                 <td><span class="estado-pill" [ngClass]="estadoClass(p.estado)">{{ ESTADO_LABEL[p.estado] }}</span></td>
                 <td><a [routerLink]="['/admin/pedidos', p.id]" class="btn-view">Ver</a></td>
               </tr>
@@ -118,7 +171,37 @@
       </div>
     </div>
 
-    <!-- Recent Payments -->
+    <!-- ── RECOJOS POR COORDINAR ──────────────────────── -->
+    @if (recojosPendientes().length > 0) {
+      <div class="dash-section" style="margin-top: 28px;">
+        <div class="dash-section-header">
+          <h2 class="dash-section-title">🏪 Recojos por coordinar</h2>
+          <span class="dash-section-badge dash-section-badge--warn">{{ recojosPendientes().length }} pendientes</span>
+        </div>
+
+        <div class="recojo-list">
+          @for (p of recojosPendientes(); track p.id) {
+            <div class="recojo-row">
+              <div class="recojo-row__info">
+                <span class="recojo-row__num">{{ p.numeroPedido }}</span>
+                <span class="recojo-row__cliente">{{ p.nombreCliente ?? p.nombreInvitado ?? p.emailCliente ?? '—' }}</span>
+                <span class="recojo-row__telefono">
+                  @if (p.telefonoContacto) {
+                    <a [href]="'tel:' + p.telefonoContacto" class="tel-link">📞 {{ p.telefonoContacto }}</a>
+                  }
+                </span>
+              </div>
+              <div class="recojo-row__right">
+                <span class="estado-pill" [ngClass]="estadoClass(p.estado)">{{ ESTADO_LABEL[p.estado] }}</span>
+                <a [routerLink]="['/admin/pedidos', p.id]" class="btn-view">Ver →</a>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    }
+
+    <!-- ── ÚLTIMOS INGRESOS ───────────────────────────── -->
     <div class="dash-section" style="margin-top: 28px;">
       <div class="dash-section-header">
         <h2 class="dash-section-title">Últimos ingresos</h2>

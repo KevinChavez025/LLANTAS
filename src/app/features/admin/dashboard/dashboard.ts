@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, inject } from '@angular/core';
+import { Component, OnInit, signal, computed, inject } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { forkJoin } from 'rxjs';
@@ -27,6 +27,7 @@ export class Dashboard implements OnInit {
   totalUsuarios      = signal(0);
   ingresoTotal       = signal(0);
   recientes          = signal<Pedido[]>([]);
+  todosPedidos       = signal<Pedido[]>([]);
   hoy                = new Date();
 
   readonly ESTADO_LABEL = ESTADO_PEDIDO_LABEL;
@@ -36,6 +37,29 @@ export class Dashboard implements OnInit {
     YAPE: 'Yape', PLIN: 'Plin'
   };
 
+  // ── Métricas de hoy ─────────────────────────────────────
+  pedidosHoy = computed(() => {
+    const hoy = new Date();
+    return this.todosPedidos().filter(p => {
+      const f = new Date(p.fechaCreacion);
+      return f.getDate() === hoy.getDate() &&
+             f.getMonth() === hoy.getMonth() &&
+             f.getFullYear() === hoy.getFullYear();
+    });
+  });
+
+  ingresosHoy = computed(() =>
+    this.pedidosHoy().reduce((acc, p) => acc + (p.total ?? 0), 0)
+  );
+
+  // ── Recojos pendientes de coordinar ─────────────────────
+  recojosPendientes = computed(() =>
+    this.todosPedidos().filter(p =>
+      p.direccionEnvio === 'RECOJO EN TIENDA' &&
+      (p.estado === 'PENDIENTE' || p.estado === 'CONFIRMADO' || p.estado === 'EN_PREPARACION')
+    )
+  );
+
   ngOnInit(): void {
     forkJoin({
       pedidos:   this.pedidos.obtenerTodosPaginado(0, 100),
@@ -43,17 +67,23 @@ export class Dashboard implements OnInit {
       usuarios:  this.usuarios.obtenerTodos()
     }).subscribe({
       next: ({ pedidos, productos, usuarios }) => {
+        const lista = pedidos.content;
+        this.todosPedidos.set(lista);
         this.totalPedidos.set(pedidos.totalElements);
-        this.pedidosPendientes.set(pedidos.content.filter(p => p.estado === 'PENDIENTE').length);
-        this.pedidosEntregados.set(pedidos.content.filter(p => p.estado === 'ENTREGADO').length);
+        this.pedidosPendientes.set(lista.filter(p => p.estado === 'PENDIENTE').length);
+        this.pedidosEntregados.set(lista.filter(p => p.estado === 'ENTREGADO').length);
         this.totalProductos.set(productos.totalElements);
         this.totalUsuarios.set(usuarios.length);
-        this.ingresoTotal.set(pedidos.content.reduce((acc, p) => acc + (p.total ?? 0), 0));
-        this.recientes.set(pedidos.content.slice(0, 6));
+        this.ingresoTotal.set(lista.reduce((acc, p) => acc + (p.total ?? 0), 0));
+        this.recientes.set(lista.slice(0, 6));
         this.cargando.set(false);
       },
       error: () => this.cargando.set(false)
     });
+  }
+
+  esRecojo(p: Pedido): boolean {
+    return p.direccionEnvio === 'RECOJO EN TIENDA';
   }
 
   estadoClass(e: string): string {

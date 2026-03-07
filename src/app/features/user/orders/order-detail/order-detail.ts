@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, inject } from '@angular/core';
+import { Component, OnInit, signal, inject, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, ActivatedRoute } from '@angular/router';
 import { PedidoService } from '../../../../core/services/pedido.service';
@@ -19,6 +19,10 @@ export class OrderDetail implements OnInit {
   cargando = signal(true);
   error    = signal(false);
 
+  esRecojo = computed(() =>
+    this.pedido()?.direccionEnvio === 'RECOJO EN TIENDA'
+  );
+
   ngOnInit(): void {
     const id = +this.route.snapshot.params['id'];
     this.pedidoService.obtenerPorId(id).subscribe({
@@ -27,7 +31,6 @@ export class OrderDetail implements OnInit {
     });
   }
 
-  // Métodos que resuelven el tipado — sin "as string" en el template
   estadoLabel(estado: string): string {
     const map: Record<string, string> = {
       PENDIENTE: 'Pendiente', CONFIRMADO: 'Confirmado',
@@ -56,21 +59,27 @@ export class OrderDetail implements OnInit {
     return map[metodo] ?? metodo;
   }
 
+  // Flujo envío: PENDIENTE → CONFIRMADO → EN_PREPARACION → ENVIADO → ENTREGADO
+  // Flujo recojo: PENDIENTE → CONFIRMADO → EN_PREPARACION → ENTREGADO
   isStepDone(estadoActual: string, step: string): boolean {
-    const order = ['PENDIENTE','CONFIRMADO','EN_PREPARACION','ENVIADO','ENTREGADO'];
+    const orderEnvio  = ['PENDIENTE','CONFIRMADO','EN_PREPARACION','ENVIADO','ENTREGADO'];
+    const orderRecojo = ['PENDIENTE','CONFIRMADO','EN_PREPARACION','ENTREGADO'];
+    const order = this.esRecojo() ? orderRecojo : orderEnvio;
     return order.indexOf(estadoActual) > order.indexOf(step);
   }
 
-  // Centra la moto (52px ancho) sobre cada punto del timeline
-  motoPosition(estado: string): string {
-    const positions: Record<string, string> = {
-      'PENDIENTE':      'calc(10% - 26px)',
-      'CONFIRMADO':     'calc(27.5% - 26px)',
-      'EN_PREPARACION': 'calc(50% - 26px)',
-      'ENVIADO':        'calc(72.5% - 26px)',
-      'ENTREGADO':      'calc(90% - 26px)',
-    };
-    return positions[estado] ?? '0px';
+  // Para recojo EN_PREPARACION = "Listo para recoger"
+  stepLabel(step: string): string {
+    if (this.esRecojo()) {
+      const map: Record<string, string> = {
+        PENDIENTE: 'Pendiente',
+        CONFIRMADO: 'Confirmado',
+        EN_PREPARACION: 'Listo para recoger',
+        ENTREGADO: 'Entregado',
+      };
+      return map[step] ?? step;
+    }
+    return this.estadoLabel(step);
   }
 
   igv(): number {

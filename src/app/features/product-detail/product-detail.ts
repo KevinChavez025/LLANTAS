@@ -53,6 +53,16 @@ export class ProductDetail implements OnInit {
     const p = this.producto();
     if (!p) return;
     this.carritoService.agregarProducto(p, this.cantidad());
-    this.toastr.success(`${p.nombre} agregado al carrito`, '¡Listo!');
+    this.toastr.success(`${p.nombre} agregado al carrito`, '¡Listo!', {
+      timeOut: 3000, positionClass: 'toast-bottom-right'
+    });
+  }
+
+  whatsAppUrl(): string {
+    const p = this.producto();
+    if (!p) return '#';
+    const medida = p.medida ? ` - Medida: ${p.medida}` : '';
+    const msg = encodeURIComponent(`Hola, consulto por la llanta: ${p.nombre}${medida}`);
+    return `https://wa.me/51923402825?text=${msg}`;
   }
 }

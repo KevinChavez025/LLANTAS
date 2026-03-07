@@ -29,19 +29,45 @@ export class PedidoService {
     size = 20,
     fechaDesde = '',
     fechaHasta = '',
-    estado: EstadoPedido | '' = ''
+    estado: EstadoPedido | '' = '',
+    soloRecojo = false
   ): Observable<Page<Pedido>> {
     let params = new HttpParams()
       .set('page', page)
       .set('size', size)
       .set('sort', 'fechaCreacion,desc');
-    if (fechaDesde) params = params.set('fechaDesde', fechaDesde);
-    if (fechaHasta) params = params.set('fechaHasta', fechaHasta + 'T23:59:59');
-    if (estado)     params = params.set('estado', estado);
+    if (fechaDesde)  params = params.set('fechaDesde', fechaDesde);
+    if (fechaHasta)  params = params.set('fechaHasta', fechaHasta);
+    if (estado)      params = params.set('estado', estado);
+    if (soloRecojo)  params = params.set('recojo', 'true');
     return this.http.get<Page<Pedido>>(this.base, { params });
   }
 
   cambiarEstado(id: number, estado: EstadoPedido): Observable<Pedido> {
     return this.http.put<Pedido>(`${this.base}/${id}/estado`, { estado });
   }
+
+  getDashboardStats(): Observable<DashboardStats> {
+    return this.http.get<DashboardStats>(`${this.base}/stats`);
+  }
+}
+
+export interface DashboardStats {
+  totalPedidos: number;
+  pedidosPendientes: number;
+  pedidosEntregados: number;
+  ingresoTotal: number;
+  pedidosHoy: number;
+  ingresosHoy: number;
+  recojosPendientesCount: number;
+  recojosPendientes: RecojoItem[];
+}
+
+export interface RecojoItem {
+  id: number;
+  numeroPedido: string;
+  nombreCliente: string;
+  telefonoContacto: string;
+  estado: string;
+  total: number;
 }

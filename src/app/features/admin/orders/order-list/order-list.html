@@ -28,6 +28,12 @@
         </select>
       </div>
     </div>
+    <div class="filtros-grupo">
+      <label class="filtro-label">Tipo</label>
+      <button class="btn-recojo-toggle" [class.btn-recojo-toggle--active]="soloRecojo" (click)="soloRecojo = !soloRecojo">
+        🏪 Solo recojos
+      </button>
+    </div>
     <div class="filtros-acciones">
       <button class="btn-filtrar" (click)="aplicarFiltros()">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
@@ -58,6 +64,7 @@
             <th>Fecha</th>
             <th>Cliente</th>
             <th>Total</th>
+            <th>Tipo</th>
             <th>Estado</th>
             <th>Cambiar estado</th>
             <th></th>
@@ -70,6 +77,13 @@
               <td class="td-date">{{ p.fechaCreacion | date:'dd/MM/yy HH:mm' }}</td>
               <td class="td-client">{{ p.nombreCliente ?? p.emailCliente ?? '—' }}</td>
               <td class="td-total">S/ {{ p.total | number:'1.2-2' }}</td>
+              <td>
+                @if (esRecojo(p)) {
+                  <span class="tipo-chip tipo-chip--recojo">🏪 Recojo</span>
+                } @else {
+                  <span class="tipo-chip tipo-chip--envio">🚚 Envío</span>
+                }
+              </td>
               <td><span class="spill" [ngClass]="pillClass(p.estado)">{{ ESTADO_LABEL[p.estado] }}</span></td>
               <td>
                 <select class="estado-select" [value]="p.estado" (change)="cambiarEstado(p, $event)">
