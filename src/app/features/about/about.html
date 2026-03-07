@@ -2,6 +2,8 @@
 
   <!-- ── HERO ── -->
   <section class="about-hero">
+    <!-- Imagen de fondo — reemplaza src con tu foto real -->
+    <img src="HeroAbout.webp" alt="Haida Inversiones" class="about-hero__bg" />
     <div class="about-hero__overlay"></div>
     <div class="container about-hero__content">
       <span class="about-hero__tag">Quiénes somos</span>
@@ -20,7 +22,7 @@
         <span class="about-section__tag">Nuestra historia</span>
         <h2 class="about-section__title">Nacimos para mantenerte en movimiento</h2>
         <p>
-          Haida Inversiones nació en 2009 con una sola misión: llevar llantas de calidad a cada rincón del Perú
+          Haida Inversiones nació en 2021 con una sola misión: llevar llantas de calidad a cada rincón del Perú
           a precios justos. Lo que comenzó como un pequeño local en Lima hoy se ha convertido en una empresa
           consolidada con presencia nacional y miles de clientes satisfechos.
         </p>
@@ -36,23 +38,8 @@
       </div>
       <div class="about-image">
         <div class="about-image__box">
-          <div class="about-image__accent"></div>
-          <div class="about-image__inner">
-            <svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <circle cx="60" cy="60" r="54" stroke="#1DB954" stroke-width="4" opacity="0.3"/>
-              <circle cx="60" cy="60" r="38" stroke="#1DB954" stroke-width="6" opacity="0.6"/>
-              <circle cx="60" cy="60" r="18" fill="#1DB954" opacity="0.15"/>
-              <circle cx="60" cy="60" r="8"  fill="#1DB954"/>
-              <line x1="60" y1="6"  x2="60" y2="22"  stroke="#1DB954" stroke-width="4" stroke-linecap="round"/>
-              <line x1="60" y1="98" x2="60" y2="114" stroke="#1DB954" stroke-width="4" stroke-linecap="round"/>
-              <line x1="6"  y1="60" x2="22" y2="60"  stroke="#1DB954" stroke-width="4" stroke-linecap="round"/>
-              <line x1="98" y1="60" x2="114" y2="60" stroke="#1DB954" stroke-width="4" stroke-linecap="round"/>
-              <line x1="18" y1="18" x2="29" y2="29"  stroke="#1DB954" stroke-width="3" stroke-linecap="round" opacity="0.5"/>
-              <line x1="91" y1="91" x2="102" y2="102" stroke="#1DB954" stroke-width="3" stroke-linecap="round" opacity="0.5"/>
-              <line x1="102" y1="18" x2="91" y2="29"  stroke="#1DB954" stroke-width="3" stroke-linecap="round" opacity="0.5"/>
-              <line x1="29"  y1="91" x2="18" y2="102" stroke="#1DB954" stroke-width="3" stroke-linecap="round" opacity="0.5"/>
-            </svg>
-          </div>
+          <!-- Imagen historia — reemplaza src con tu foto real -->
+          <img src="About.webp" alt="Nuestra historia" class="about-image__photo" />
           <div class="about-image__badge">
             <span class="about-image__badge-num">4+</span>
             <span class="about-image__badge-txt">Años de experiencia</span>
@@ -155,6 +142,21 @@
     </div>
   </section>
 
+  <!-- ── CTA ── -->
+  <section class="about-cta reveal">
+    <!-- Imagen de fondo — coloca tu foto en assets/images/cta-about.webp -->
+    <img src="AboutContact.webp" alt="" class="about-cta__bg" />
+    <div class="about-cta__overlay"></div>
+    <div class="container about-cta__inner">
+      <h2 class="about-cta__title">¿Listo para encontrar tus llantas ideales?</h2>
+      <p class="about-cta__sub">Explora nuestro catálogo o contáctanos y te asesoramos sin compromiso.</p>
+      <div class="about-cta__btns">
+        <a routerLink="/catalogo" class="btn-cta btn-cta--primary">Ver catálogo</a>
+        <a routerLink="/contacto" class="btn-cta btn-cta--outline">Contáctanos</a>
+      </div>
+    </div>
+  </section>
+
   <!-- ── EQUIPO ── -->
   <section class="about-section reveal">
     <div class="container">
@@ -171,7 +173,7 @@
           <h4 class="team-card__name">Carlos Mendoza</h4>
           <p class="team-card__role">Fundador & Gerente General</p>
           <p class="team-card__bio">
-            Con más de 4 años en el sector automotriz, Carlos fundó Haida con la visión
+            Con más de 20 años en el sector automotriz, Carlos fundó Haida con la visión
             de democratizar el acceso a llantas de calidad en todo el Perú.
           </p>
         </div>
@@ -193,18 +195,6 @@
             el tiempo prometido, coordinando nuestra red de distribución nacional.
           </p>
         </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ── CTA ── -->
-  <section class="about-cta reveal">
-    <div class="container about-cta__inner">
-      <h2 class="about-cta__title">¿Listo para encontrar tus llantas ideales?</h2>
-      <p class="about-cta__sub">Explora nuestro catálogo o contáctanos y te asesoramos sin compromiso.</p>
-      <div class="about-cta__btns">
-        <a routerLink="/catalogo" class="btn-cta btn-cta--primary">Ver catálogo</a>
-        <a routerLink="/contacto" class="btn-cta btn-cta--outline">Contáctanos</a>
       </div>
     </div>
   </section>
