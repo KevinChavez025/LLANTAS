@@ -144,6 +144,6 @@ export const routes: Routes = [
   // ========== RUTA 404 ==========
   {
     path: '**',
-    redirectTo: 'home'
+    loadComponent: () => import('./features/not-found/not-found').then(m => m.NotFound)
   }
 ];

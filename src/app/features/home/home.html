@@ -33,7 +33,7 @@
           @for (r of aros; track r) { <option [value]="r">{{ r }}</option> }
         </select>
         <select [(ngModel)]="tipoVehiculoSeleccionado" class="hero__select">
-          <option value="">Tipo vehículo</option>
+          <option value="">Vehículo</option>
           @for (t of tiposVehiculo; track t) { <option [value]="t">{{ t }}</option> }
         </select>
         <button (click)="buscarPorMedida()" class="btn btn-primary hero__search-btn">BUSCAR</button>

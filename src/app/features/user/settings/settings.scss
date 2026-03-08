@@ -1,0 +1,246 @@
+@use '../../../../styles/variables' as *;
+@use '../../../../styles/mixins' as *;
+@use 'sass:color';
+
+.settings-page {
+  background: $bg-dark;
+  min-height: 100vh;
+  padding: 32px 0 60px;
+}
+
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 24px;
+  @include mobile { padding: 0 16px; }
+}
+
+.page-header {
+  margin-bottom: 28px;
+  &__title { font-size: 22px; font-weight: 800; color: $text-color; margin-bottom: 6px; }
+  &__breadcrumb {
+    font-size: 13px; color: $text-muted;
+    a { color: $text-muted; text-decoration: none; &:hover { color: $primary-color; } }
+    span { color: $text-color; }
+  }
+}
+
+// ── LAYOUT ───────────────────────────────────
+.settings-layout {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 24px;
+  align-items: start;
+  @include tablet { grid-template-columns: 1fr; }
+}
+
+// ── SIDEBAR (reutiliza el estilo de profile) ─
+.user-sidebar {
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $radius-lg;
+  overflow: hidden;
+  position: sticky;
+  top: 80px;
+  @include tablet { display: none; } // en tablet/mobile se usa los tabs
+  &__nav { padding: 6px 0; }
+}
+
+.user-nav-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 11px 18px;
+  font-size: 13px; font-weight: 500;
+  color: $text-muted; text-decoration: none;
+  transition: all $transition-fast;
+  &:hover { background: $bg-dark; color: $text-color; }
+  &.active {
+    background: rgba($primary-color, 0.08);
+    color: $primary-color; font-weight: 700;
+    border-right: 3px solid $primary-color;
+  }
+}
+
+// ── TABS MOBILE ──────────────────────────────
+.settings-tabs {
+  display: none;
+  gap: 4px;
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $radius-lg;
+  padding: 6px;
+  margin-bottom: 20px;
+  @include tablet { display: flex; }
+  @include mobile { gap: 2px; padding: 4px; }
+}
+
+.settings-tab {
+  flex: 1;
+  padding: 8px 12px;
+  border: none;
+  border-radius: $radius-md;
+  background: transparent;
+  font-size: 13px; font-weight: 600;
+  color: $text-muted;
+  cursor: pointer;
+  transition: all $transition-fast;
+  white-space: nowrap;
+
+  &--active {
+    background: $primary-color;
+    color: white;
+  }
+  &:hover:not(&--active) { background: $bg-dark; color: $text-color; }
+
+  @include mobile { font-size: 12px; padding: 8px 6px; }
+}
+
+// ── CARDS ────────────────────────────────────
+.settings-card {
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $radius-lg;
+  padding: 28px;
+  margin-bottom: 20px;
+
+  @include mobile { padding: 20px 16px; }
+
+  &__title {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 16px; font-weight: 700; color: $text-color;
+    margin-bottom: 24px; padding-bottom: 16px;
+    border-bottom: 1px solid $border-color;
+  }
+
+  &__desc {
+    font-size: 13px; color: $text-muted; line-height: 1.6;
+    a { color: $primary-color; font-weight: 600; text-decoration: none;
+      &:hover { text-decoration: underline; } }
+  }
+
+  &__footer {
+    margin-top: 24px; padding-top: 16px;
+    border-top: 1px solid $border-color;
+  }
+
+  &--danger {
+    border-color: rgba($danger-color, 0.2);
+    .settings-card__title { color: $danger-color; border-bottom-color: rgba($danger-color, 0.15); }
+  }
+}
+
+// ── CAMPOS ───────────────────────────────────
+.settings-field {
+  margin-bottom: 20px;
+
+  label {
+    display: block; font-size: 13px; font-weight: 600;
+    color: $text-color; margin-bottom: 8px;
+  }
+
+  &__value {
+    font-size: 14px; color: $text-muted;
+    background: $bg-dark;
+    border: 1px solid $border-color;
+    border-radius: $radius-md;
+    padding: 10px 14px;
+  }
+
+  &__hint { font-size: 12px; color: $text-muted; margin-top: 6px; }
+
+  &__input-wrap {
+    position: relative;
+    input { padding-right: 44px; }
+  }
+
+  &__eye {
+    position: absolute; right: 12px; top: 50%;
+    transform: translateY(-50%);
+    background: none; border: none;
+    color: $text-muted; cursor: pointer;
+    display: flex; align-items: center;
+    &:hover { color: $primary-color; }
+  }
+}
+
+.settings-input {
+  width: 100%;
+  background: $bg-dark;
+  border: 2px solid $border-color;
+  border-radius: $radius-md;
+  color: $text-color;
+  font-size: 14px;
+  padding: 10px 14px;
+  transition: border-color $transition-fast;
+  font-family: inherit;
+
+  &:focus {
+    outline: none;
+    border-color: $primary-color;
+    box-shadow: 0 0 0 3px rgba($primary-color, 0.1);
+  }
+  &::placeholder { color: $text-muted; }
+}
+
+.settings-divider {
+  height: 1px; background: $border-color;
+  margin: 24px 0;
+}
+
+// ── TOGGLE SWITCHES ──────────────────────────
+.settings-toggle-list {
+  display: flex; flex-direction: column; gap: 0;
+}
+
+.settings-toggle {
+  display: flex; align-items: center;
+  justify-content: space-between; gap: 16px;
+  padding: 16px 0;
+  border-bottom: 1px solid $border-color;
+  &:last-child { border-bottom: none; }
+
+  &__info { flex: 1; }
+  &__label { display: block; font-size: 14px; font-weight: 600; color: $text-color; margin-bottom: 3px; }
+  &__desc  { display: block; font-size: 12px; color: $text-muted; }
+}
+
+.toggle-switch {
+  position: relative; display: inline-block;
+  width: 48px; height: 26px; flex-shrink: 0;
+
+  input { opacity: 0; width: 0; height: 0; }
+
+  &__slider {
+    position: absolute; cursor: pointer;
+    inset: 0; background: $border-color;
+    border-radius: 26px;
+    transition: background $transition-fast;
+
+    &::before {
+      content: '';
+      position: absolute;
+      height: 20px; width: 20px;
+      left: 3px; bottom: 3px;
+      background: white; border-radius: 50%;
+      transition: transform $transition-fast;
+      box-shadow: $shadow-sm;
+    }
+  }
+
+  input:checked + &__slider {
+    background: $primary-color;
+    &::before { transform: translateX(22px); }
+  }
+}
+
+// ── PRIVACIDAD ───────────────────────────────
+.privacy-item {
+  display: flex; gap: 14px; align-items: flex-start;
+  padding: 14px 0;
+  border-bottom: 1px solid $border-color;
+  &:last-of-type { border-bottom: none; }
+
+  svg { color: $primary-color; flex-shrink: 0; margin-top: 2px; }
+
+  &__title { font-size: 14px; font-weight: 600; color: $text-color; margin: 0 0 3px; }
+  &__desc  { font-size: 13px; color: $text-muted; margin: 0; line-height: 1.5; }
+}

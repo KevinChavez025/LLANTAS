@@ -23,7 +23,8 @@ export class Navbar implements OnInit {
   private sanitizer = inject(DomSanitizer);
   private router = inject(Router);
 
-  isMenuOpen = false;
+  isMobileOpen = false;   // menú hamburguesa mobile
+  isUserOpen   = false;   // dropdown del avatar de usuario
   cartCount = 0;
   isAuthenticated = false;
   isAdmin = false;
@@ -52,14 +53,25 @@ export class Navbar implements OnInit {
     return ['/', '/home', '/nosotros', '/contacto'].includes(url) || url.startsWith('/catalogo');
   }
 
-  toggleMenu(): void {
-    this.isMenuOpen = !this.isMenuOpen;
+  toggleMobile(): void {
+    this.isMobileOpen = !this.isMobileOpen;
+    if (this.isMobileOpen) this.isUserOpen = false;
+  }
+
+  toggleUser(): void {
+    this.isUserOpen = !this.isUserOpen;
+    if (this.isUserOpen) this.isMobileOpen = false;
+  }
+
+  closeAll(): void {
+    this.isMobileOpen = false;
+    this.isUserOpen   = false;
   }
 
   logout(): void {
     this.favoritosService.limpiarAlLogout();
     this.authService.logout();
-    this.isMenuOpen = false;
+    this.closeAll();
   }
 
   private s(svg: string): SafeHtml {

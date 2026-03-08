@@ -30,8 +30,8 @@ export class Home implements OnInit, AfterViewInit {
   readonly whatsappUrl     = `https://wa.me/${this.whatsappNumero}?text=${this.whatsappMensaje}`;
 
   // ── Hero image ────────────────────────────────────────────
-  // Pon aquí el nombre de tu archivo en /public, ej: 'hero-banner.jpg'
-  private readonly heroImgPath = 'HeroSection.webp';
+  // Configurable: cambia heroImage en environment.ts para prod
+  private readonly heroImgPath: string = (window as any).__env?.heroImage || 'HeroSection.webp';
 
   get heroStyle(): SafeStyle | null {
     if (!this.heroImgPath) return null;

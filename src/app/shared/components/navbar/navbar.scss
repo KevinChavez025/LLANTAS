@@ -33,6 +33,7 @@ $texto-navbar-muted: #CCCCCC;
   gap: 4px;
   text-decoration: none;
   transition: transform $transition-fast;
+  flex-shrink: 0; // FIX: evita que el logo se comprima en mobile
 
   &:hover { transform: scale(1.02); }
 
@@ -42,6 +43,7 @@ $texto-navbar-muted: #CCCCCC;
     color: $primary-color;
     letter-spacing: -0.5px;
     text-shadow: $shadow-neon-green;
+    white-space: nowrap; // FIX: evita que el texto se parta
   }
 
   .logo-subtext {
@@ -49,6 +51,18 @@ $texto-navbar-muted: #CCCCCC;
     font-weight: 700;
     color: $texto-navbar;
     font-style: italic;
+    white-space: nowrap;
+  }
+
+  // FIX: reducir tamaño en mobile para que no se corte
+  @include tablet {
+    .logo-text    { font-size: 20px; }
+    .logo-subtext { font-size: 16px; }
+  }
+
+  @include mobile {
+    .logo-text    { font-size: 17px; }
+    .logo-subtext { font-size: 14px; }
   }
 }
 
@@ -322,7 +336,16 @@ $texto-navbar-muted: #CCCCCC;
   z-index: calc(#{$z-sticky} - 1);
 
   @include tablet { top: 70px; }
-  @include mobile { overflow-x: auto; top: 70px; }
+  @include mobile {
+    overflow-x: auto;
+    top: 70px;
+    // FIX: scrollbar visible para que el usuario sepa que puede hacer scroll
+    scrollbar-width: thin;
+    scrollbar-color: $primary-color transparent;
+    &::-webkit-scrollbar        { height: 3px; }
+    &::-webkit-scrollbar-track  { background: transparent; }
+    &::-webkit-scrollbar-thumb  { background: $primary-color; border-radius: 3px; }
+  }
 
   &__container {
     max-width: 1400px;
